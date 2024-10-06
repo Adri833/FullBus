@@ -17,14 +17,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+import es.thatapps.fullbus.navigation.Routes
 import es.thatapps.fullbus.presentation.components.PasswordTextField
 import es.thatapps.fullbus.presentation.components.RegisterTextField
 
-@Preview
 @Composable
-fun RegisterScreen() {
+fun RegisterScreen(navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -34,14 +37,8 @@ fun RegisterScreen() {
     ) {
         Text(text = "Ingresa tus datos", fontSize = 28.sp, color = Color.Black)
         Spacer(modifier = Modifier.height(20.dp))
-        Text(
-            text = "Necesitamos estos datos para \n poder crear tu cuenta de usuario",
-            fontSize = 14.sp,
-            textAlign = TextAlign.Center
-        )
-        Spacer(modifier = Modifier.height(20.dp))
         RegisterTextField(
-            value = "userName",
+            value = "",
             placeHolder = "Nombre"
         ) {
             // TODO agregar logica
@@ -62,7 +59,7 @@ fun RegisterScreen() {
         Spacer(modifier = Modifier.height(20.dp))
         Button(
             onClick = {
-                // TODO agregar logica
+                navController.navigate(Routes.Login.route)
             },
             shape = CircleShape,
             colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
@@ -73,4 +70,12 @@ fun RegisterScreen() {
             Text(text = "Registrarse")
         }
     }
+}
+
+// Esta es la misma función de RegisterScreen pero usando un NavController falso para el preview
+@Preview(showBackground = true)
+@Composable
+fun RegisterScreenPreview() {
+    val navController = rememberNavController() // NavController de prueba para el Preview
+    RegisterScreen(navController)
 }
