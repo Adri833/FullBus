@@ -2,9 +2,12 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
 
-    // Dogger Hilt
+    // Dagger Hilt
     id("kotlin-kapt")
     id("com.google.dagger.hilt.android")
+
+    // Google FireBase
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -71,11 +74,24 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
+
     // Navigation
     implementation("androidx.navigation:navigation-compose:2.7.2")
+
+    // Firebase
+    implementation("com.google.firebase:firebase-auth-ktx:21.0.5") // Authentication
 
     // Dogger Hilt
     implementation("com.google.dagger:hilt-android:2.44")
     kapt("com.google.dagger:hilt-android-compiler:2.44")
+    implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
+
+    // Couroutine
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.6.0") // Revisa que tengas la última versión
+
 }
 
+// Para habilitar el procesamiento de anotaciones
+kapt {
+    correctErrorTypes = true
+}

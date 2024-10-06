@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "849555118843",
+    "project_id": "fullbus833",
+    "storage_bucket": "fullbus833.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:849555118843:android:7b1091cd38677b9ed4ae5e",
+        "android_client_info": {
+          "package_name": "es.thatapps.fullbus"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA-da_LljDzwJ-cIzc_wIw30QjQZUWu6fg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

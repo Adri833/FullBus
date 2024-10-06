@@ -1,32 +1,24 @@
 package es.thatapps.fullbus.presentation.components
 
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.TextField
+import androidx.compose.material3.Text // Asegúrate de importar esto
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.KeyboardType
 
 @Composable
 fun RegisterTextField(
     value: String,
     placeHolder: String,
-    onValueChanged: (String) -> Unit
+    onValueChange: (String) -> Unit
 ) {
-    OutlinedTextField(
+    TextField(
         value = value,
-        onValueChange = { onValueChanged(it) },
-        colors = TextFieldDefaults.colors(
-            focusedContainerColor = Color.White,
-            unfocusedContainerColor = Color.White,
-            disabledContainerColor = Color.White
-        ),
-        maxLines = 1,
-        singleLine = true,
-        placeholder = {
-            Text(text = placeHolder)
-        },
-        modifier = Modifier.fillMaxWidth()
+        onValueChange = onValueChange,
+        placeholder = { Text(placeHolder) },
+        modifier = Modifier.fillMaxWidth(),
+        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Text)
     )
 }

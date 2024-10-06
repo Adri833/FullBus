@@ -12,6 +12,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -20,6 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import es.thatapps.fullbus.navigation.Routes
@@ -27,7 +32,11 @@ import es.thatapps.fullbus.presentation.components.PasswordTextField
 import es.thatapps.fullbus.presentation.components.RegisterTextField
 
 @Composable
-fun RegisterScreen(navController: NavController) {
+fun RegisterScreen(navController: NavController, viewModel: RegisterViewModel = hiltViewModel()) {
+    var userName by remember { mutableStateOf("") }
+    var userEmail by remember { mutableStateOf("") }
+    var userPassword by remember { mutableStateOf("") }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -39,10 +48,10 @@ fun RegisterScreen(navController: NavController) {
         Spacer(modifier = Modifier.height(20.dp))
         RegisterTextField(
             value = "",
-            placeHolder = "Nombre"
-        ) {
-            // TODO agregar logica
-        }
+            placeHolder = "Nombre",
+            onValueChange = { userName = it }
+        )
+
         Spacer(modifier = Modifier.height(10.dp))
         RegisterTextField(
             value = "userEmail",
