@@ -24,6 +24,6 @@ fun LoginScreen() {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text("Tu madre tiene una polla", fontSize = 25.sp, color = Color.Black)
-
+        Text("Que ya la quisiera yo", fontSize = 25.sp, color = Color.Black)
     }
 }
