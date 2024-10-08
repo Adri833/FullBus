@@ -4,16 +4,17 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import dagger.hilt.android.AndroidEntryPoint
 import es.thatapps.fullbus.navigation.NavigationHost
 import es.thatapps.fullbus.ui.theme.FullBusTheme
 
+/*
+@AndroidEntryPoint le dice a Hilt que esta clase necesita dependencias inyectadas.
+Automáticamente genera y gestiona el código necesario para hacer la inyección.
+Se pone en la activity para que se inyecten todas las dependencias
+*/
+
+@AndroidEntryPoint
 class MainActivity: ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -22,7 +23,6 @@ class MainActivity: ComponentActivity() {
         setContent {
             FullBusTheme {
                 NavigationHost()
-
             }
         }
     }

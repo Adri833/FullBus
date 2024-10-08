@@ -1,10 +1,9 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
-
-    // Dogger Hilt
-    id("kotlin-kapt")
-    id("com.google.dagger.hilt.android")
+    alias(libs.plugins.dagger.hilt.android) // Dagger Hilt
+    kotlin("kapt")
+    id("com.google.gms.google-services") // Google Firebase
 }
 
 android {
@@ -72,10 +71,15 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     // Navigation
-    implementation("androidx.navigation:navigation-compose:2.7.2")
+    implementation(libs.androidx.navigation.compose)
 
-    // Dogger Hilt
-    implementation("com.google.dagger:hilt-android:2.44")
-    kapt("com.google.dagger:hilt-android-compiler:2.44")
+    // Dagger Hilt
+    implementation(libs.hilt.android)
+    implementation(libs.hilt.navigation.compose)
+    kapt(libs.hilt.android.compiler)
+
+    // Google Firebase
+    implementation(platform("com.google.firebase:firebase-bom:33.4.0"))
+    implementation("com.google.firebase:firebase-auth:23.0.0") // Authenticator
 }
 

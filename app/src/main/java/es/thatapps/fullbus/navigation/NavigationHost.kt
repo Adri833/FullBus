@@ -16,11 +16,16 @@ fun NavigationHost() {
         startDestination = Routes.Register.route,
     ) {
         composable(route = Routes.Register.route) {
-           RegisterScreen(navController = navController)
+//           RegisterScreen(navController = navController) esto es una colada como una catedral
+            RegisterScreen(
+                navigationToLogin = {
+                    navController.navigate(Routes.Login.route)
+                }
+            )
         }
 
         composable(route = Routes.Login.route) {
-        LoginScreen()
+            LoginScreen()
         }
     }
 }
