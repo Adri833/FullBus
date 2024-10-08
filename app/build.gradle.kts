@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.dagger.hilt.android) // Dagger Hilt
     kotlin("kapt")
+    id("com.google.gms.google-services") // Google Firebase
 }
 
 android {
@@ -76,5 +77,9 @@ dependencies {
     implementation(libs.hilt.android)
     implementation(libs.hilt.navigation.compose)
     kapt(libs.hilt.android.compiler)
+
+    // Google Firebase
+    implementation(platform("com.google.firebase:firebase-bom:33.4.0"))
+    implementation("com.google.firebase:firebase-auth:23.0.0") // Authenticator
 }
 
