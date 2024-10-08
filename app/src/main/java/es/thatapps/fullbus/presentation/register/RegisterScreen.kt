@@ -1,5 +1,6 @@
 package es.thatapps.fullbus.presentation.register
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -12,13 +13,19 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import es.thatapps.fullbus.R
 import es.thatapps.fullbus.presentation.components.PasswordTextField
 import es.thatapps.fullbus.presentation.components.RegisterTextField
 
@@ -27,6 +34,12 @@ fun RegisterScreen(
     viewModel: RegisterViewModel = hiltViewModel(),
     navigationToLogin: () -> Unit,
 ) {
+    // Estados para almacenar los valores de entrada
+    val name = remember { mutableStateOf("") }
+    val email = remember { mutableStateOf("") }
+    val password = remember { mutableStateOf("") }
+    val registerState by viewModel.registerState.collectAsState()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -34,32 +47,45 @@ fun RegisterScreen(
             .padding(50.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+
+        Image(
+            painter = painterResource(id = R.drawable.logo_fullbus),
+            contentDescription = "Logo de la aplicacion",
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(200.dp)
+        )
+
         Text(text = "Ingresa tus datos", fontSize = 28.sp, color = Color.Black)
         Spacer(modifier = Modifier.height(20.dp))
+
         RegisterTextField(
-            value = "",
-            placeHolder = "Nombre"
+            value = name.value,
+            placeHolder = "Nombre de Usuario"
         ) {
-            // TODO agregar logica
+            name.value = it // Actualiza el valor del nombre
         }
         Spacer(modifier = Modifier.height(10.dp))
+
         RegisterTextField(
-            value = "userEmail",
+            value = email.value,
             placeHolder = "Email"
         ) {
-            // TODO agregar logica
+            email.value = it // Actualiza el valor del email
         }
         Spacer(modifier = Modifier.height(10.dp))
+
         PasswordTextField(
-            value = "userPassword",
+            value = password.value,
             onValueChange = {
-                // TODO agregar logica
-            })
+                password.value = it // Actualiza el valor de la contraseña
+            }
+        )
         Spacer(modifier = Modifier.height(20.dp))
+
         Button(
             onClick = {
-                // TODO agregar logica, se hace navegacion para probar
-                navigationToLogin()
+                viewModel.register(email.value, password.value) // Llama a la función de registro
             },
             shape = CircleShape,
             colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
@@ -69,10 +95,19 @@ fun RegisterScreen(
         ) {
             Text(text = "Registrarse")
         }
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        when (registerState) {
+            is RegisterState.Loading -> Text("Cargando...")
+            is RegisterState.Success -> Text("Registrado con éxito!")
+            is RegisterState.Error -> Text("Error: ${(registerState as RegisterState.Error).message}")
+            else -> {}
+
+        }
     }
 }
 
-// Asi si, lo que tenías antes lo ve alguien y le da un infarto...
 @Preview(showBackground = true)
 @Composable
 fun RegisterScreenPreview() {
