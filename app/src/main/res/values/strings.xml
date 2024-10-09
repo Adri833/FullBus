@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">FullBus</string>
+
+    <!-- Errores -->
+    <string name="email_required">El correo es obligatorio</string>
+    <string name="password_short">La contraseña debe tener minimo 6 caracteres</string>
+    <string name="register_error">Error durante el registro</string>
 </resources>
