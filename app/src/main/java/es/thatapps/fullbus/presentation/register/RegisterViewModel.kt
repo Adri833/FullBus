@@ -1,8 +1,11 @@
 package es.thatapps.fullbus.presentation.register
 
+import androidx.compose.material3.Text
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import es.thatapps.fullbus.R
 import es.thatapps.fullbus.data.AuthRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -26,7 +29,7 @@ class RegisterViewModel @Inject constructor(
             _registerState.value = if (result.isSuccess) {
                 RegisterState.Success
             } else {
-                RegisterState.Error(result.exceptionOrNull()?.message ?: "Uknown error")
+                RegisterState.Error(result.exceptionOrNull()?.message ?: "Error desconocido")
             }
         }
     }

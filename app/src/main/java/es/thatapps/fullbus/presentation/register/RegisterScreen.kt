@@ -21,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -56,7 +57,10 @@ fun RegisterScreen(
                 .height(200.dp)
         )
 
+        Spacer(modifier = Modifier.height(12.dp))
+
         Text(text = "Ingresa tus datos", fontSize = 28.sp, color = Color.Black)
+
         Spacer(modifier = Modifier.height(20.dp))
 
         RegisterTextField(
@@ -65,7 +69,7 @@ fun RegisterScreen(
         ) {
             name.value = it // Actualiza el valor del nombre
         }
-        Spacer(modifier = Modifier.height(10.dp))
+        Spacer(modifier = Modifier.height(11.dp))
 
         RegisterTextField(
             value = email.value,
@@ -73,7 +77,7 @@ fun RegisterScreen(
         ) {
             email.value = it // Actualiza el valor del email
         }
-        Spacer(modifier = Modifier.height(10.dp))
+        Spacer(modifier = Modifier.height(11.dp))
 
         PasswordTextField(
             value = password.value,
@@ -98,12 +102,31 @@ fun RegisterScreen(
 
         Spacer(modifier = Modifier.height(10.dp))
 
+        // Muestra los estados al registrarse
         when (registerState) {
             is RegisterState.Loading -> Text("Cargando...")
             is RegisterState.Success -> Text("Registrado con éxito!")
-            is RegisterState.Error -> Text("Error: ${(registerState as RegisterState.Error).message}")
+            is RegisterState.Error -> Text(stringResource(id = R.string.register_error))
             else -> {}
 
+        }
+
+        // Espacio en blanco hasta la parte inferior de la pantalla
+        Spacer(modifier = Modifier.weight(1f))
+
+        Text(text = "¿Ya tienes cuenta?", fontSize = 17.sp, color = Color.Black)
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        Button (
+            onClick = navigationToLogin,
+            shape = CircleShape,
+            colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp)
+        ) {
+            Text(text = "Iniciar Sesión")
         }
     }
 }
