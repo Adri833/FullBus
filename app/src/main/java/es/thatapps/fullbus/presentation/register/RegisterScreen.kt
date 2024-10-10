@@ -1,5 +1,6 @@
 package es.thatapps.fullbus.presentation.register
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -20,15 +22,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.google.firebase.firestore.FirebaseFirestore
 import es.thatapps.fullbus.R
 import es.thatapps.fullbus.presentation.components.PasswordTextField
 import es.thatapps.fullbus.presentation.components.RegisterTextField
+
 
 @Composable
 fun RegisterScreen(
@@ -36,10 +41,16 @@ fun RegisterScreen(
     navigationToLogin: () -> Unit,
 ) {
     // Estados para almacenar los valores de entrada
-    val name = remember { mutableStateOf("") }
+    val username = remember { mutableStateOf("") }
     val email = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
     val registerState by viewModel.registerState.collectAsState()
+
+    // Obtener el controlador del teclado
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+    // Firestore database
+    val db = FirebaseFirestore.getInstance()
 
     Column(
         modifier = Modifier
@@ -64,10 +75,10 @@ fun RegisterScreen(
         Spacer(modifier = Modifier.height(20.dp))
 
         RegisterTextField(
-            value = name.value,
+            value = username.value,
             placeHolder = "Nombre de Usuario"
         ) {
-            name.value = it // Actualiza el valor del nombre
+            username.value = it // Actualiza el valor del nombre
         }
         Spacer(modifier = Modifier.height(11.dp))
 
@@ -85,11 +96,15 @@ fun RegisterScreen(
                 password.value = it // Actualiza el valor de la contraseña
             }
         )
+
         Spacer(modifier = Modifier.height(20.dp))
 
         Button(
             onClick = {
-                viewModel.register(email.value, password.value) // Llama a la función de registro
+                // Oculta el teclado
+                keyboardController?.hide()
+
+                viewModel.register(email.value, password.value, username.value) // Llama a la función de registro
             },
             shape = CircleShape,
             colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
@@ -97,16 +112,23 @@ fun RegisterScreen(
                 .fillMaxWidth()
                 .height(50.dp)
         ) {
-            Text(text = "Registrarse")
+            Text(text = "Registrarse", fontSize = 17.sp, color = Color.White)
         }
 
         Spacer(modifier = Modifier.height(10.dp))
 
         // Muestra los estados al registrarse
         when (registerState) {
-            is RegisterState.Loading -> Text("Cargando...")
+            is RegisterState.Loading -> CircularProgressIndicator() // Circulo mientras carga
             is RegisterState.Success -> Text("Registrado con éxito!")
-            is RegisterState.Error -> Text(stringResource(id = R.string.register_error))
+            is RegisterState.Error -> {
+                val errorState = registerState as RegisterState.Error
+                Text(
+                    text = stringResource(id = errorState.messageResID),
+                    color = Color.Black
+                )
+            }
+
             else -> {}
 
         }
@@ -118,7 +140,7 @@ fun RegisterScreen(
 
         Spacer(modifier = Modifier.height(10.dp))
 
-        Button (
+        Button(
             onClick = navigationToLogin,
             shape = CircleShape,
             colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
@@ -126,7 +148,7 @@ fun RegisterScreen(
                 .fillMaxWidth()
                 .height(50.dp)
         ) {
-            Text(text = "Iniciar Sesión")
+            Text(text = "Iniciar Sesión", fontSize = 17.sp, color = Color.White)
         }
     }
 }
