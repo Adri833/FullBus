@@ -1,6 +1,7 @@
 package es.thatapps.fullbus.presentation.register
 
-import android.util.Log
+import android.widget.Toast
+import androidx.compose.animation.core.estimateAnimationDurationMillis
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -22,6 +23,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -29,7 +31,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.google.firebase.firestore.FirebaseFirestore
 import es.thatapps.fullbus.R
 import es.thatapps.fullbus.presentation.components.PasswordTextField
 import es.thatapps.fullbus.presentation.components.RegisterTextField
@@ -48,9 +49,6 @@ fun RegisterScreen(
 
     // Obtener el controlador del teclado
     val keyboardController = LocalSoftwareKeyboardController.current
-
-    // Firestore database
-    val db = FirebaseFirestore.getInstance()
 
     Column(
         modifier = Modifier
@@ -117,10 +115,16 @@ fun RegisterScreen(
 
         Spacer(modifier = Modifier.height(10.dp))
 
+        val context = LocalContext.current
+
         // Muestra los estados al registrarse
         when (registerState) {
             is RegisterState.Loading -> CircularProgressIndicator() // Circulo mientras carga
-            is RegisterState.Success -> Text("Registrado con éxito!")
+            is RegisterState.Success -> {
+                viewModel.resetRegisterState() // Reestablece el estado para evitar un bucle
+                Toast.makeText(context, "Registro exitoso!", Toast.LENGTH_SHORT).show() // Notificacion de exito
+                navigationToLogin()
+            }
             is RegisterState.Error -> {
                 val errorState = registerState as RegisterState.Error
                 Text(
@@ -128,9 +132,7 @@ fun RegisterScreen(
                     color = Color.Black
                 )
             }
-
             else -> {}
-
         }
 
         // Espacio en blanco hasta la parte inferior de la pantalla
