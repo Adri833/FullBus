@@ -2,7 +2,12 @@
     <string name="app_name">FullBus</string>
 
     <!-- Errores -->
-    <string name="email_required">El correo es obligatorio</string>
-    <string name="password_short">La contraseña debe tener minimo 6 caracteres</string>
-    <string name="register_error">Error durante el registro</string>
+    <string name="camp_required">Por favor, rellena todos los campos</string>
+    <string name="invalid_email">El formato del correo es inválido</string>
+    <string name="password_short">La contraseña debe tener al menos 6 caracteres</string>
+    <string name="username_taken">El nombre de usuario ya está en uso</string>
+    <string name="register_error">Error en el registro</string>
+    <string name="error_unknown">Ha ocurrido un error desconocido. Por favor, inténtalo de nuevo</string>
+    <string name="email_in_use">El correo electrónico ya está en uso</string>
+    <string name="error_firestore">Error de la base de datos</string>
 </resources>

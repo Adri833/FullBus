@@ -79,7 +79,8 @@ dependencies {
     kapt(libs.hilt.android.compiler)
 
     // Google Firebase
-    implementation(platform("com.google.firebase:firebase-bom:33.4.0"))
-    implementation("com.google.firebase:firebase-auth:23.0.0") // Authenticator
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.auth) // Authenticator
+    implementation(libs.firebase.firestore)
 }
 
