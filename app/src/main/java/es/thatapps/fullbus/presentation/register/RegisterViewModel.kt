@@ -2,8 +2,8 @@ package es.thatapps.fullbus.presentation.register
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.FirebaseFirestoreException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import es.thatapps.fullbus.R
 import es.thatapps.fullbus.data.AuthRepository
@@ -47,10 +47,22 @@ class RegisterViewModel @Inject constructor(
                 saveUserToFirestore(username, email, password)
                 _registerState.value = RegisterState.Success
             } else {
-                _registerState.value = RegisterState.Error(R.string.error_unknown)
+                // Obtener la excepción para identificar el tipo de error
+                val exception = result.exceptionOrNull()
+                val errorResId = when (exception) {
+                    is FirebaseAuthUserCollisionException -> R.string.email_in_use // Error de correo ya registrado
+                    else -> R.string.error_unknown // Otros errores desconocidos
+                }
+                _registerState.value = RegisterState.Error(errorResId)
             }
         }
     }
+
+    // Funcion para resetear el estado del registro
+    fun resetRegisterState() {
+        _registerState.value = RegisterState.Idle
+    }
+
 
     // Guardar el usuario en Firestore si el email no está registrado
     private fun saveUserToFirestore(username: String, email: String, password: String) {
@@ -58,17 +70,20 @@ class RegisterViewModel @Inject constructor(
         // Si no está registrado, proceder a guardar los datos del usuario
         firestore.collection("users").document(email).set(
             hashMapOf("username" to username, "email" to email, "password" to password)
+
         ).addOnSuccessListener {
             _registerState.value = RegisterState.Success
+
         }.addOnFailureListener {
+            // Manejo de errores genéricos al intentar guardar en Firestore
             _registerState.value = RegisterState.Error(R.string.error_firestore)
         }
     }
 }
 
 sealed class RegisterState {
-    object Idle : RegisterState()
-    object Loading : RegisterState()
-    object Success : RegisterState()
+    data object Idle : RegisterState()
+    data object Loading : RegisterState()
+    data object Success : RegisterState()
     data class Error(val messageResID: Int) : RegisterState()
 }
