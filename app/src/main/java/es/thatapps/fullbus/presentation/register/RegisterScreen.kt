@@ -1,7 +1,6 @@
 package es.thatapps.fullbus.presentation.register
 
 import android.widget.Toast
-import androidx.compose.animation.core.estimateAnimationDurationMillis
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -54,9 +53,10 @@ fun RegisterScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
-            .padding(50.dp),
+            .padding(20.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Spacer(modifier = Modifier.height(25.dp))
 
         Image(
             painter = painterResource(id = R.drawable.logo_fullbus),
@@ -78,7 +78,7 @@ fun RegisterScreen(
         ) {
             username.value = it // Actualiza el valor del nombre
         }
-        Spacer(modifier = Modifier.height(11.dp))
+        Spacer(modifier = Modifier.height(15.dp))
 
         RegisterTextField(
             value = email.value,
@@ -86,7 +86,6 @@ fun RegisterScreen(
         ) {
             email.value = it // Actualiza el valor del email
         }
-        Spacer(modifier = Modifier.height(11.dp))
 
         PasswordTextField(
             value = password.value,
@@ -152,6 +151,8 @@ fun RegisterScreen(
         ) {
             Text(text = "Iniciar Sesión", fontSize = 17.sp, color = Color.White)
         }
+
+        Spacer(modifier = Modifier.height(40.dp))
     }
 }
 

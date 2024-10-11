@@ -10,4 +10,5 @@
     <string name="error_unknown">Ha ocurrido un error desconocido. Por favor, inténtalo de nuevo</string>
     <string name="email_in_use">El correo electrónico ya está en uso</string>
     <string name="error_firestore">Error de la base de datos</string>
+    <string name="error_login">Error al iniciar sesion. Por favor, intentelo de nuevo</string>
 </resources>

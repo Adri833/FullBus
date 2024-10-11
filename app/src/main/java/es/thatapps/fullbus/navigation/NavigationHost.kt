@@ -15,8 +15,8 @@ fun NavigationHost() {
         navController = navController,
         startDestination = Routes.Register.route,
     ) {
+        // Navegacion hacia la pantalla de login
         composable(route = Routes.Register.route) {
-//           RegisterScreen(navController = navController) esto es una colada como una catedral
             RegisterScreen(
                 navigationToLogin = {
                     navController.navigate(Routes.Login.route)
@@ -24,8 +24,13 @@ fun NavigationHost() {
             )
         }
 
+        // Navegacion hacia la pantalla de registro
         composable(route = Routes.Login.route) {
-            LoginScreen()
+            LoginScreen(
+                navigationToRegister = {
+                    navController.navigate(Routes.Register.route)
+                }
+            )
         }
     }
 }

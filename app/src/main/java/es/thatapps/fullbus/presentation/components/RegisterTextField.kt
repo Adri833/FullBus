@@ -18,13 +18,14 @@ fun RegisterTextField(
         value = value,
         onValueChange = { onValueChanged(it) },
         colors = TextFieldDefaults.colors(
+
             focusedContainerColor = Color.White,
             unfocusedContainerColor = Color.White,
             disabledContainerColor = Color.White
         ),
         maxLines = 1,
         singleLine = true,
-        placeholder = {
+        label = {
             Text(text = placeHolder)
         },
         modifier = Modifier.fillMaxWidth()
