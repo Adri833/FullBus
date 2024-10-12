@@ -3,6 +3,8 @@ package es.thatapps.fullbus.presentation.login
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -123,6 +126,26 @@ fun LoginScreen(
         )
         Spacer(modifier =  Modifier.height(23.dp))
 
+        // Mostrar mensaje de error en un recuadro rojo si hay algún error
+        if (loginState is LoginState.Error) {
+            val errorState = loginState as LoginState.Error
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .border(1.dp, Color.Red, shape = RoundedCornerShape(4.dp)) // Borde de color rojo
+                    .background(Color(0xFFFFD2D7), shape = RoundedCornerShape(4.dp)) // Color rojo más claro
+                    .padding(8.dp),
+                contentAlignment = Alignment.Center // Centrar el texto
+            ) {
+                Text(
+                    text = stringResource(id = errorState.messageResID),
+                    color = Color.Red,
+                    fontSize = 15.sp
+                )
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+        }
+
         // Botón de inicio de sesión
         Button(
             onClick = {
@@ -152,13 +175,6 @@ fun LoginScreen(
                 Toast.makeText(context, "Bienvenido", Toast.LENGTH_SHORT).show() // Notificacion de exito
                 navigationToRegister()
             }
-            is LoginState.Error -> {
-                val errorState = loginState as LoginState.Error
-                Text(
-                    text = stringResource(id = errorState.messageResID),
-                    color = Color.Black
-                )
-            }
             else -> {}
         }
 
@@ -168,6 +184,32 @@ fun LoginScreen(
             modifier = Modifier.padding(top = 16.dp)
         ) {
             Text("¿No tienes cuenta? Regístrate")
+        }
+
+        TextButton(
+            onClick = { viewModel.resetPassword(email.value) }, // Llama a la función de restablecimiento de contraseña
+            modifier = Modifier.padding(top = 16.dp)
+        ) {
+            Text("¿Olvidaste tu contraseña?")
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Recuadro verde para mostrar si el correo de recuperacion ha sido enviado
+        if (loginState is LoginState.PasswordResetSuccess) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .border(1.dp, Color.Green, shape = RoundedCornerShape(4.dp)) // Borde de color rojo
+                    .background(Color(0xFFD0E8D0), shape = RoundedCornerShape(4.dp)) // Color rojo más claro
+                    .padding(8.dp),
+                contentAlignment = Alignment.Center // Centrar el texto
+            ) {
+                Text(
+                    text = stringResource(R.string.email_send),
+                    color = Color(0xFF004D00),
+                    fontSize = 15.sp
+                )
+            }
         }
     }
 }

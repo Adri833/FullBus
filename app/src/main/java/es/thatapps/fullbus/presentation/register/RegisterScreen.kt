@@ -3,6 +3,8 @@ package es.thatapps.fullbus.presentation.register
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -33,6 +36,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import es.thatapps.fullbus.R
 import es.thatapps.fullbus.presentation.components.PasswordTextField
 import es.thatapps.fullbus.presentation.components.RegisterTextField
+import es.thatapps.fullbus.presentation.login.LoginState
 
 
 @Composable
@@ -96,6 +100,26 @@ fun RegisterScreen(
 
         Spacer(modifier = Modifier.height(20.dp))
 
+        // Mostrar mensaje de error en un recuadro rojo si hay algún error
+        if (registerState is RegisterState.Error) {
+            val errorState = registerState as RegisterState.Error
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .border(1.dp, Color.Red, shape = RoundedCornerShape(4.dp)) // Borde de color rojo
+                    .background(Color(0xFFFFD2D7), shape = RoundedCornerShape(4.dp)) // Color rojo más claro
+                    .padding(8.dp),
+                contentAlignment = Alignment.Center // Centrar el texto
+            ) {
+                Text(
+                    text = stringResource(id = errorState.messageResID),
+                    color = Color.Red,
+                    fontSize = 15.sp
+                )
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+        }
+
         Button(
             onClick = {
                 // Oculta el teclado
@@ -124,13 +148,7 @@ fun RegisterScreen(
                 Toast.makeText(context, "Registro exitoso!", Toast.LENGTH_SHORT).show() // Notificacion de exito
                 navigationToLogin()
             }
-            is RegisterState.Error -> {
-                val errorState = registerState as RegisterState.Error
-                Text(
-                    text = stringResource(id = errorState.messageResID),
-                    color = Color.Black
-                )
-            }
+            is RegisterState.Error -> {}
             else -> {}
         }
 
