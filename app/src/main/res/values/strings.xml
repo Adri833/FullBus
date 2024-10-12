@@ -10,4 +10,10 @@
     <string name="error_unknown">Ha ocurrido un error desconocido. Por favor, inténtalo de nuevo</string>
     <string name="email_in_use">El correo electrónico ya está en uso</string>
     <string name="error_firestore">Error de la base de datos</string>
+    <string name="error_login">Error desconocido al iniciar sesion. Por favor, intentelo de nuevo</string>
+    <string name="user_not_found">No se ha encontrado el ususario</string>
+    <string name="invalid_credentials">El usuario o contraseña es incorrecto</string>
+    <string name="error_reset_password">Error al restablecer la contraseña</string>
+
+    <string name="email_send">Se ha enviado un mensaje a tu email</string>
 </resources>
