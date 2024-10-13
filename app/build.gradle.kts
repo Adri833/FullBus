@@ -81,6 +81,7 @@ dependencies {
     // Google Firebase
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.auth) // Authenticator
-    implementation(libs.firebase.firestore)
+    implementation(libs.firebase.firestore) // Firestore db
+    implementation(libs.play.services.ads) // AdMob
 }
 
