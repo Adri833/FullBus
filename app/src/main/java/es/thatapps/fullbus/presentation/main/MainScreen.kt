@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -21,7 +22,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.thatapps.fullbus.R
 import es.thatapps.fullbus.presentation.components.AdBanner
+import es.thatapps.fullbus.presentation.components.BusInfoBox
 import es.thatapps.fullbus.presentation.components.BusStatusBox
+import es.thatapps.fullbus.presentation.components.Header
 
 @Composable
 fun MainScreen(context: Context) {
@@ -32,53 +35,16 @@ fun MainScreen(context: Context) {
             .padding(16.dp)
     ) {
         // Encabezado con la información de la línea de autobús y el logo
-        HeaderSection()
+        Header()
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.width(15.dp))
 
-        // Contenedor de autobuses
-        BusStatusBox(
-            time = "7:00",
-            isFull = false,
-            onReportFull = { /* acción al marcar como lleno */ }
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        BusStatusBox(
-            time = "7:15",
-            isFull = true,
-            reportCount = 3,
-            onReportFull = { /* acción al marcar como lleno */ }
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Anuncio
-        AdBanner(context = context)
-    }
-}
-
-@Composable
-fun HeaderSection() {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(Color(0xFFFFC0CB))
-            .padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = "M-126",
-            fontSize = 20.sp,
-            color = Color.White
-        )
-        Spacer(modifier = Modifier.weight(1f))
-        // Imagen de logo de la aplicación
-        Image(
-            painter = painterResource(id = R.drawable.logo_fullbus),
-            contentDescription = "Logo FullBus",
-            modifier = Modifier.size(40.dp)
+        BusInfoBox(
+            lineNumber = "M-126",
+            backgroundColor = Color(0xFFFFC0CB), // Color rosa
+            origin = "Viso",
+            destination = "Sevilla",
+            busIcon = R.drawable.bus_1
         )
     }
 }
