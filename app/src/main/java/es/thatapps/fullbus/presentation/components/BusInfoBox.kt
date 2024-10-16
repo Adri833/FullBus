@@ -3,15 +3,7 @@ package es.thatapps.fullbus.presentation.components
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
@@ -21,6 +13,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import es.thatapps.fullbus.R
 
 @Composable
 fun BusInfoBox(
@@ -29,15 +23,18 @@ fun BusInfoBox(
     backgroundColor: Color,
     origin: String,
     destination: String,
-    busIcon: Int
+    busIcon: Int,
+    reversed: Boolean = false // Invierte el orden
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .background(backgroundColor, shape = RoundedCornerShape(16.dp))
             .border(2.dp, Color.Black, shape = RoundedCornerShape(16.dp))
-            .padding(16.dp)
+            .padding(16.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
+        // Número de línea en un círculo
         Box(
             modifier = Modifier
                 .size(60.dp)
@@ -48,18 +45,57 @@ fun BusInfoBox(
             Text(text = lineNumber, color = Color.Black)
         }
 
-        Spacer(modifier = Modifier.width(16.dp))
+        // Columna para origen y destino con la flecha
+        Row(
+            modifier = Modifier.weight(1f),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center // Centra horizontalmente
+        ) {
+            if (reversed) {
 
-        Column {
-            Text(text = origin, color = Color.Black)
-            Spacer(modifier = Modifier.height(8.dp))
+                // Destino
+                Text(text = destination, fontSize = 22.sp ,color = Color.Black)
+
+                Spacer(modifier = Modifier.width(12.dp))
+
+                // Ícono de flecha
+                Image(
+                    painter = painterResource(id = R.drawable.ic_arrow_reverse),
+                    contentDescription = "Arrow Icon",
+                    modifier = Modifier.size(38.dp)
+                )
+
+                Spacer(modifier = Modifier.width(12.dp))
+
+                // Origen
+                Text(text = origin, fontSize = 22.sp ,color = Color.Black)
+            } else {
+                // Orden normal
+                Text(text = origin, fontSize = 22.sp ,color = Color.Black)
+
+                Spacer(modifier = Modifier.width(12.dp))
+
+                // Ícono de flecha
+                Image(
+                    painter = painterResource(id = R.drawable.ic_arrow),
+                    contentDescription = "Arrow Icon",
+                    modifier = Modifier.size(38.dp)
+                )
+
+                Spacer(modifier = Modifier.width(12.dp))
+
+                // Destino
+                Text(text = destination, fontSize = 22.sp ,color = Color.Black)
+            }
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            // Icono del bus a la derecha
             Image(
                 painter = painterResource(id = busIcon),
                 contentDescription = "Bus Icon",
-                modifier = Modifier.size(40.dp)
+                modifier = Modifier.size(60.dp)
             )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(text = destination, color = Color.Black)
         }
     }
 }

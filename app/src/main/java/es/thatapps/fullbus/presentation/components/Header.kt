@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -21,14 +22,17 @@ fun Header() {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color(0xFFB0BEC5)) // Color de fondo gris claro
-            .padding(8.dp),
+            .background(
+                Color(0xFFB0BEC5), // Color de fondo gris claro
+            )
+            .padding(start = 8.dp, end = 8.dp, top = 20.dp, bottom = 8.dp), // Espacios para ayudar al centrado
         verticalAlignment = Alignment.CenterVertically
     ) {
         // Botón de menú
         IconButton(onClick = { /* Acción para abrir el menú */ }) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_menu), // Asegúrate de tener este recurso
+                modifier = Modifier.width(30.dp),
                 contentDescription = "Menu",
                 tint = Color.Black
             )
@@ -40,7 +44,7 @@ fun Header() {
         Image(
             painter = painterResource(id = R.drawable.logo_fullbus2),
             contentDescription = "Logo FullBus",
-            modifier = Modifier.size(60.dp)
+            modifier = Modifier.size(90.dp)
         )
 
         Spacer(modifier = Modifier.weight(1f))
@@ -50,6 +54,7 @@ fun Header() {
             Icon(
                 painter = painterResource(id = R.drawable.ic_avatar), // Asegúrate de tener este recurso
                 contentDescription = "Profile",
+                modifier = Modifier.width(40.dp),
                 tint = Color.Black
             )
         }
