@@ -45,7 +45,7 @@ fun NavigationHost() {
 
         // Navegacion de la pantalla Main
         composable(route = Routes.Main.route) {
-            MainScreen(context = context)
+            MainScreen()
         }
     }
 }
