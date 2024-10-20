@@ -46,7 +46,7 @@ fun MainScreen() {
                 origin = "Viso",
                 destination = "Sevilla",
                 busIcon = R.drawable.ic_bus, // Logo del bus
-                onClick = { Toast.makeText(context, "Tontopolla", Toast.LENGTH_SHORT).show()}
+                onClick = { Toast.makeText(context, "Tontopolla", Toast.LENGTH_SHORT).show() }
             )
 
             // Sevilla -> Viso
@@ -57,7 +57,29 @@ fun MainScreen() {
                 origin = "Sevilla",
                 destination = "Viso",
                 busIcon = R.drawable.ic_bus,
-                onClick = { Toast.makeText(context, "Has clicado", Toast.LENGTH_SHORT).show()}
+                onClick = { Toast.makeText(context, "Has clicado", Toast.LENGTH_SHORT).show() }
+            )
+
+            // Carmona -> Sevilla
+            BusInfoBox(
+                lineNumber = "M-124",
+                backgroundColor1 = Color(0xFFaf7c53),
+                backgroundColor2 = Color(0xFFf5cda2), // TODO cambiar color
+                origin = "Carmona",
+                destination = "Sevilla",
+                busIcon = R.drawable.ic_bus,
+                onClick = { Toast.makeText(context, "Carmona", Toast.LENGTH_SHORT).show() }
+            )
+
+            // Alcalá -> Sevilla
+            BusInfoBox(
+                lineNumber = "M-122",
+                backgroundColor1 = Color(0xFFF7C815),
+                backgroundColor2 = Color(0xFFEC9704),
+                origin = "Alcalá",
+                destination = "Sevilla",
+                busIcon = R.drawable.ic_bus,
+                onClick = { Toast.makeText(context, "Alcalá", Toast.LENGTH_SHORT).show() }
             )
 
             // Espacio en blanco hasta la parte inferior de la pantalla
