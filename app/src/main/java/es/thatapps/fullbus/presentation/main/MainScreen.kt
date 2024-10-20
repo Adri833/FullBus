@@ -64,22 +64,22 @@ fun MainScreen() {
             BusInfoBox(
                 lineNumber = "M-124",
                 backgroundColor1 = Color(0xFFaf7c53),
-                backgroundColor2 = Color(0xFFf5cda2), // TODO cambiar color
+                backgroundColor2 = Color(0xFFB17D54),
                 origin = "Carmona",
                 destination = "Sevilla",
                 busIcon = R.drawable.ic_bus,
                 onClick = { Toast.makeText(context, "Carmona", Toast.LENGTH_SHORT).show() }
             )
 
-            // Alcalá -> Sevilla
+            // Sevilla - Carmona
             BusInfoBox(
-                lineNumber = "M-122",
-                backgroundColor1 = Color(0xFFF7C815),
-                backgroundColor2 = Color(0xFFEC9704),
-                origin = "Alcalá",
-                destination = "Sevilla",
+                lineNumber = "M-124",
+                backgroundColor1 = Color(0xFFB17D54),
+                backgroundColor2 = Color(0xFFaf7c53),
+                origin = "Sevilla",
+                destination = "Carmona",
                 busIcon = R.drawable.ic_bus,
-                onClick = { Toast.makeText(context, "Alcalá", Toast.LENGTH_SHORT).show() }
+                onClick = { Toast.makeText(context, "Carmona 2", Toast.LENGTH_SHORT).show() }
             )
 
             // Espacio en blanco hasta la parte inferior de la pantalla
