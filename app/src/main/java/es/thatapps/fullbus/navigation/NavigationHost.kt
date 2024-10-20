@@ -7,7 +7,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import es.thatapps.fullbus.presentation.login.LoginScreen
 import es.thatapps.fullbus.presentation.register.RegisterScreen
-import es.thatapps.fullbus.presentation.main.MainScreen
+import es.thatapps.fullbus.presentation.home.presentation.MainScreen
 
 
 @Composable

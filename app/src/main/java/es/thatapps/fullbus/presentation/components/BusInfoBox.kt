@@ -17,7 +17,9 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -30,13 +32,12 @@ fun BusInfoBox(
     backgroundColor2: Color,
     origin: String,
     destination: String,
-    busIcon: Int,
     onClick: () -> Unit // Maneja el click
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
+            .padding(8.dp)
             .shadow(elevation = 6.dp, shape = RoundedCornerShape(16.dp)) // Sombra
             .border(2.dp, Color.Black, shape = RoundedCornerShape(16.dp)) // Borde negro
             .clickable(onClick = onClick), // Hacer que el Card sea clicable
@@ -77,35 +78,60 @@ fun BusInfoBox(
                         text = lineNumber,
                         fontSize = 16.sp,
                         color = Color.Black,
-                        style = androidx.compose.ui.text.TextStyle( // negrita
-                            fontWeight = Bold))
+                        textAlign = TextAlign.Center,
+                        style = TextStyle(fontWeight = Bold), // negrita
+                        modifier = Modifier
+                            .width(50.dp)
+                    )
                 }
 
                 Spacer(modifier = Modifier.width(16.dp))
 
                 // Columna para origen y destino con la flecha
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier
+                        .wrapContentSize()
                 ) {
-                    Text(text = origin, fontSize = 22.sp, color = Color.Black)
+                    Text(
+                        text = origin,
+                        fontSize = 22.sp,
+                        color = Color.Black,
+                        textAlign = TextAlign.Center,
+                        fontWeight = Bold,
+                        modifier = Modifier
+                            .width(180.dp)
+                    )
+                    
                     Spacer(modifier = Modifier.width(8.dp))
+
                     Image(
                         painter = painterResource(id = R.drawable.ic_arrow2),
                         contentDescription = "Arrow Icon",
                         modifier = Modifier.size(28.dp)
                     )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(text = destination, fontSize = 22.sp, color = Color.Black)
-                }
 
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    Text(
+                        text = destination,
+                        fontSize = 22.sp,
+                        color = Color.Black,
+                        textAlign = TextAlign.Center,
+                        fontWeight = Bold,
+                        modifier = Modifier
+                            .width(180.dp)
+                    )
+                }
 
                 Spacer(modifier = Modifier.width(16.dp))
 
                 // Ícono del bus a la derecha
                 Image(
-                    painter = painterResource(id = busIcon),
+                    modifier = Modifier
+                        .size(56.dp),
+                    painter = painterResource(id = R.drawable.ic_bus),
                     contentDescription = "Bus Icon",
-                    modifier = Modifier.size(45.dp)
                 )
             }
         }
@@ -119,9 +145,8 @@ fun PreviewBusInfoBox() {
         lineNumber = "M-126",
         backgroundColor1 = Color(0xFFffb9d3),
         backgroundColor2 = Color(0xFFffa2c4),
-        origin = "Viso",
+        origin = "El Viso del Alcor",
         destination = "Sevilla",
-        busIcon = R.drawable.ic_bus,
         onClick = {}
     )
 }
