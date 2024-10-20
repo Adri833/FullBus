@@ -100,7 +100,7 @@ fun BusInfoBox(
                         textAlign = TextAlign.Center,
                         fontWeight = Bold,
                         modifier = Modifier
-                            .width(180.dp)
+                            .width(200.dp)
                     )
                     
                     Spacer(modifier = Modifier.width(8.dp))
@@ -145,7 +145,7 @@ fun PreviewBusInfoBox() {
         lineNumber = "M-126",
         backgroundColor1 = Color(0xFFffb9d3),
         backgroundColor2 = Color(0xFFffa2c4),
-        origin = "El Viso del Alcor",
+        origin = "Alcala de Guadaira",
         destination = "Sevilla",
         onClick = {}
     )

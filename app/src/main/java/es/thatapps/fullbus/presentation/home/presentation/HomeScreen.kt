@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.runtime.Composable
@@ -37,11 +38,15 @@ fun MainScreen(
         // Contenido principal de la página con padding
         Column(
             modifier = Modifier
-                .fillMaxSize(),
+                .fillMaxSize()
+                .wrapContentHeight(),
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            LazyColumn(content = {
+            LazyColumn(
+                // Se ancla entre el Header y el AdBanner
+                modifier = Modifier.weight(1f),
+                content = {
                 itemsIndexed(BusLineMockData.getMockBusLines()) { _, item ->
                     item.apply {
                         BusInfoBox(
@@ -55,18 +60,16 @@ fun MainScreen(
                         }
                     }
                 }
-            }, modifier = Modifier
-                .fillMaxSize()
-                .height(360.dp)
+            }
             )
 
             // Espacio en blanco hasta la parte inferior de la pantalla
-            Spacer(modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.height(10.dp))
 
             // Solo muestra el banner si el contexto no es nulo
             AdBanner(context)
 
-            Spacer(modifier = Modifier.height(40.dp))
+            Spacer(modifier = Modifier.height(46.dp))
         }
     }
 }

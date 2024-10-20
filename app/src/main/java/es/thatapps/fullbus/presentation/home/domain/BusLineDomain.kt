@@ -23,37 +23,29 @@ object BusLineMockData {
                 origin = "El Viso del Alcor",
                 destination = "Sevilla",
                 color = BusLineColorsDomain(
-                    colorBase = Color(0xFFffb9d3),
-                    colorAccent = Color(0xFFffa2c4)
-                )
-            ),
-            BusLineDomain(
-                line = "M-123B",
-                origin = "East Station",
-                destination = "West Gate",
-                color = BusLineColorsDomain(
                     colorBase = Color(0xFFffa2c4),
                     colorAccent = Color(0xFFffb9d3)
                 )
             ),
             BusLineDomain(
-                line = "C3",
-                origin = "Downtown",
-                destination = "City Airport",
+                line = "M-122",
+                origin = "Alcalá de Guadaira",
+                destination = "Sevilla",
                 color = BusLineColorsDomain(
-                    colorBase = Color(0xFFffa2c4),
-                    colorAccent = Color(0xFFffb9d3)
+                    colorBase = Color(0xFFf9ff00),
+                    colorAccent = Color(0xFFd0d700)
                 )
             ),
             BusLineDomain(
-                line = "D4",
-                origin = "South Avenue",
-                destination = "North Hill",
+                line = "M-124",
+                origin = "Carmona",
+                destination = "Sevilla",
                 color = BusLineColorsDomain(
-                    colorBase = Color(0xFFffb9d3),
-                    colorAccent = Color(0xFFffa2c4)
+                    colorBase = Color(0xFFaf7c53),
+                    colorAccent = Color(0xFFB17D54)
                 )
             ),
+
         )
     }
 }
