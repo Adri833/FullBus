@@ -5,9 +5,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import es.thatapps.fullbus.presentation.home.presentation.HomeScreen
 import es.thatapps.fullbus.presentation.login.LoginScreen
 import es.thatapps.fullbus.presentation.register.RegisterScreen
-import es.thatapps.fullbus.presentation.home.presentation.MainScreen
 
 
 @Composable
@@ -17,7 +17,7 @@ fun NavigationHost() {
 
     NavHost(
         navController = navController,
-        startDestination = Routes.Main.route,
+        startDestination = Routes.Home.route,
     ) {
         // Navegacion de la pantalla Register
         composable(route = Routes.Register.route) {
@@ -25,8 +25,8 @@ fun NavigationHost() {
                 navigationToLogin = {
                     navController.navigate(Routes.Login.route)
                 },
-                navigationToMain = {
-                    navController.navigate(Routes.Main.route)
+                navigationToHome = {
+                    navController.navigate(Routes.Home.route)
                 }
             )
         }
@@ -37,15 +37,19 @@ fun NavigationHost() {
                 navigationToRegister = {
                     navController.navigate(Routes.Register.route)
                 },
-                navigationToMain = {
-                    navController.navigate(Routes.Main.route)
+                navigationToHome = {
+                    navController.navigate(Routes.Home.route)
                 }
             )
         }
 
         // Navegacion de la pantalla Main
-        composable(route = Routes.Main.route) {
-            MainScreen()
+        composable(route = Routes.Home.route) {
+            HomeScreen(
+                navigationToRegister = {
+                    navController.navigate(Routes.Register.route)
+                },
+            )
         }
     }
 }

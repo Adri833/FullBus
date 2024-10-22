@@ -41,7 +41,7 @@ import es.thatapps.fullbus.presentation.components.RegisterTextField
 fun RegisterScreen(
     viewModel: RegisterViewModel = hiltViewModel(),
     navigationToLogin: () -> Unit,
-    navigationToMain: () -> Unit,
+    navigationToHome: () -> Unit,
 ) {
     // Estados para almacenar los valores de entrada
     val username = remember { mutableStateOf("") }
@@ -145,7 +145,7 @@ fun RegisterScreen(
             is RegisterState.Success -> {
                 viewModel.resetRegisterState() // Reestablece el estado para evitar un bucle
                 Toast.makeText(context, "Registro exitoso!", Toast.LENGTH_SHORT).show() // Notificacion de exito
-                navigationToMain()
+                navigationToHome()
             }
             is RegisterState.Error -> {}
             else -> {}

@@ -18,10 +18,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import es.thatapps.fullbus.R
 
 @Composable
-fun Header() {
+fun Header(navigationToRegister: () -> Unit) {
     // Estado para controlar la visibilidad del menú desplegable
     var showMenu by remember { mutableStateOf(false) }
     // Estado para controlar la visibilidad del diálogo de sugerencias
@@ -57,23 +58,64 @@ fun Header() {
             containerColor = Color(0xFFB0BEC5), // Color de fondo del menú
             onDismissRequest = { showMenu = false } // Se oculta al clickar fuera de él
         ) {
+            // Elemento para la configuracion
             DropdownMenuItem(
-                text = { Text("Sugerencias") },
+                text = {
+                    Text("Configuración",
+                        fontSize = 16.sp,
+                        color = Color.Black)
+                       },
+                onClick = {
+                    // TODO : logica de la configuración (modo oscuro, notificaciones, etc.)
+                    showMenu = false
+                },
+                modifier = Modifier.padding(8.dp)
+            )
+
+
+            // Elemento para la configuración de perfil
+            DropdownMenuItem(
+                text = {
+                    Text("Perfil",
+                        fontSize = 16.sp,
+                        color = Color.Black)
+                       },
+                onClick = {
+                    // TODO : logica de la configuración de perfil
+                    showMenu = false
+                },
+                modifier = Modifier.padding(8.dp)
+            )
+
+            // Elemento para enviar sugerencias
+            DropdownMenuItem(
+                text = {
+                    Text("Sugerencias",
+                        fontSize = 16.sp,
+                        color = Color.Black)
+                       },
                 onClick = {
                     showMenu = false
                     showSuggestionDialog = true // Muestra la pantalla de sugerencias
-                }
+                },
+                modifier = Modifier.padding(8.dp)
             )
 
+            // Elemento para cerrar sesion
             DropdownMenuItem(
-                text = { Text("Cerrar sesión") },
+                text = {
+                    Text("Cerrar sesión",
+                    fontSize = 16.sp,
+                    color = Color.Black)
+                       },
                 onClick = {
                     showMenu = false
-                    //TODO: volver a la pantalla de registro
-                }
+                    navigationToRegister() // Navegar a la pantalla de registro
+                },
+                modifier = Modifier.padding(8.dp)
             )
-        }
 
+        }
 
         Spacer(modifier = Modifier.weight(1f))
 
@@ -101,7 +143,7 @@ fun Header() {
     if (showSuggestionDialog) {
         SuggestionDialog(
             onDismiss = { showSuggestionDialog = false },
-            onSend = { suggestion ->
+            onSend = { _ ->
                 // TODO: logica de la sugerencia (email, mensajitos...)
                 showSuggestionDialog = false // Cierra el diálogo después de enviar
             }
