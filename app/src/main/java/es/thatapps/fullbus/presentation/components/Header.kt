@@ -22,7 +22,10 @@ import androidx.compose.ui.unit.sp
 import es.thatapps.fullbus.R
 
 @Composable
-fun Header(navigationToRegister: () -> Unit) {
+fun Header(
+    navigationToRegister: () -> Unit,
+    navigationToSettings: () -> Unit,
+) {
     // Estado para controlar la visibilidad del menú desplegable
     var showMenu by remember { mutableStateOf(false) }
     // Estado para controlar la visibilidad del diálogo de sugerencias
@@ -66,12 +69,11 @@ fun Header(navigationToRegister: () -> Unit) {
                         color = Color.Black)
                        },
                 onClick = {
-                    // TODO : logica de la configuración (modo oscuro, notificaciones, etc.)
                     showMenu = false
+                    navigationToSettings() // Navegar hacia la pantalla de configuracion
                 },
                 modifier = Modifier.padding(8.dp)
             )
-
 
             // Elemento para la configuración de perfil
             DropdownMenuItem(

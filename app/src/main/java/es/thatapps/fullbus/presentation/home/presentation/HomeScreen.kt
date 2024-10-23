@@ -21,7 +21,8 @@ import es.thatapps.fullbus.presentation.home.domain.BusLineMockData
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
-    navigationToRegister: () -> Unit
+    navigationToRegister: () -> Unit,
+    navigationToSettings: () -> Unit,
 ) {
     // TODO: quitar comentarios del contexto y de anuncio
 //    val context = LocalContext.current
@@ -30,7 +31,7 @@ fun HomeScreen(
         modifier = Modifier.fillMaxSize()
     ) {
         // Header sin padding para que ocupe toda la pantalla horizontalmente
-        Header(navigationToRegister)
+        Header(navigationToRegister, navigationToSettings)
 
         Spacer(modifier = Modifier.height(15.dp))
 
@@ -77,6 +78,7 @@ fun HomeScreen(
 @Composable
 fun PreviewMainScreen() {
     HomeScreen(
-        navigationToRegister = {}
+        navigationToRegister = {},
+        navigationToSettings = {},
     )
 }

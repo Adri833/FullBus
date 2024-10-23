@@ -8,6 +8,7 @@ import androidx.navigation.compose.rememberNavController
 import es.thatapps.fullbus.presentation.home.presentation.HomeScreen
 import es.thatapps.fullbus.presentation.login.LoginScreen
 import es.thatapps.fullbus.presentation.register.RegisterScreen
+import es.thatapps.fullbus.presentation.settings.SettingsScreen
 
 
 @Composable
@@ -43,13 +44,24 @@ fun NavigationHost() {
             )
         }
 
-        // Navegacion de la pantalla Main
+        // Navegacion de la pantalla Home
         composable(route = Routes.Home.route) {
             HomeScreen(
                 navigationToRegister = {
                     navController.navigate(Routes.Register.route)
                 },
+                navigationToSettings = {
+                    navController.navigate(Routes.Settings.route)
+                }
             )
+        }
+
+        // Navegacion de la pantalla Settings
+        composable(route = Routes.Settings.route) {
+            SettingsScreen(isDarkModeEnabled = false,
+                onDarkModeToggle = { /* TODO: lógica para cambiar el modo oscuro */ },
+                areNotificationsEnabled = false,
+                onNotificationToggle = { /* TODO: lógica para cambiar las notificaciones */ })
         }
     }
 }
