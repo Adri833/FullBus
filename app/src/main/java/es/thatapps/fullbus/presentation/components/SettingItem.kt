@@ -42,8 +42,10 @@ fun SettingItem(
                 checked = isCheked,
                 onCheckedChange = onChekedChange,
                 colors = SwitchDefaults.colors(
-                    checkedThumbColor = Color(0xFF6200EE), // Color del interruptor
-                    uncheckedThumbColor = Color(0xFFB0BEC5)
+                    checkedThumbColor = Color.White, // interruptor activo
+                    uncheckedThumbColor = Color(0xFFBF0000), // interruptor inactivo
+                    checkedTrackColor = Color(0xFFD32F2F), // pista activa
+                    uncheckedTrackColor = Color(0xFFE0E0E0) // pista inactiva
                 )
             )
         }

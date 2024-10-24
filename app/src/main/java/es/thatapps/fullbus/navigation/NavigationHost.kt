@@ -12,7 +12,9 @@ import es.thatapps.fullbus.presentation.settings.SettingsScreen
 
 
 @Composable
-fun NavigationHost() {
+fun NavigationHost(
+
+) {
     val navController = rememberNavController()
     val context = LocalContext.current
 
@@ -58,10 +60,7 @@ fun NavigationHost() {
 
         // Navegacion de la pantalla Settings
         composable(route = Routes.Settings.route) {
-            SettingsScreen(isDarkModeEnabled = false,
-                onDarkModeToggle = { /* TODO: lógica para cambiar el modo oscuro */ },
-                areNotificationsEnabled = false,
-                onNotificationToggle = { /* TODO: lógica para cambiar las notificaciones */ })
+            SettingsScreen()
         }
     }
 }

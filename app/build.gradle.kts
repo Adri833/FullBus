@@ -62,6 +62,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.datastore.core.android)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -83,5 +84,8 @@ dependencies {
     implementation(libs.firebase.auth) // Authenticator
     implementation(libs.firebase.firestore) // Firestore db
     implementation(libs.play.services.ads) // AdMob
+
+    // DataStore
+    implementation(libs.androidx.datastore.preferences)
 }
 
