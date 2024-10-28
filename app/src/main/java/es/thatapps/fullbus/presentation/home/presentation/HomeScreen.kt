@@ -21,6 +21,7 @@ import es.thatapps.fullbus.presentation.home.domain.BusLineMockData
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
+    onBusLineClick: (String) -> Unit, // Función para manejar clics en líneas de autobús
     navigationToRegister: () -> Unit,
     navigationToSettings: () -> Unit,
 ) {
@@ -56,7 +57,7 @@ fun HomeScreen(
                             origin = origin,
                             destination = destination,
                         ) {
-//                            TODO onCLick
+                            onBusLineClick(line)
                         }
                     }
                 }
@@ -72,13 +73,4 @@ fun HomeScreen(
             Spacer(modifier = Modifier.height(46.dp))
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun PreviewMainScreen() {
-    HomeScreen(
-        navigationToRegister = {},
-        navigationToSettings = {},
-    )
 }

@@ -5,6 +5,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import es.thatapps.fullbus.presentation.home.presentation.BusDetailScreen
 import es.thatapps.fullbus.presentation.home.presentation.HomeScreen
 import es.thatapps.fullbus.presentation.login.LoginScreen
 import es.thatapps.fullbus.presentation.register.RegisterScreen
@@ -49,6 +50,10 @@ fun NavigationHost(
         // Navegacion de la pantalla Home
         composable(route = Routes.Home.route) {
             HomeScreen(
+                onBusLineClick = {
+                    busLineId ->
+                    navController.navigate("busLineDetail/$busLineId")
+                },
                 navigationToRegister = {
                     navController.navigate(Routes.Register.route)
                 },
@@ -61,6 +66,14 @@ fun NavigationHost(
         // Navegacion de la pantalla Settings
         composable(route = Routes.Settings.route) {
             SettingsScreen()
+        }
+
+        // Navegación de la pantalla de detalles de la línea de autobús
+        composable(route = Routes.BusDetail.route) { backStackEntry ->
+            val busLineId = backStackEntry.arguments?.getString("busLineId") ?: return@composable
+            BusDetailScreen(busLineId = busLineId) {
+                navController.popBackStack() // Volver a la pantalla anterior
+            }
         }
     }
 }
