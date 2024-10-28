@@ -29,20 +29,19 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import es.thatapps.fullbus.R
 import es.thatapps.fullbus.presentation.components.PasswordTextField
 import es.thatapps.fullbus.presentation.components.RegisterTextField
-import es.thatapps.fullbus.presentation.login.LoginState
 
 
 @Composable
 fun RegisterScreen(
     viewModel: RegisterViewModel = hiltViewModel(),
     navigationToLogin: () -> Unit,
+    navigationToHome: () -> Unit,
 ) {
     // Estados para almacenar los valores de entrada
     val username = remember { mutableStateOf("") }
@@ -146,7 +145,7 @@ fun RegisterScreen(
             is RegisterState.Success -> {
                 viewModel.resetRegisterState() // Reestablece el estado para evitar un bucle
                 Toast.makeText(context, "Registro exitoso!", Toast.LENGTH_SHORT).show() // Notificacion de exito
-                navigationToLogin()
+                navigationToHome()
             }
             is RegisterState.Error -> {}
             else -> {}
@@ -172,12 +171,4 @@ fun RegisterScreen(
 
         Spacer(modifier = Modifier.height(40.dp))
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun RegisterScreenPreview() {
-    RegisterScreen(
-        navigationToLogin = {}
-    )
 }

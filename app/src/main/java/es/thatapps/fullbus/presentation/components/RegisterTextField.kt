@@ -18,7 +18,6 @@ fun RegisterTextField(
         value = value,
         onValueChange = { onValueChanged(it) },
         colors = TextFieldDefaults.colors(
-
             focusedContainerColor = Color.White,
             unfocusedContainerColor = Color.White,
             disabledContainerColor = Color.White

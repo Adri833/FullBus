@@ -46,6 +46,7 @@ import es.thatapps.fullbus.R
 fun LoginScreen(
     viewModel: LoginViewModel = hiltViewModel(),
     navigationToRegister: () -> Unit,
+    navigationToHome: () -> Unit,
 ) {
     // Estados para almacenar los valores de entrada
     val email = remember { mutableStateOf("") }
@@ -173,7 +174,7 @@ fun LoginScreen(
             is LoginState.Success -> {
                 viewModel.resetLoginState() // Reestablece el estado para evitar un bucle
                 Toast.makeText(context, "Bienvenido", Toast.LENGTH_SHORT).show() // Notificacion de exito
-                navigationToRegister()
+                navigationToHome()
             }
             else -> {}
         }
