@@ -2,9 +2,11 @@ package es.thatapps.fullbus.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import es.thatapps.fullbus.presentation.home.presentation.BusDetailScreen
 import es.thatapps.fullbus.presentation.home.presentation.HomeScreen
 import es.thatapps.fullbus.presentation.login.LoginScreen
@@ -69,11 +71,17 @@ fun NavigationHost(
         }
 
         // Navegación de la pantalla de detalles de la línea de autobús
-        composable(route = Routes.BusDetail.route) { backStackEntry ->
+        composable(
+            route = Routes.BusDetail.route,
+            arguments = listOf(navArgument("busLineId") { type = NavType.StringType })
+        ) { backStackEntry ->
             val busLineId = backStackEntry.arguments?.getString("busLineId") ?: return@composable
-            BusDetailScreen(busLineId = busLineId) {
-                navController.popBackStack() // Volver a la pantalla anterior
-            }
+            BusDetailScreen(
+                busLineId = busLineId,
+                onBack = { navController.popBackStack() },
+                navigationToRegister = { navController.navigate(Routes.Register.route) },
+                navigationToSettings = { navController.navigate(Routes.Settings.route) }
+            )
         }
     }
 }
