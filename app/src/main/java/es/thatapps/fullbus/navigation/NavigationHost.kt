@@ -7,7 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import es.thatapps.fullbus.presentation.home.presentation.BusDetailScreen
+import es.thatapps.fullbus.presentation.busDetails.presentation.BusDetailScreen
 import es.thatapps.fullbus.presentation.home.presentation.HomeScreen
 import es.thatapps.fullbus.presentation.login.LoginScreen
 import es.thatapps.fullbus.presentation.register.RegisterScreen
@@ -52,8 +52,7 @@ fun NavigationHost(
         // Navegacion de la pantalla Home
         composable(route = Routes.Home.route) {
             HomeScreen(
-                onBusLineClick = {
-                    busLineId ->
+                onBusLineClick = { busLineId ->
                     navController.navigate("busLineDetail/$busLineId")
                 },
                 navigationToRegister = {
@@ -83,5 +82,7 @@ fun NavigationHost(
                 navigationToSettings = { navController.navigate(Routes.Settings.route) }
             )
         }
+
+
     }
 }

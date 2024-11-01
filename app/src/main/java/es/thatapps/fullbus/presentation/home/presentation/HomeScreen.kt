@@ -50,20 +50,21 @@ fun HomeScreen(
                 // Se ancla entre el Header y el AdBanner
                 modifier = Modifier.weight(1f),
                 content = {
-                itemsIndexed(BusLineMockData.getMockBusLines()) { _, item ->
-                    item.apply {
-                        BusInfoBox(
-                            lineNumber = line,
-                            backgroundColor1 = color.colorBase,
-                            backgroundColor2 = color.colorAccent,
-                            origin = origin,
-                            destination = destination,
-                        ) {
-                            onBusLineClick(line)
+                    itemsIndexed(BusLineMockData.getMockBusLines()) { _, item ->
+                        item.apply {
+                            BusInfoBox(
+                                lineNumber = line,
+                                backgroundColor1 = color.colorBase,
+                                backgroundColor2 = color.colorAccent,
+                                origin = origin,
+                                destination = destination,
+                            ) {
+                                // Recoge la linea de bus en la que hacemos clic
+                                onBusLineClick(line)
+                            }
                         }
                     }
                 }
-            }
             )
 
             // Espacio en blanco hasta la parte inferior de la pantalla

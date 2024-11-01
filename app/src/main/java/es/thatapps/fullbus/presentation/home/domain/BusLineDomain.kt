@@ -45,7 +45,6 @@ object BusLineMockData {
                     colorAccent = Color(0xFFB17D54)
                 )
             ),
-
         )
     }
 }
