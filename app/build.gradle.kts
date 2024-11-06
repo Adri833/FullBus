@@ -80,11 +80,11 @@ dependencies {
     kapt(libs.hilt.android.compiler)
 
     // Google Firebase
-    implementation(platform(libs.firebase.bom))
+    implementation(platform("com.google.firebase:firebase-bom:33.5.1"))
     implementation(libs.firebase.auth) // Authenticator
     implementation(libs.firebase.firestore) // Firestore db
     implementation(libs.play.services.ads) // AdMob
-
+    implementation ("com.google.android.gms:play-services-base:18.1.0")
     // DataStore
     implementation(libs.androidx.datastore.preferences)
 }

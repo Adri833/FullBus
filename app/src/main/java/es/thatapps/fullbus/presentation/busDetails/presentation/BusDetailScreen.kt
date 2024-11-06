@@ -21,26 +21,24 @@ fun BusDetailScreen(
     navigationToSettings: () -> Unit,
     viewModel: BusViewModel = hiltViewModel()
 ) {
-    LaunchedEffect(busLineId) {
-        viewModel.initBusDetails(busLineId) // Inicializa los detalles solo para la línea seleccionada
-    }
-
-    // Observa los cambios en el flujo de datos
-    val busLines by viewModel.busLines.collectAsState()
+    // Observar el estado de los buses activos
+    val activeBuses by viewModel.activeBuses.collectAsState()
 
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
     ) {
         Header(navigationToRegister, navigationToSettings)
 
         LazyColumn(
-            modifier = Modifier.weight(1f)
+            modifier = Modifier
+                .weight(1f)
         ) {
-            items(busLines) { item ->
+            items(activeBuses) { bus ->
                 BusStatus(
-                    busDetail = item,
-                    onReportFull = { viewModel.reportBusFull(item.line) },
-                    onResetAvailable = { viewModel.setBusAvailable(item.line) }
+                    busDetail = bus,
+                    onReportFull = { viewModel.reportFull(bus.line) },
+                    onResetAvailable = { viewModel.setBusAvailable(bus.line) }
                 )
             }
         }
