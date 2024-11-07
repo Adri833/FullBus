@@ -55,7 +55,7 @@ fun BusStatus(
 
             // Hora de salida del autobús
             Text(
-                text = busDetail.time,
+                text = busDetail.departureTime,
                 fontSize = 34.sp,
                 color = Color.Black,
                 fontWeight = FontWeight.Bold,
