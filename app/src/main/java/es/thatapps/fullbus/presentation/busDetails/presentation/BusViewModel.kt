@@ -26,28 +26,42 @@ class BusViewModel @Inject constructor(
     private val _activeBuses = MutableStateFlow<List<BusDetailDomain>>(emptyList())
     val activeBuses: StateFlow<List<BusDetailDomain>> = _activeBuses
 
-
     init {
         viewModelScope.launch {
-            loadActiveBuses()
-            createBusesBasedOnSchedule()
+            loadActiveBuses() //  Carga inicial de buses activos
+            refreshActiveBuses() // Elimina buses expirados y crea nuevos
         }
     }
 
-    // Carga los buses activos desde Firestore y actualiza el estado
+    // Carga los buses activos desde Firestore
     private suspend fun loadActiveBuses() {
         _activeBuses.value = busRepository.getActiveBuses()
     }
 
-    // Crea buses según el horario y día actual, evitando duplicados
-    private suspend fun createBusesBasedOnSchedule() {
+    // Refresca los buses activos (elimina expirados y crea nuevos)
+    private suspend fun refreshActiveBuses() {
+        val currentTimeMillis = System.currentTimeMillis()  // Obtén el tiempo actual en milisegundos
         val currentDate = Calendar.getInstance(madridTimeZone)
-        val currentTimeString = sdf.format(Date())
+        val currentTimeString = sdf.format(currentDate.time)
 
-        // Obtenemos los buses ya activos en Firestore, utilizando un Map para una búsqueda rápida
-        val existingBuses = busRepository.getActiveBuses().associateBy { it.departureTime }
+        // Filtra y elimina los buses expirados directamente
+        _activeBuses.value.forEach { bus ->
+            val arriveDate = sdf.parse(bus.arriveTime) ?: return@forEach
+            val arrivalTimeMillis = arriveDate.time  // La hora de llegada del bus en milisegundos
 
-        // Iteramos sobre los horarios de buses para crear instancias
+            // Si el bus ha expirado, lo eliminamos
+            if (currentTimeMillis > arrivalTimeMillis) {
+                busRepository.deleteBus(bus)  // Elimina el bus de Firestore
+            }
+        }
+
+        // Recarga la lista de buses activos después de eliminar los expirados
+        _activeBuses.value = busRepository.getActiveBuses()
+
+        // Obtiene los buses ya activos en Firestore, utilizando un Map para una búsqueda rápida
+        val existingBuses = _activeBuses.value.associateBy { it.departureTime }
+
+        // Crea nuevos buses según el horario actual si no existen
         BusScheduleRepository.busSchedules.forEach { busSchedule ->
             val schedule = when (currentDate.get(Calendar.DAY_OF_WEEK)) {
                 Calendar.SATURDAY -> busSchedule.saturdaySchedule
@@ -58,35 +72,32 @@ class BusViewModel @Inject constructor(
             schedule.forEach { departureTime ->
                 // Verificamos si el bus debe ser creado
                 if (shouldCreateBus(departureTime, currentTimeString, existingBuses)) {
-                    val arrivalTime = calculateArrivalTime(departureTime)
-                    val busDetail = BusDetailDomain(
+                    val newBus = BusDetailDomain(
                         line = busSchedule.line,
                         departureTime = departureTime,
-                        arriveTime = arrivalTime,
+                        arriveTime = calculateArrivalTime(departureTime),
                         isFull = false
                     )
-
-                    // Añadimos el bus si aún no existe
-                    busRepository.addBus(busDetail)
+                    busRepository.addBus(newBus) // Crea el bus en Firestore
                 }
             }
         }
-
-        // Carga los buses activos después de añadir los nuevos
+        // Recarga la lista de buses activos
         loadActiveBuses()
     }
 
     // Verifica si el bus debe ser creado
-    private fun shouldCreateBus(departureTime: String, currentTimeString: String, existingBuses: Map<String, BusDetailDomain>): Boolean {
+    private fun shouldCreateBus(
+        departureTime: String,
+        currentTimeString: String,
+        existingBuses: Map<String, BusDetailDomain>
+    ): Boolean {
         val departureDate = sdf.parse(departureTime) ?: return false
         val currentDate = sdf.parse(currentTimeString) ?: return false
 
-        // Calculamos la hora de llegada para el bus
-        val arrivalTime = calculateArrivalTime(departureTime)
-        val arrivalDate = sdf.parse(arrivalTime) ?: return false
-
-        // El bus debe ser creado si la hora actual es entre la hora de salida y la hora de llegada
-        return currentDate >= departureDate && currentDate <= arrivalDate && !existingBuses.containsKey(departureTime)
+        // Calcula la hora de llegada y verifica que el bus no exista ya y que esté dentro del rango de tiempo
+        val arrivalDate = Date(departureDate.time + 3600000) // Añadir 1 hora
+        return currentDate in departureDate..arrivalDate && !existingBuses.containsKey(departureTime)
     }
 
     // Calcula la hora de llegada sumando 1 hora a la hora de salida
@@ -96,55 +107,13 @@ class BusViewModel @Inject constructor(
         return sdf.format(arrivalDate)
     }
 
-    // Verifica y carga los buses activos en el estado, eliminando los que ya han pasado su hora de llegada
-    // Verifica y carga los buses activos en el estado, pero sin eliminar buses
-    fun checkActiveBuses() {
-        val currentTime = System.currentTimeMillis()
-        val activeBuses = _activeBuses.value
-
-        viewModelScope.launch {
-            // Filtra los buses activos
-            val busesToKeep = activeBuses.filter { bus ->
-                val departureDate = sdf.parse(bus.departureTime) ?: return@filter false
-                val arriveDate = sdf.parse(bus.arriveTime) ?: return@filter false
-                val currentDate = Date(currentTime)
-
-                // Compara la hora actual con la hora de salida y la hora de llegada
-                currentDate.after(departureDate) && currentDate.before(arriveDate)
-            }
-
-            // Actualiza el estado de los buses activos
-            _activeBuses.value = busesToKeep
-        }
-    }
-
-    // Mueve la lógica de borrado a un método separado
-    fun removeExpiredBuses() {
-        val currentTime = System.currentTimeMillis()
-
-        viewModelScope.launch {
-            val activeBuses = _activeBuses.value
-
-            // Elimina los buses que han pasado su hora de llegada
-            activeBuses.forEach { bus ->
-                val arriveDate = sdf.parse(bus.arriveTime) ?: return@forEach
-                val currentDate = Date(currentTime)
-
-                // Si la hora de llegada ya ha pasado, elimina el bus de Firestore
-                if (currentDate.after(arriveDate)) {
-                    busRepository.deleteBus(bus)
-                }
-            }
-        }
-    }
-
     // Función para poner el bus como lleno
     fun reportFull(busLineId: String) {
         viewModelScope.launch {
             _activeBuses.value.find { it.line == busLineId }?.let { bus ->
                 bus.isFull = true
                 busRepository.updateBus(bus) // Actualiza el estado del bus en Firestore
-                checkActiveBuses() // Recarga los buses activos
+                refreshActiveBuses() // Recarga los buses activos
             }
         }
     }
@@ -155,7 +124,7 @@ class BusViewModel @Inject constructor(
             _activeBuses.value.find { it.line == busLine }?.let { bus ->
                 bus.isFull = false
                 busRepository.updateBus(bus)  // Actualiza el estado del bus en Firestore
-                checkActiveBuses()  // Recarga los buses activos
+                refreshActiveBuses()  // Recarga los buses activos
             }
         }
     }
