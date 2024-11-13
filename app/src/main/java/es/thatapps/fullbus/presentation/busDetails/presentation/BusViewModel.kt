@@ -40,30 +40,28 @@ class BusViewModel @Inject constructor(
 
     // Refresca los buses activos (elimina expirados y crea nuevos)
     private suspend fun refreshActiveBuses() {
-        val currentTimeMillis = System.currentTimeMillis()  // Obtén el tiempo actual en milisegundos
-        val currentDate = Calendar.getInstance(madridTimeZone)
-        val currentTimeString = sdf.format(currentDate.time)
+        val calendar = Calendar.getInstance(madridTimeZone)
+        val currentTime = sdf.format(calendar.time)
 
         // Filtra y elimina los buses expirados directamente
         _activeBuses.value.forEach { bus ->
-            val arriveDate = sdf.parse(bus.arriveTime) ?: return@forEach
-            val arrivalTimeMillis = arriveDate.time  // La hora de llegada del bus en milisegundos
+            val arriveTime = bus.arriveTime
 
             // Si el bus ha expirado, lo eliminamos
-            if (currentTimeMillis > arrivalTimeMillis) {
+            if (currentTime > arriveTime) {
                 busRepository.deleteBus(bus)  // Elimina el bus de Firestore
             }
         }
 
         // Recarga la lista de buses activos después de eliminar los expirados
-        _activeBuses.value = busRepository.getActiveBuses()
+        loadActiveBuses()
 
         // Obtiene los buses ya activos en Firestore, utilizando un Map para una búsqueda rápida
         val existingBuses = _activeBuses.value.associateBy { it.departureTime }
 
         // Crea nuevos buses según el horario actual si no existen
         BusScheduleRepository.busSchedules.forEach { busSchedule ->
-            val schedule = when (currentDate.get(Calendar.DAY_OF_WEEK)) {
+            val schedule = when (calendar.get(Calendar.DAY_OF_WEEK)) {
                 Calendar.SATURDAY -> busSchedule.saturdaySchedule
                 Calendar.SUNDAY -> busSchedule.holidaySchedule
                 else -> busSchedule.normalSchedule
@@ -71,14 +69,14 @@ class BusViewModel @Inject constructor(
 
             schedule.forEach { departureTime ->
                 // Verificamos si el bus debe ser creado
-                if (shouldCreateBus(departureTime, currentTimeString, existingBuses)) {
-                    val newBus = BusDetailDomain(
-                        line = busSchedule.line,
-                        departureTime = departureTime,
-                        arriveTime = calculateArrivalTime(departureTime),
-                        isFull = false
+                if (shouldCreateBus(departureTime, currentTime, existingBuses)) {
+                    busRepository.addBus(BusDetailDomain(
+                            line = busSchedule.line,
+                            departureTime = departureTime,
+                            arriveTime = calculateArrivalTime(departureTime),
+                            isFull = false
+                        )
                     )
-                    busRepository.addBus(newBus) // Crea el bus en Firestore
                 }
             }
         }
