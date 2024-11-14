@@ -18,9 +18,11 @@ class BusViewModel @Inject constructor(
     private val busRepository: BusRepository
 ) : ViewModel() {
 
-    // Configura la zona horaria de Madrid
+    // Variables de tiempo
     private val madridTimeZone = TimeZone.getTimeZone("Europe/Madrid")
     private val sdf = SimpleDateFormat("HH:mm", Locale.getDefault()).apply { timeZone = madridTimeZone }
+    private val calendar = Calendar.getInstance(madridTimeZone)
+    private val currentTime = sdf.format(calendar.time)
 
     // Estado de los buses activos
     private val _activeBuses = MutableStateFlow<List<BusDetailDomain>>(emptyList())
@@ -40,21 +42,12 @@ class BusViewModel @Inject constructor(
 
     // Refresca los buses activos (elimina expirados y crea nuevos)
     private suspend fun refreshActiveBuses() {
-        val calendar = Calendar.getInstance(madridTimeZone)
-        val currentTime = sdf.format(calendar.time)
-
-        // Filtra y elimina los buses expirados directamente
         _activeBuses.value.forEach { bus ->
-            val arriveTime = bus.arriveTime
-
-            // Si el bus ha expirado, lo eliminamos
-            if (currentTime > arriveTime) {
-                busRepository.deleteBus(bus)  // Elimina el bus de Firestore
+            // Compara la hora actual con la de llegada del bus, si es mayor lo elimina
+            if (currentTime > bus.arriveTime) {
+                busRepository.deleteBus(bus)
             }
         }
-
-        // Recarga la lista de buses activos después de eliminar los expirados
-        loadActiveBuses()
 
         // Obtiene los buses ya activos en Firestore, utilizando un Map para una búsqueda rápida
         val existingBuses = _activeBuses.value.associateBy { it.departureTime }
@@ -67,9 +60,9 @@ class BusViewModel @Inject constructor(
                 else -> busSchedule.normalSchedule
             }
 
+            // Verifica si el bus debe ser creado comparando la hora actual con la hora de salida, y si ya existe
             schedule.forEach { departureTime ->
-                // Verificamos si el bus debe ser creado
-                if (shouldCreateBus(departureTime, currentTime, existingBuses)) {
+                if (currentTime in departureTime..calculateArrivalTime(departureTime) && !existingBuses.containsKey(departureTime)) {
                     busRepository.addBus(BusDetailDomain(
                             line = busSchedule.line,
                             departureTime = departureTime,
@@ -84,24 +77,10 @@ class BusViewModel @Inject constructor(
         loadActiveBuses()
     }
 
-    // Verifica si el bus debe ser creado
-    private fun shouldCreateBus(
-        departureTime: String,
-        currentTimeString: String,
-        existingBuses: Map<String, BusDetailDomain>
-    ): Boolean {
-        val departureDate = sdf.parse(departureTime) ?: return false
-        val currentDate = sdf.parse(currentTimeString) ?: return false
-
-        // Calcula la hora de llegada y verifica que el bus no exista ya y que esté dentro del rango de tiempo
-        val arrivalDate = Date(departureDate.time + 3600000) // Añadir 1 hora
-        return currentDate in departureDate..arrivalDate && !existingBuses.containsKey(departureTime)
-    }
-
     // Calcula la hora de llegada sumando 1 hora a la hora de salida
     private fun calculateArrivalTime(departureTime: String): String {
         val departureDate = sdf.parse(departureTime) ?: return departureTime
-        val arrivalDate = Date(departureDate.time + 60 * 60 * 1000) // Añade 1 hora
+        val arrivalDate = Date(departureDate.time + (60 * 60 * 1000)) // Añade 1 hora
         return sdf.format(arrivalDate)
     }
 
