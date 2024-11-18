@@ -2,12 +2,14 @@ package es.thatapps.fullbus.presentation.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -17,6 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.thatapps.fullbus.R
@@ -26,7 +29,6 @@ import es.thatapps.fullbus.presentation.busDetails.domain.BusDetailDomain
 fun BusStatus(
     busDetail: BusDetailDomain,
     onReportFull: () -> Unit,
-    onResetAvailable: () -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -35,6 +37,7 @@ fun BusStatus(
                 if (busDetail.isFull) Color(0xFFFFCDD2) else Color(0xFFC8E6C9),
                 RoundedCornerShape(8.dp)
             )
+            .border(2.dp, Color.Black, RoundedCornerShape(8.dp))
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -93,8 +96,9 @@ fun BusStatus(
         } else {
             Button(
                 onClick = onReportFull,
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFD4655)),
                 modifier = Modifier.align(Alignment.CenterHorizontally)
-            ) {
+                ) {
                 Icon(
                     imageVector = Icons.Filled.Check,
                     contentDescription = "Report Full",
@@ -104,14 +108,19 @@ fun BusStatus(
                 Text("Reportar como lleno")
             }
         }
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Button(
-            onClick = onResetAvailable,
-            modifier = Modifier.align(Alignment.CenterHorizontally)
-        ) {
-            Text("Restablecer a libre")
-        }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewBusStatus() {
+    BusStatus(
+        busDetail = BusDetailDomain(
+            line = "M-126",
+            departureTime = "15:30",
+            arriveTime = "16:30",
+            isFull = false
+        ),
+        onReportFull = { /* Acción para reportar como lleno */ },
+    )
 }

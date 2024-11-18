@@ -21,12 +21,33 @@ class BusViewModel @Inject constructor(
     // Variables de tiempo
     private val madridTimeZone = TimeZone.getTimeZone("Europe/Madrid")
     private val sdf = SimpleDateFormat("HH:mm", Locale.getDefault()).apply { timeZone = madridTimeZone }
+    private val sdfDay = SimpleDateFormat("EEEE", Locale("es", "ES")).apply { timeZone = madridTimeZone }
     private val calendar = Calendar.getInstance(madridTimeZone)
     private val currentTime = sdf.format(calendar.time)
+    private val resetHour = 4
+    private val currentHour = calendar.get(Calendar.HOUR_OF_DAY)
 
     // Estado de los buses activos
     private val _activeBuses = MutableStateFlow<List<BusDetailDomain>>(emptyList())
     val activeBuses: StateFlow<List<BusDetailDomain>> = _activeBuses
+
+    // Función para obtener la hora actual
+    fun getCurrentHour(): String {
+        return SimpleDateFormat("HH:mm:ss", Locale.getDefault()).apply { timeZone = madridTimeZone }.format(Date())
+    }
+
+    // Función para obtener el día actual
+    fun getLogicDay(): String {
+        // Crea una copia de calendar para evitar modificar el estado original
+        val adjustedCalendar = (calendar.clone() as Calendar).apply {
+            if (currentHour < resetHour) {
+                add(Calendar.DAY_OF_YEAR, -1) // Resta un día si es antes de las 4:00 am
+            }
+        }
+        // Usa la copia ajustada para obtener el día lógico
+        return sdfDay.format(adjustedCalendar.time)
+    }
+
 
     init {
         viewModelScope.launch {
@@ -43,8 +64,16 @@ class BusViewModel @Inject constructor(
     // Refresca los buses activos (elimina expirados y crea nuevos)
     private suspend fun refreshActiveBuses() {
         _activeBuses.value.forEach { bus ->
+            // Si la hora actual es mayor o igual a 4:00, el dia se considera
+            if (currentHour < resetHour) {
+                calendar.add(Calendar.DAY_OF_YEAR, -1) // Resta un dia
+            }
+
+            // Establece las 4:00 como la hora de inicio del nuevo dia
+            calendar.set(Calendar.HOUR_OF_DAY, resetHour)
+
             // Compara la hora actual con la de llegada del bus, si es mayor lo elimina
-            if (currentTime > bus.arriveTime) {
+            if (currentTime > bus.arriveTime || isPreviousDay(bus.departureTime, currentTime)) {
                 busRepository.deleteBus(bus)
             }
         }
@@ -66,7 +95,7 @@ class BusViewModel @Inject constructor(
                     busRepository.addBus(BusDetailDomain(
                             line = busSchedule.line,
                             departureTime = departureTime,
-                            arriveTime = calculateArrivalTime(departureTime),
+                        arriveTime = calculateArrivalTime(departureTime),
                             isFull = false
                         )
                     )
@@ -75,6 +104,14 @@ class BusViewModel @Inject constructor(
         }
         // Recarga la lista de buses activos
         loadActiveBuses()
+    }
+
+    // Verifica si el autobús pertenece a un día anterior
+    private fun isPreviousDay(departureTime: String, currentTime: String): Boolean {
+        val departureDate = sdf.parse(departureTime) ?: return false
+        val currentDate = sdf.parse(currentTime) ?: return false
+
+        return departureDate.before(currentDate) && currentTime < "04:00" // Nuevo día desde las 4:00 am
     }
 
     // Calcula la hora de llegada sumando 1 hora a la hora de salida
@@ -91,17 +128,6 @@ class BusViewModel @Inject constructor(
                 bus.isFull = true
                 busRepository.updateBus(bus) // Actualiza el estado del bus en Firestore
                 refreshActiveBuses() // Recarga los buses activos
-            }
-        }
-    }
-
-    // Función para poner el bus como disponible
-    fun setBusAvailable(busLine: String) {
-        viewModelScope.launch {
-            _activeBuses.value.find { it.line == busLine }?.let { bus ->
-                bus.isFull = false
-                busRepository.updateBus(bus)  // Actualiza el estado del bus en Firestore
-                refreshActiveBuses()  // Recarga los buses activos
             }
         }
     }

@@ -12,6 +12,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import es.thatapps.fullbus.presentation.components.BusStatus
 import es.thatapps.fullbus.presentation.components.Header
+import kotlinx.coroutines.delay
 
 @Composable
 fun BusDetailScreen(
@@ -24,11 +25,26 @@ fun BusDetailScreen(
     // Observar el estado de los buses activos
     val activeBuses by viewModel.activeBuses.collectAsState()
 
+    // Estado para la hora actual
+    val currentTime = remember { mutableStateOf(viewModel.getCurrentHour()) }
+
+    // Actualiza la hora cada segundo
+    LaunchedEffect(Unit) {
+        while (true) {
+            currentTime.value = viewModel.getCurrentHour()
+            delay(1000)
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
     ) {
         Header(navigationToRegister, navigationToSettings)
+
+        Text("Dia actual: ${viewModel.getLogicDay()}", fontSize = 20.sp)
+
+        Text("Hora actual: ${currentTime.value}", fontSize = 20.sp)
 
         LazyColumn(
             modifier = Modifier
@@ -38,7 +54,6 @@ fun BusDetailScreen(
                 BusStatus(
                     busDetail = bus,
                     onReportFull = { viewModel.reportFull(bus.line) },
-                    onResetAvailable = { viewModel.setBusAvailable(bus.line) }
                 )
             }
         }
