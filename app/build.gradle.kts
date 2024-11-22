@@ -87,5 +87,9 @@ dependencies {
     implementation ("com.google.android.gms:play-services-base:18.5.0")
     // DataStore
     implementation(libs.androidx.datastore.preferences)
+
+    // HorizontalPager
+    implementation ("com.google.accompanist:accompanist-pager:0.28.0")
+
 }
 

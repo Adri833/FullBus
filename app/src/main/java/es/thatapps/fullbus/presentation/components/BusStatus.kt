@@ -1,18 +1,23 @@
 package es.thatapps.fullbus.presentation.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -24,6 +29,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.thatapps.fullbus.R
 import es.thatapps.fullbus.presentation.busDetails.domain.BusDetailDomain
+import es.thatapps.fullbus.ui.theme.Green
+import es.thatapps.fullbus.ui.theme.Orange
+import es.thatapps.fullbus.ui.theme.Red
+import es.thatapps.fullbus.ui.theme.Red2
 
 @Composable
 fun BusStatus(
@@ -32,12 +41,12 @@ fun BusStatus(
 ) {
     Column(
         modifier = Modifier
-            .fillMaxWidth()
+            .fillMaxSize()
             .background(
-                if (busDetail.isFull) Color(0xFFFFCDD2) else Color(0xFFC8E6C9),
-                RoundedCornerShape(8.dp)
+                if (busDetail.isFull) Red else Green,
+                RoundedCornerShape(16.dp)
             )
-            .border(2.dp, Color.Black, RoundedCornerShape(8.dp))
+            .border(3.dp, Color.Black, RoundedCornerShape(16.dp))
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -46,69 +55,101 @@ fun BusStatus(
             modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.Start,
         ) {
-            // Línea del autobús
-            Text(
-                text = busDetail.line,
-                fontSize = 28.sp,
-                color = Color.Black,
-                fontWeight = FontWeight.Bold,
-            )
+            // Línea del autobús y hora de salida
+            Row(
+                modifier = Modifier.fillMaxWidth(), // Ocupa el ancho disponible
+            ) {
+                // Línea del autobús
+                Column(
+                    modifier = Modifier.weight(1f), // Ocupa el espacio a la izquierda
+                    horizontalAlignment = Alignment.Start
+                ) {
+                    // Hora de salida del autobús
+                    Clock(
+                        time = busDetail.departureTime,
+                    )
 
-            Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
 
-            // Hora de salida del autobús
-            Text(
-                text = busDetail.departureTime,
-                fontSize = 34.sp,
-                color = Color.Black,
-                fontWeight = FontWeight.Bold,
-            )
+                    Text(
+                        text = busDetail.line,
+                        fontSize = 28.sp,
+                        color = Color.Black,
+                        fontWeight = FontWeight.Bold,
+                    )
+                }
+
+                // Imagen alineada a la derecha
+                if (busDetail.isFull)
+                    Image(
+                    painter = painterResource(id = R.drawable.advertencia),
+                    contentDescription = "Line Image",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.size(50.dp)
+                )
+            }
         }
-
-        Spacer(modifier = Modifier.height(8.dp))
 
         // Imagen de bus
         Image(
-            painter = painterResource(id = R.drawable.bus_1), // Asegúrate de que la imagen exista
+            painter = painterResource(id = R.drawable.bus_1),
             contentDescription = "Bus Image",
             contentScale = ContentScale.Crop,
-            modifier = Modifier.size(150.dp)
+            modifier = Modifier.size(170.dp)
         )
-
-        Spacer(modifier = Modifier.height(8.dp))
 
         // Estado y acciones
         if (busDetail.isFull) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Row(
+                modifier = Modifier
+                    .background(Orange, RoundedCornerShape(20.dp))
+                    .border(3.dp , Color.Black, RoundedCornerShape(20.dp))
+                    .padding(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Icon(
-                    imageVector = Icons.Filled.Close,
-                    contentDescription = "Full Status",
-                    tint = Color.Red,
-                    modifier = Modifier.size(24.dp)
+                    imageVector = Icons.Filled.AccountCircle,
+                    tint = Color.Black,
+                    contentDescription = "Full Bus",
+                    modifier = Modifier.size(32.dp)
                 )
+
                 Spacer(modifier = Modifier.width(8.dp))
+
                 Text(
-                    text = "Lleno",
-                    fontSize = 20.sp,
-                    color = Color.Red
+                    text = "Reportado por (nombre_usuario)",
+                    color = Color.Black,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp
                 )
             }
         } else {
             Button(
                 onClick = onReportFull,
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFD4655)),
-                modifier = Modifier.align(Alignment.CenterHorizontally)
+                shape = RoundedCornerShape(20.dp),
+                border = BorderStroke(3.dp, Color.Black),
+                colors = ButtonDefaults.buttonColors(containerColor = Red2),
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .size(width = 220.dp, height = 48.dp)
                 ) {
                 Icon(
-                    imageVector = Icons.Filled.Check,
+                    imageVector = Icons.Filled.Close,
+                    tint = Color.Black,
                     contentDescription = "Report Full",
-                    modifier = Modifier.size(18.dp)
+                    modifier = Modifier.size(28.dp)
                 )
-                Spacer(modifier = Modifier.width(4.dp))
-                Text("Reportar como lleno")
+
+                Spacer(modifier = Modifier.width(4.dp)) // Separacion entre el icono y el texto
+
+                Text(
+                    text = "Reportar",
+                    color = Color.Black,
+                    fontSize = 20.sp)
             }
         }
     }
+    Spacer(modifier = Modifier.height(8.dp))
 }
 
 @Preview(showBackground = true)
@@ -119,7 +160,7 @@ fun PreviewBusStatus() {
             line = "M-126",
             departureTime = "15:30",
             arriveTime = "16:30",
-            isFull = false
+            isFull = true
         ),
         onReportFull = { /* Acción para reportar como lleno */ },
     )

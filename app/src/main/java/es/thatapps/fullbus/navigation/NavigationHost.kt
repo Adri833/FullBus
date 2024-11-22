@@ -77,12 +77,10 @@ fun NavigationHost(
             val busLineId = backStackEntry.arguments?.getString("busLineId") ?: return@composable
             BusDetailScreen(
                 busLineId = busLineId,
-                onBack = { navController.popBackStack() },
                 navigationToRegister = { navController.navigate(Routes.Register.route) },
                 navigationToSettings = { navController.navigate(Routes.Settings.route) }
             )
         }
-
 
     }
 }

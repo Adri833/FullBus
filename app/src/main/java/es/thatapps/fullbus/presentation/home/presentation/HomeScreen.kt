@@ -5,18 +5,19 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import es.thatapps.fullbus.presentation.components.AdBanner
 import es.thatapps.fullbus.presentation.components.BusInfoBox
 import es.thatapps.fullbus.presentation.components.Header
+import es.thatapps.fullbus.presentation.components.adjustForMobile
 import es.thatapps.fullbus.presentation.home.domain.BusLineMockData
 
 @Composable
@@ -26,12 +27,10 @@ fun HomeScreen(
     navigationToRegister: () -> Unit,
     navigationToSettings: () -> Unit,
 ) {
-    // TODO: quitar comentarios del contexto y de anuncio
-//    val context = LocalContext.current
-
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .adjustForMobile()
     ) {
         // Header sin padding para que ocupe toda la pantalla horizontalmente
         Header(navigationToRegister, navigationToSettings)
@@ -68,12 +67,10 @@ fun HomeScreen(
             )
 
             // Espacio en blanco hasta la parte inferior de la pantalla
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-            // Banner de anuncio en la parte inferior
-//            AdBanner(context)
-
-            Spacer(modifier = Modifier.height(46.dp))
+            //Banner de anuncio en la parte inferior
+            AdBanner(context = LocalContext.current)
         }
     }
 }

@@ -1,23 +1,24 @@
 package es.thatapps.fullbus.presentation.busDetails.presentation
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Button
+import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.ui.platform.LocalContext
+import es.thatapps.fullbus.presentation.components.AdBanner
 import es.thatapps.fullbus.presentation.components.BusStatus
 import es.thatapps.fullbus.presentation.components.Header
+import es.thatapps.fullbus.presentation.components.adjustForMobile
 import kotlinx.coroutines.delay
 
 @Composable
 fun BusDetailScreen(
     busLineId: String,
-    onBack: () -> Unit,
     navigationToRegister: () -> Unit,
     navigationToSettings: () -> Unit,
     viewModel: BusViewModel = hiltViewModel()
@@ -39,31 +40,36 @@ fun BusDetailScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .adjustForMobile()
     ) {
+        // Encabezado
         Header(navigationToRegister, navigationToSettings)
 
+        // Textos de prueba para el dia y la hora actual
         Text("Dia actual: ${viewModel.getLogicDay()}", fontSize = 20.sp)
-
         Text("Hora actual: ${currentTime.value}", fontSize = 20.sp)
 
-        LazyColumn(
+        // Contenedor para el HorizontalPager
+        Box(
             modifier = Modifier
-                .weight(1f)
+                .weight(1f) // Hace que ocupe el espacio disponible
+                .padding(top = 16.dp, start = 16.dp, end = 16.dp) // Separación con el texto de la hora
         ) {
-            items(activeBuses) { bus ->
+            HorizontalPager(
+                state = rememberPagerState(pageCount = { activeBuses.size }),
+                modifier = Modifier.fillMaxSize() // Asegura que ocupe el espacio del Box al completo
+            ) { page ->
+                // Mostrar el bus correspondiente a la pagina actual
+                val bus = activeBuses[page]
                 BusStatus(
                     busDetail = bus,
-                    onReportFull = { viewModel.reportFull(bus.line) },
+                    onReportFull = { viewModel.reportFull(bus.line) }
                 )
             }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Button(onClick = onBack) {
-            Text("Volver a la lista", fontSize = 20.sp)
-        }
-
-        Spacer(modifier = Modifier.height(50.dp))
+        AdBanner(context = LocalContext.current)
     }
 }

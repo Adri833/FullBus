@@ -17,9 +17,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.thatapps.fullbus.R
+import es.thatapps.fullbus.ui.theme.LightGray
 
 @Composable
 fun Header(
@@ -35,7 +37,7 @@ fun Header(
         modifier = Modifier
             .fillMaxWidth()
             .background(
-                Color(0xFFB0BEC5), // Color de fondo gris claro
+                LightGray, // Color de fondo gris claro
             )
             .padding(
                 start = 8.dp,
@@ -151,4 +153,13 @@ fun Header(
             }
         )
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewHeader() {
+    Header(
+        navigationToRegister = { /* Acción de navegación a registrar */ },
+        navigationToSettings = { /* Acción de navegación a configuraciones */ }
+    )
 }
