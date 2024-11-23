@@ -48,6 +48,7 @@ fun BusDetailScreen(
         // Textos de prueba para el dia y la hora actual
         Text("Dia actual: ${viewModel.getLogicDay()}", fontSize = 20.sp)
         Text("Hora actual: ${currentTime.value}", fontSize = 20.sp)
+        Text("Hora de llegada: ${viewModel.calculateArrivalTime(currentTime.value)}", fontSize = 20.sp)
 
         // Contenedor para el HorizontalPager
         Box(

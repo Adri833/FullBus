@@ -7,6 +7,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
@@ -94,7 +95,15 @@ fun BusStatus(
             modifier = Modifier.size(250.dp)
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Icon(
+            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+            tint = Color.Black,
+            contentDescription = "Arrow to indicate direction",
+            modifier = Modifier
+                .align(Alignment.End)
+                .size(70.dp)
+        )
+
 
         // Estado y acciones
         if (busDetail.isFull) {
@@ -158,7 +167,7 @@ fun PreviewBusStatus() {
             line = "M-126",
             departureTime = "15:30",
             arriveTime = "16:30",
-            isFull = true
+            isFull = false
         ),
         onReportFull = { /* Acción para reportar como lleno */ },
     )

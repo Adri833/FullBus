@@ -21,7 +21,6 @@ class BusViewModel @Inject constructor(
     // Variables de tiempo
     private val madridTimeZone = TimeZone.getTimeZone("Europe/Madrid")
     private val sdf = SimpleDateFormat("HH:mm", Locale.getDefault()).apply { timeZone = madridTimeZone }
-    private val sdfDay = SimpleDateFormat("EEEE", Locale("es", "ES")).apply { timeZone = madridTimeZone }
     private val calendar = Calendar.getInstance(madridTimeZone)
     private val currentTime = sdf.format(calendar.time)
     private val resetHour = 4
@@ -37,17 +36,15 @@ class BusViewModel @Inject constructor(
     }
 
     // Función para obtener el día actual
-    fun getLogicDay(): String {
-        // Crea una copia de calendar para evitar modificar el estado original
+    fun getLogicDay(): Int {
+        // Crea una copia del calendario para no modificar el original
         val adjustedCalendar = (calendar.clone() as Calendar).apply {
             if (currentHour < resetHour) {
-                add(Calendar.DAY_OF_YEAR, -1) // Resta un día si es antes de las 4:00 am
+                add(Calendar.DAY_OF_YEAR, -1) // Retrocede un día si es antes de las 4:00 am
             }
         }
-        // Usa la copia ajustada para obtener el día lógico
-        return sdfDay.format(adjustedCalendar.time)
+        return adjustedCalendar.get(Calendar.DAY_OF_WEEK) // Devuelve el día lógico
     }
-
 
     init {
         viewModelScope.launch {
@@ -64,16 +61,8 @@ class BusViewModel @Inject constructor(
     // Refresca los buses activos (elimina expirados y crea nuevos)
     private suspend fun refreshActiveBuses() {
         _activeBuses.value.forEach { bus ->
-            // Si la hora actual es mayor o igual a 4:00, el dia se considera
-            if (currentHour < resetHour) {
-                calendar.add(Calendar.DAY_OF_YEAR, -1) // Resta un dia
-            }
-
-            // Establece las 4:00 como la hora de inicio del nuevo dia
-            calendar.set(Calendar.HOUR_OF_DAY, resetHour)
-
             // Compara la hora actual con la de llegada del bus, si es mayor lo elimina
-            if (currentTime > bus.arriveTime || isPreviousDay(bus.departureTime, currentTime)) {
+            if (currentTime > bus.arriveTime) {
                 busRepository.deleteBus(bus)
             }
         }
@@ -83,7 +72,7 @@ class BusViewModel @Inject constructor(
 
         // Crea nuevos buses según el horario actual si no existen
         BusScheduleRepository.busSchedules.forEach { busSchedule ->
-            val schedule = when (calendar.get(Calendar.DAY_OF_WEEK)) {
+            val schedule = when (getLogicDay()) {
                 Calendar.SATURDAY -> busSchedule.saturdaySchedule
                 Calendar.SUNDAY -> busSchedule.holidaySchedule
                 else -> busSchedule.normalSchedule
@@ -91,11 +80,12 @@ class BusViewModel @Inject constructor(
 
             // Verifica si el bus debe ser creado comparando la hora actual con la hora de salida, y si ya existe
             schedule.forEach { departureTime ->
-                if (currentTime in departureTime..calculateArrivalTime(departureTime) && !existingBuses.containsKey(departureTime)) {
-                    busRepository.addBus(BusDetailDomain(
+                if (shouldCreateBus(departureTime, calculateArrivalTime(departureTime), currentTime) && !existingBuses.containsKey(departureTime)) {
+                    busRepository.addBus(
+                        BusDetailDomain(
                             line = busSchedule.line,
                             departureTime = departureTime,
-                        arriveTime = calculateArrivalTime(departureTime),
+                            arriveTime = calculateArrivalTime(departureTime),
                             isFull = false
                         )
                     )
@@ -106,16 +96,19 @@ class BusViewModel @Inject constructor(
         loadActiveBuses()
     }
 
-    // Verifica si el autobús pertenece a un día anterior
-    private fun isPreviousDay(departureTime: String, currentTime: String): Boolean {
-        val departureDate = sdf.parse(departureTime) ?: return false
-        val currentDate = sdf.parse(currentTime) ?: return false
-
-        return departureDate.before(currentDate) && currentTime < "04:00" // Nuevo día desde las 4:00 am
+    // Verifica si el bus debe ser creado según el rango de horarios
+    private fun shouldCreateBus(departureTime: String, arrivalTime: String, currentTime: String): Boolean {
+        return if (departureTime > arrivalTime) {
+            // Si el rango cruza la medianoche
+            currentTime in departureTime.. "23:59" || currentTime in "00:00"..arrivalTime
+        } else {
+            // Rango normal, dentro del mismo día
+            currentTime in departureTime..arrivalTime
+        }
     }
 
     // Calcula la hora de llegada sumando 1 hora a la hora de salida
-    private fun calculateArrivalTime(departureTime: String): String {
+    fun calculateArrivalTime(departureTime: String): String {
         val departureDate = sdf.parse(departureTime) ?: return departureTime
         val arrivalDate = Date(departureDate.time + (60 * 60 * 1000)) // Añade 1 hora
         return sdf.format(arrivalDate)
