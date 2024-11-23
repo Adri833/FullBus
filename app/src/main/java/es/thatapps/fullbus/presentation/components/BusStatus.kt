@@ -14,10 +14,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -95,8 +91,10 @@ fun BusStatus(
             painter = painterResource(id = R.drawable.bus_1),
             contentDescription = "Bus Image",
             contentScale = ContentScale.Crop,
-            modifier = Modifier.size(170.dp)
+            modifier = Modifier.size(250.dp)
         )
+
+        Spacer(modifier = Modifier.height(16.dp))
 
         // Estado y acciones
         if (busDetail.isFull) {
