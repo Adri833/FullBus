@@ -92,18 +92,8 @@ fun BusStatus(
             painter = painterResource(id = R.drawable.bus_1),
             contentDescription = "Bus Image",
             contentScale = ContentScale.Crop,
-            modifier = Modifier.size(250.dp)
+            modifier = Modifier.size(230.dp)
         )
-
-        Icon(
-            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-            tint = Color.Black,
-            contentDescription = "Arrow to indicate direction",
-            modifier = Modifier
-                .align(Alignment.End)
-                .size(70.dp)
-        )
-
 
         // Estado y acciones
         if (busDetail.isFull) {

@@ -30,13 +30,14 @@ class BusViewModel @Inject constructor(
     private val _activeBuses = MutableStateFlow<List<BusDetailDomain>>(emptyList())
     val activeBuses: StateFlow<List<BusDetailDomain>> = _activeBuses
 
-    // Función para obtener la hora actual
+    // TODO borrar este metodo
+    // Función para obtener la hora actual en formato "HH:mm:ss"
     fun getCurrentHour(): String {
         return SimpleDateFormat("HH:mm:ss", Locale.getDefault()).apply { timeZone = madridTimeZone }.format(Date())
     }
 
     // Función para obtener el día actual
-    fun getLogicDay(): Int {
+    private fun getLogicDay(): Int {
         // Crea una copia del calendario para no modificar el original
         val adjustedCalendar = (calendar.clone() as Calendar).apply {
             if (currentHour < resetHour) {
@@ -60,12 +61,8 @@ class BusViewModel @Inject constructor(
 
     // Refresca los buses activos (elimina expirados y crea nuevos)
     private suspend fun refreshActiveBuses() {
-        _activeBuses.value.forEach { bus ->
-            // Compara la hora actual con la de llegada del bus, si es mayor lo elimina
-            if (currentTime > bus.arriveTime) {
-                busRepository.deleteBus(bus)
-            }
-        }
+        // Primero elimina todos los buses expirados
+        deleteBus()
 
         // Obtiene los buses ya activos en Firestore, utilizando un Map para una búsqueda rápida
         val existingBuses = _activeBuses.value.associateBy { it.departureTime }
@@ -86,7 +83,9 @@ class BusViewModel @Inject constructor(
                             line = busSchedule.line,
                             departureTime = departureTime,
                             arriveTime = calculateArrivalTime(departureTime),
-                            isFull = false
+                            isFull = false,
+                            id = "${busSchedule.line}_${departureTime}",
+                            day = getLogicDay().toString(),
                         )
                     )
                 }
@@ -94,6 +93,15 @@ class BusViewModel @Inject constructor(
         }
         // Recarga la lista de buses activos
         loadActiveBuses()
+    }
+
+    private suspend fun deleteBus() {
+        _activeBuses.value.forEach { bus ->
+            // Compara la hora actual con la de llegada del bus y el dia actual, si es mayor lo elimina
+            if (currentTime > bus.arriveTime || bus.day != getLogicDay().toString()) {
+                busRepository.deleteBus(bus)
+            }
+        }
     }
 
     // Verifica si el bus debe ser creado según el rango de horarios
@@ -108,13 +116,13 @@ class BusViewModel @Inject constructor(
     }
 
     // Calcula la hora de llegada sumando 1 hora a la hora de salida
-    fun calculateArrivalTime(departureTime: String): String {
+    private fun calculateArrivalTime(departureTime: String): String {
         val departureDate = sdf.parse(departureTime) ?: return departureTime
         val arrivalDate = Date(departureDate.time + (60 * 60 * 1000)) // Añade 1 hora
         return sdf.format(arrivalDate)
     }
 
-    // Función para poner el bus como lleno
+    // Función para establecer el bus como lleno
     fun reportFull(busLineId: String) {
         viewModelScope.launch {
             _activeBuses.value.find { it.line == busLineId }?.let { bus ->

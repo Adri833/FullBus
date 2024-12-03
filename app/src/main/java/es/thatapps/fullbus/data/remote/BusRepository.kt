@@ -25,7 +25,9 @@ class BusRepository @Inject constructor() {
             "line" to bus.line,
             "isFull" to bus.isFull,
             "departureTime" to bus.departureTime,
-            "arriveTime" to bus.arriveTime
+            "arriveTime" to bus.arriveTime,
+            "id" to busId,
+            "day" to bus.day
         )
 
         busCollection.document(busId).set(autobus).await()
@@ -41,8 +43,9 @@ class BusRepository @Inject constructor() {
 
     // Metodo que actualiza un bus en la db
     suspend fun updateBus(bus: BusDetailDomain) {
+        val busId = "${bus.line}_${bus.departureTime}"
         val busDoc = busCollection
-            .whereEqualTo("line", bus.line) // 'line' es el identificador unico del autobus (filtro)
+            .whereEqualTo("id", busId)
             .get()
             .await()
             .documents

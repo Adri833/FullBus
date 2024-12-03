@@ -35,7 +35,7 @@ fun Clock(
             text = time,
             fontSize = 48.sp,
             // TODO: Cambiar la fuente
-            fontFamily = FontFamily(Font(digital_clock)),
+            // fontFamily = FontFamily(Font(digital_clock)),
             fontWeight = FontWeight.Bold,
             color = Color.Red
         )
