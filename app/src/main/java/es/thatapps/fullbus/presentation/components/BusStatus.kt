@@ -7,7 +7,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
@@ -65,15 +64,6 @@ fun BusStatus(
                     Clock(
                         time = busDetail.departureTime,
                     )
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    Text(
-                        text = busDetail.line,
-                        fontSize = 28.sp,
-                        color = Color.Black,
-                        fontWeight = FontWeight.Bold,
-                    )
                 }
 
                 // Imagen alineada a la derecha
@@ -94,6 +84,15 @@ fun BusStatus(
             contentScale = ContentScale.Crop,
             modifier = Modifier.size(230.dp)
         )
+
+        Text(
+            text = busDetail.line,
+            fontSize = 28.sp,
+            color = Color.Black,
+            fontWeight = FontWeight.Bold,
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
 
         // Estado y acciones
         if (busDetail.isFull) {
@@ -128,7 +127,7 @@ fun BusStatus(
                 colors = ButtonDefaults.buttonColors(containerColor = Red2),
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
-                    .size(width = 220.dp, height = 48.dp)
+                    .size(width = 230.dp, height = 48.dp)
                 ) {
                 Icon(
                     imageVector = Icons.Filled.Close,
@@ -145,8 +144,14 @@ fun BusStatus(
                     fontSize = 20.sp)
             }
         }
+//        Spacer(modifier = Modifier.height(24.dp))
+//
+//        TimedProgressBar(
+//            startTime = busDetail.departureTime,
+//            endTime = busDetail.arriveTime,
+//            currentTime = SimpleDateFormat("HH:mm", Locale.getDefault()).apply { timeZone = TimeZone.getTimeZone("Europe/Madrid") }.format(Calendar.getInstance().time),
+//        )
     }
-    Spacer(modifier = Modifier.height(8.dp))
 }
 
 @Preview(showBackground = true)

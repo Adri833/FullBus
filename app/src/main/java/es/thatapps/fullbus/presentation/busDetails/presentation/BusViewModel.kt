@@ -30,7 +30,6 @@ class BusViewModel @Inject constructor(
     private val _activeBuses = MutableStateFlow<List<BusDetailDomain>>(emptyList())
     val activeBuses: StateFlow<List<BusDetailDomain>> = _activeBuses
 
-    // TODO borrar este metodo
     // Función para obtener la hora actual en formato "HH:mm:ss"
     fun getCurrentHour(): String {
         return SimpleDateFormat("HH:mm:ss", Locale.getDefault()).apply { timeZone = madridTimeZone }.format(Date())

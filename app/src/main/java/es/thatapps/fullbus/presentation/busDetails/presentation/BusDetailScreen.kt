@@ -17,12 +17,14 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun BusDetailScreen(
+    busLine: String,
     navigationToRegister: () -> Unit,
     navigationToSettings: () -> Unit,
     viewModel: BusViewModel = hiltViewModel()
 ) {
     // Observar el estado de los buses activos
     val activeBuses by viewModel.activeBuses.collectAsState()
+    val filteredBuses = activeBuses.filter { it.line == busLine }
 
     // Estado para la hora actual
     val currentTime = remember { mutableStateOf(viewModel.getCurrentHour()) }
@@ -62,7 +64,7 @@ fun BusDetailScreen(
                 .weight(1f) // Hace que ocupe el espacio disponible
                 .padding(top = 16.dp, start = 16.dp, end = 16.dp) // Separación con el texto de la hora
         ) {
-            HorizontalPagerBuses(activeBuses, viewModel)
+            HorizontalPagerBuses(filteredBuses, viewModel)
         }
 
         Spacer(modifier = Modifier.height(16.dp))
