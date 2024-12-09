@@ -18,7 +18,7 @@ class BusViewModel @Inject constructor(
     private val busRepository: BusRepository
 ) : ViewModel() {
 
-    // Variables de tiempo
+    // Configuración de la zona horaria y formato de hora
     private val madridTimeZone = TimeZone.getTimeZone("Europe/Madrid")
     private val sdf = SimpleDateFormat("HH:mm", Locale.getDefault()).apply { timeZone = madridTimeZone }
     private val calendar = Calendar.getInstance(madridTimeZone)
@@ -69,28 +69,31 @@ class BusViewModel @Inject constructor(
         // Crea nuevos buses según el horario actual si no existen
         BusScheduleRepository.busSchedules.forEach { busSchedule ->
             val schedule = when (getLogicDay()) {
-                Calendar.SATURDAY -> busSchedule.saturdaySchedule
-                Calendar.SUNDAY -> busSchedule.holidaySchedule
-                else -> busSchedule.normalSchedule
+                Calendar.SATURDAY -> busSchedule.schedules["Saturday"]
+                Calendar.SUNDAY -> busSchedule.schedules["Holiday"]
+                else -> busSchedule.schedules["Normal"]
             }
 
             // Verifica si el bus debe ser creado comparando la hora actual con la hora de salida, y si ya existe
-            schedule.forEach { departureTime ->
-                if (shouldCreateBus(departureTime, calculateArrivalTime(departureTime), currentTime) && !existingBuses.containsKey(departureTime)) {
-                    busRepository.addBus(
-                        BusDetailDomain(
-                            line = busSchedule.line,
-                            departureTime = departureTime,
-                            arriveTime = calculateArrivalTime(departureTime),
-                            isFull = false,
-                            id = "${busSchedule.line}_${departureTime}",
-                            day = getLogicDay().toString(),
+            schedule?.forEach { (direction, times) ->
+                times.forEach { departureTime ->
+                    val arrivalTime = calculateArrivalTime(departureTime)
+                    if (shouldCreateBus(departureTime, arrivalTime, currentTime) && !existingBuses.containsKey(departureTime)) {
+                        busRepository.addBus(
+                            BusDetailDomain(
+                                line = busSchedule.line,
+                                departureTime = departureTime,
+                                arriveTime = arrivalTime,
+                                direction = direction,
+                                isFull = false,
+                                id = "${busSchedule.line}_${departureTime}_${direction}",
+                                day = getLogicDay().toString(),
+                            )
                         )
-                    )
+                    }
                 }
             }
         }
-        // Recarga la lista de buses activos
         loadActiveBuses()
     }
 
@@ -122,9 +125,9 @@ class BusViewModel @Inject constructor(
     }
 
     // Función para establecer el bus como lleno
-    fun reportFull(busLineId: String) {
+    fun reportFull(busId: String) {
         viewModelScope.launch {
-            _activeBuses.value.find { it.line == busLineId }?.let { bus ->
+            _activeBuses.value.find { it.id == busId }?.let { bus ->
                 bus.isFull = true
                 busRepository.updateBus(bus) // Actualiza el estado del bus en Firestore
                 refreshActiveBuses() // Recarga los buses activos

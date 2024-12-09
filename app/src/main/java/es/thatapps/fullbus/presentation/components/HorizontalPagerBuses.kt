@@ -53,7 +53,7 @@ fun HorizontalPagerBuses(
             ) {
                 BusStatus(
                     busDetail = bus,
-                    onReportFull = { viewModel.reportFull(bus.line) }
+                    onReportFull = { viewModel.reportFull(bus.id) }
                 )
             }
         }
