@@ -73,7 +73,8 @@ fun NavigationHost(
                 BusDetailScreen(
                     busLine = busLine, // Pasar el busLine a la pantalla de detalles
                     navigationToRegister = { navController.navigate(Routes.Register.route) },
-                    navigationToSettings = { navController.navigate(Routes.Settings.route) }
+                    navigationToSettings = { navController.navigate(Routes.Settings.route) },
+                    navigationToHome = { navController.navigate(Routes.Home.route) }
                 )
             }
         }

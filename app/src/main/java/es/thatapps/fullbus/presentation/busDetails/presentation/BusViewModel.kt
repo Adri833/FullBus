@@ -30,11 +30,6 @@ class BusViewModel @Inject constructor(
     private val _activeBuses = MutableStateFlow<List<BusDetailDomain>>(emptyList())
     val activeBuses: StateFlow<List<BusDetailDomain>> = _activeBuses
 
-    // Función para obtener la hora actual en formato "HH:mm:ss"
-    fun getCurrentHour(): String {
-        return SimpleDateFormat("HH:mm:ss", Locale.getDefault()).apply { timeZone = madridTimeZone }.format(Date())
-    }
-
     // Función para obtener el día actual
     private fun getLogicDay(): Int {
         // Crea una copia del calendario para no modificar el original
@@ -127,11 +122,19 @@ class BusViewModel @Inject constructor(
     // Función para establecer el bus como lleno
     fun reportFull(busId: String) {
         viewModelScope.launch {
-            _activeBuses.value.find { it.id == busId }?.let { bus ->
-                bus.isFull = true
-                busRepository.updateBus(bus) // Actualiza el estado del bus en Firestore
-                refreshActiveBuses() // Recarga los buses activos
+            // Encuentra el bus en la lista de buses activos
+            _activeBuses.value = _activeBuses.value.map { bus ->
+                if (bus.id == busId) {
+                    bus.copy(isFull = true) // Crea una copia del bus con isFull como true
+                } else {
+                    bus
+                }
             }
+            // Luego actualiza el estado del bus en Firestore
+            busRepository.updateBus(_activeBuses.value.find { it.id == busId }!!)
+
+            // Llama a refreshActiveBuses para recargar los buses activos si es necesario
+            refreshActiveBuses()
         }
     }
 }

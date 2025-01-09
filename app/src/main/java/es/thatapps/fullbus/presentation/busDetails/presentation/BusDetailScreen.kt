@@ -1,24 +1,25 @@
 package es.thatapps.fullbus.presentation.busDetails.presentation
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import es.thatapps.fullbus.R
 import es.thatapps.fullbus.presentation.components.AdBanner
 import es.thatapps.fullbus.presentation.components.Header
 import es.thatapps.fullbus.presentation.components.HorizontalPagerBuses
 import es.thatapps.fullbus.presentation.components.adjustForMobile
-import kotlinx.coroutines.delay
 
 @SuppressLint("DiscouragedApi")
 @Composable
@@ -26,6 +27,7 @@ fun BusDetailScreen(
     busLine: String,
     navigationToRegister: () -> Unit,
     navigationToSettings: () -> Unit,
+    navigationToHome: () -> Unit,
     viewModel: BusViewModel = hiltViewModel()
 ) {
     // Observar el estado de los buses activos
@@ -34,15 +36,9 @@ fun BusDetailScreen(
     val idaBuses = filteredBuses.filter { it.direction == "Ida" }
     val vueltaBuses = filteredBuses.filter { it.direction == "Vuelta" }
 
-    // Estado para la hora actual
-    val currentTime = remember { mutableStateOf(viewModel.getCurrentHour()) }
-
     // Actualiza la hora cada segundo
-    LaunchedEffect(Unit) {
-        while (true) {
-            currentTime.value = viewModel.getCurrentHour()
-            delay(1000)
-        }
+    LaunchedEffect(activeBuses) {
+        Log.d("BusDetailScreen", "Buses activos actualizados: $activeBuses")
     }
 
     // Estado para la hora seleccionada
@@ -75,17 +71,15 @@ fun BusDetailScreen(
         when (selectedTabIndex) {
             0 -> { // Ida
 
-                // Contenedor para centrar el texto de la hora
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth() // Ocupa todo el ancho
-                        .padding(top = 8.dp), // Espaciado vertical
-                    contentAlignment = Alignment.Center // Centra el contenido
-                ) {
-                    Text(
-                        text = currentTime.value,
-                        fontSize = 20.sp
-                    )
+                Box {
+                    IconButton(
+                        onClick = { navigationToHome() },
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_back),
+                            contentDescription = "Back"
+                        )
+                    }
                 }
 
                 // Contenedor para el HorizontalPager
@@ -100,17 +94,15 @@ fun BusDetailScreen(
 
             1 -> { // Vuelta
 
-                // Contenedor para centrar el texto de la hora
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth() // Ocupa todo el ancho
-                        .padding(top = 8.dp), // Espaciado vertical
-                    contentAlignment = Alignment.Center // Centra el contenido
-                ) {
-                    Text(
-                        text = currentTime.value,
-                        fontSize = 20.sp
-                    )
+                Box {
+                    IconButton(
+                        onClick = { navigationToHome() },
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_back),
+                            contentDescription = "Back"
+                        )
+                    }
                 }
 
                 Box(
@@ -123,6 +115,18 @@ fun BusDetailScreen(
             }
 
             2 -> { // Horario
+
+                Box {
+                    IconButton(
+                        onClick = { navigationToHome() },
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_back),
+                            contentDescription = "Back"
+                        )
+                    }
+                }
+
                 Box(
                     modifier = Modifier
                         .weight(1f)

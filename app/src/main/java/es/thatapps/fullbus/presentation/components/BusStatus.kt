@@ -43,7 +43,7 @@ fun BusStatus(
                 RoundedCornerShape(16.dp)
             )
             .border(3.dp, Color.Black, RoundedCornerShape(16.dp))
-            .padding(16.dp),
+            .padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // Información de la línea y la hora
@@ -82,7 +82,7 @@ fun BusStatus(
             painter = painterResource(id = R.drawable.bus_1),
             contentDescription = "Bus Image",
             contentScale = ContentScale.Crop,
-            modifier = Modifier.size(230.dp)
+            modifier = Modifier.size(210.dp)
         )
 
         Text(
@@ -92,7 +92,7 @@ fun BusStatus(
             fontWeight = FontWeight.Bold,
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(24.dp))
 
         // Estado y acciones
         if (busDetail.isFull) {
@@ -100,7 +100,8 @@ fun BusStatus(
                 modifier = Modifier
                     .background(Orange, RoundedCornerShape(20.dp))
                     .border(3.dp , Color.Black, RoundedCornerShape(20.dp))
-                    .padding(8.dp),
+                    .padding(8.dp)
+                    .wrapContentSize(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
@@ -162,8 +163,8 @@ fun PreviewBusStatus() {
             line = "M-126",
             departureTime = "15:30",
             arriveTime = "16:30",
-            isFull = false
+            isFull = true
         ),
-        onReportFull = { /* Acción para reportar como lleno */ },
+        onReportFull = {},
     )
 }
