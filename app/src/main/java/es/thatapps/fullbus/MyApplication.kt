@@ -2,6 +2,7 @@ package es.thatapps.fullbus
 
 import android.app.Application
 import com.google.android.gms.ads.MobileAds
+import com.google.firebase.FirebaseApp
 import dagger.hilt.android.HiltAndroidApp
 
 /*
@@ -14,5 +15,6 @@ class MyApplication: Application() {
     override fun onCreate() {
         super.onCreate()
         MobileAds.initialize(this) {}
+        FirebaseApp.initializeApp(this)
     }
 }

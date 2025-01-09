@@ -66,6 +66,7 @@ fun SuggestionDialog(
                             println("Error añadiendo sugerencia: $e")
                         }
                 },
+
                 shape = CircleShape,
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2c9421))
             ) {
@@ -75,7 +76,7 @@ fun SuggestionDialog(
         dismissButton = {
             Button(
                 onClick = onDismiss,
-                colors = ButtonDefaults.buttonColors(containerColor = Color.Gray)
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
             ) {
                 Text("Cancelar", fontSize = 16.sp)
             }

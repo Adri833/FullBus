@@ -1,11 +1,12 @@
 [versions]
+accompanistPager = "0.28.0"
 agp = "8.5.2"
 datastorePreferences = "<version>1.0.0"
 firebaseAuth = "23.0.0"
 firebaseBom = "33.4.0"
 firebaseFirestore = "25.1.0"
 hilt = "2.49"
-kotlin = "1.9.0"
+kotlin = "1.9.23"
 coreKtx = "1.13.1"
 junit = "4.13.2"
 junitVersion = "1.2.1"
@@ -14,6 +15,7 @@ lifecycleRuntimeKtx = "2.8.6"
 activityCompose = "1.9.2"
 composeBom = "2024.09.03"
 navigationCompose = "2.8.2"
+playServices = "17.0.0"
 playServicesAds = "23.4.0"
 uiToolingPreview = "VERSION"
 constraintlayoutCompose = "1.0.1"
@@ -21,6 +23,7 @@ uiTestAndroid = "1.7.3"
 datastoreCoreAndroid = "1.1.1"
 
 [libraries]
+accompanist-pager = { module = "com.google.accompanist:accompanist-pager", version.ref = "accompanistPager" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
 firebase-auth = { module = "com.google.firebase:firebase-auth", version.ref = "firebaseAuth" }
@@ -47,6 +50,7 @@ androidx-navigation-compose = { group = "androidx.navigation", name = "navigatio
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
 hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hilt" }
 hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version = "1.2.0" }
+play-services = { module = "com.google.android.gms:play-services", version.ref = "playServices" }
 play-services-ads = { module = "com.google.android.gms:play-services-ads", version.ref = "playServicesAds" }
 ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "uiToolingPreview" }
 androidx-constraintlayout-compose = { group = "androidx.constraintlayout", name = "constraintlayout-compose", version.ref = "constraintlayoutCompose" }
