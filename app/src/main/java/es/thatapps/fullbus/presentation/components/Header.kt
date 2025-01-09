@@ -135,7 +135,7 @@ fun Header(
         // Botón de perfil de usuario
         IconButton(onClick = { /* Acción para el perfil */ }) {
             Icon(
-                painter = painterResource(id = R.drawable.ic_avatar), // Asegúrate de tener este recurso
+                painter = painterResource(id = R.drawable.ic_avatar),
                 contentDescription = "Profile",
                 modifier = Modifier.width(40.dp),
                 tint = Color.Black
