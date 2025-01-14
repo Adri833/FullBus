@@ -38,7 +38,7 @@ fun HomeScreen(
     val drawerMenu = DrawerMenu()
 
     // Estructura principal con el menú lateral y el header
-    drawerMenu.Show(
+    drawerMenu.show(
         drawerState = drawerState,
         navigationToRegister = navigationToRegister,
         navigationToSettings = navigationToSettings
