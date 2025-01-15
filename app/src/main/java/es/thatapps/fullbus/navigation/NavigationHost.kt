@@ -7,6 +7,7 @@ import androidx.navigation.compose.rememberNavController
 import es.thatapps.fullbus.presentation.busDetails.presentation.BusDetailScreen
 import es.thatapps.fullbus.presentation.home.presentation.HomeScreen
 import es.thatapps.fullbus.presentation.login.LoginScreen
+import es.thatapps.fullbus.presentation.profile.ProfileScreen
 import es.thatapps.fullbus.presentation.register.RegisterScreen
 import es.thatapps.fullbus.presentation.settings.SettingsScreen
 
@@ -57,6 +58,9 @@ fun NavigationHost(
                 },
                 navigationToSettings = {
                     navController.navigate(Routes.Settings.route)
+                },
+                navigationToProfile = {
+                    navController.navigate(Routes.Profile.route)
                 }
             )
         }
@@ -74,9 +78,25 @@ fun NavigationHost(
                     busLine = busLine, // Pasar el busLine a la pantalla de detalles
                     navigationToRegister = { navController.navigate(Routes.Register.route) },
                     navigationToSettings = { navController.navigate(Routes.Settings.route) },
-                    navigationToHome = { navController.navigate(Routes.Home.route) }
+                    navigationToHome = { navController.navigate(Routes.Home.route) },
+                    navigationToProfile = { navController.navigate(Routes.Profile.route) }
                 )
             }
+        }
+
+        // Navegación de la pantalla de perfil
+        composable(route = Routes.Profile.route) {
+            ProfileScreen(
+                navigationToSettings = {
+                    navController.navigate(Routes.Settings.route)
+                },
+                navigationToRegister = {
+                    navController.navigate(Routes.Register.route)
+                },
+                navigationToProfile = {
+                    navController.navigate(Routes.Profile.route)
+                }
+            )
         }
     }
 }

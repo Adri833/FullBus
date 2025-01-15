@@ -30,6 +30,7 @@ fun HomeScreen(
     onBusLineClick: (String) -> Unit, // Función para manejar clics en líneas de autobús
     navigationToRegister: () -> Unit,
     navigationToSettings: () -> Unit,
+    navigationToProfile: () -> Unit,
 ) {
 
     // Estados del menu
@@ -41,7 +42,8 @@ fun HomeScreen(
     drawerMenu.Show(
         drawerState = drawerState,
         navigationToRegister = navigationToRegister,
-        navigationToSettings = navigationToSettings
+        navigationToSettings = navigationToSettings,
+        navigationToProfile = navigationToProfile,
     ) {
 
         Column(
