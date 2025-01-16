@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -28,6 +30,7 @@ class DrawerMenu {
         navigationToRegister: () -> Unit,
         navigationToSettings: () -> Unit,
         navigationToProfile: () -> Unit,
+        navigationToHome: () -> Unit,
         content: @Composable () -> Unit
     ) {
         ModalNavigationDrawer(
@@ -36,7 +39,8 @@ class DrawerMenu {
                 DrawerContent(
                     navigationToRegister = navigationToRegister,
                     navigationToSettings = navigationToSettings,
-                    navigationToProfile = navigationToProfile
+                    navigationToProfile = navigationToProfile,
+                    navigationToHome = navigationToHome
                 )
             },
             content = content // Contenido principal de la pantalla
@@ -47,7 +51,8 @@ class DrawerMenu {
     private fun DrawerContent(
         navigationToRegister: () -> Unit,
         navigationToSettings: () -> Unit,
-        navigationToProfile: () -> Unit
+        navigationToProfile: () -> Unit,
+        navigationToHome: () -> Unit
     ) {
         Column (
             modifier = Modifier
@@ -74,6 +79,12 @@ class DrawerMenu {
 
             // Opciones del menú
             MenuItem(
+                iconRes = R.drawable.ic_home,
+                text = "Inicio",
+                onClick =  navigationToHome
+            )
+
+            MenuItem(
                 iconRes = R.drawable.ic_profile,
                 text = "Perfil",
                 onClick = navigationToProfile
@@ -85,6 +96,8 @@ class DrawerMenu {
                 onClick = navigationToSettings
             )
 
+            SuggestionMenuItem()
+
             MenuItem(
                 iconRes = R.drawable.ic_logout,
                 text = "Cerrar sesión",
@@ -95,5 +108,30 @@ class DrawerMenu {
 
     fun openMenu(scope: CoroutineScope, drawerState: DrawerState) {
         scope.launch { drawerState.open() }
+    }
+
+    @Composable
+    fun SuggestionMenuItem() {
+        // Estado para mostrar u ocultar el cuadro de diálogo
+        val showDialog = remember { mutableStateOf(false) }
+
+        // MenuItem que abre el cuadro de sugerencias
+        MenuItem(
+            iconRes = R.drawable.ic_suggest,
+            text = "Sugerencias",
+            onClick = {
+                showDialog.value = true // Muestra el cuadro de diálogo al hacer clic
+            }
+        )
+
+        // Mostrar el cuadro de diálogo si el estado es verdadero
+        if (showDialog.value) {
+            SuggestionDialog(
+                onDismiss = { showDialog.value = false }, // Oculta el cuadro de diálogo
+                onSend = { suggestion ->
+                    showDialog.value = false // Oculta el cuadro después de enviar
+                }
+            )
+        }
     }
 }

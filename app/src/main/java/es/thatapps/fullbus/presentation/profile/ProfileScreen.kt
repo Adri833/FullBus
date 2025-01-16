@@ -12,7 +12,8 @@ import es.thatapps.fullbus.presentation.components.Header
 fun ProfileScreen(
     navigationToSettings: () -> Unit,
     navigationToRegister: () -> Unit,
-    navigationToProfile: () -> Unit
+    navigationToProfile: () -> Unit,
+    navigationToHome: () -> Unit
 ) {
     // Estados del menu
     val drawerState = rememberDrawerState(DrawerValue.Closed)
@@ -25,6 +26,7 @@ fun ProfileScreen(
         navigationToRegister = navigationToRegister,
         navigationToSettings = navigationToSettings,
         navigationToProfile = navigationToProfile,
+        navigationToHome = navigationToHome
     ) {
         Header(onMenuClick = { drawerMenu.openMenu(scope, drawerState) }, onProfileClick = {})
     }

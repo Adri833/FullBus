@@ -29,7 +29,7 @@ fun MenuItem(
         onClick = onClick,
         modifier = Modifier
             .width(300.dp)
-            .padding(8.dp),
+            .padding(10.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = Color(0xFFE0E0E0), // Fondo del botón
             contentColor = Color.Black // Color del contenido

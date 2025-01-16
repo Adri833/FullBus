@@ -51,6 +51,7 @@ fun BusDetailScreen(
         navigationToRegister = navigationToRegister,
         navigationToSettings = navigationToSettings,
         navigationToProfile = navigationToProfile,
+        navigationToHome = navigationToHome
     ) {
         // Actualiza la hora cada segundo
         LaunchedEffect(activeBuses) {

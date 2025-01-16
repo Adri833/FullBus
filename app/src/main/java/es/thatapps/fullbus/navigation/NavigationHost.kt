@@ -61,6 +61,9 @@ fun NavigationHost(
                 },
                 navigationToProfile = {
                     navController.navigate(Routes.Profile.route)
+                },
+                navigationToHome = {
+                    navController.navigate(Routes.Home.route)
                 }
             )
         }
@@ -95,6 +98,9 @@ fun NavigationHost(
                 },
                 navigationToProfile = {
                     navController.navigate(Routes.Profile.route)
+                },
+                navigationToHome = {
+                    navController.navigate(Routes.Home.route)
                 }
             )
         }

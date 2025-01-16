@@ -31,6 +31,7 @@ fun HomeScreen(
     navigationToRegister: () -> Unit,
     navigationToSettings: () -> Unit,
     navigationToProfile: () -> Unit,
+    navigationToHome: () -> Unit
 ) {
 
     // Estados del menu
@@ -44,6 +45,7 @@ fun HomeScreen(
         navigationToRegister = navigationToRegister,
         navigationToSettings = navigationToSettings,
         navigationToProfile = navigationToProfile,
+        navigationToHome = navigationToHome
     ) {
 
         Column(
