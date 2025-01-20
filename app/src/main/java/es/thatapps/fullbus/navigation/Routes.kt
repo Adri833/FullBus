@@ -7,5 +7,5 @@ sealed class Routes(val route: String) {
     data object Home: Routes("home")
     data object Settings: Routes("settings")
     data object BusDetail : Routes("busLineDetail/{busLineId}")
-
+    data object Profile : Routes("profile")
 }

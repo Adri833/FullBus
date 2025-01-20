@@ -30,8 +30,6 @@ fun HomeScreen(
     onBusLineClick: (String) -> Unit, // Función para manejar clics en líneas de autobús
     navigationToRegister: () -> Unit,
     navigationToSettings: () -> Unit,
-    navigationToProfile: () -> Unit,
-    navigationToHome: () -> Unit
 ) {
 
     // Estados del menu
@@ -40,12 +38,10 @@ fun HomeScreen(
     val drawerMenu = DrawerMenu()
 
     // Estructura principal con el menú lateral y el header
-    drawerMenu.Show(
+    drawerMenu.show(
         drawerState = drawerState,
         navigationToRegister = navigationToRegister,
-        navigationToSettings = navigationToSettings,
-        navigationToProfile = navigationToProfile,
-        navigationToHome = navigationToHome
+        navigationToSettings = navigationToSettings
     ) {
 
         Column(
