@@ -1,11 +1,13 @@
 package es.thatapps.fullbus.presentation.profile
 
+import android.provider.Settings.Global
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import es.thatapps.fullbus.presentation.components.DrawerMenu
+import es.thatapps.fullbus.presentation.components.GlobalHeader
 import es.thatapps.fullbus.presentation.components.Header
 
 @Composable
@@ -28,6 +30,6 @@ fun ProfileScreen(
         navigationToProfile = navigationToProfile,
         navigationToHome = navigationToHome
     ) {
-        Header(onMenuClick = { drawerMenu.openMenu(scope, drawerState) }, onProfileClick = {})
+        GlobalHeader()
     }
 }

@@ -52,6 +52,8 @@ fun RegisterScreen(
     // Obtener el controlador del teclado
     val keyboardController = LocalSoftwareKeyboardController.current
 
+    val context = LocalContext.current
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -124,7 +126,7 @@ fun RegisterScreen(
                 // Oculta el teclado
                 keyboardController?.hide()
 
-                viewModel.register(email.value, password.value, username.value) // Llama a la función de registro
+                viewModel.register(email.value, password.value, context) // Llama a la función de registro
             },
             shape = CircleShape,
             colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
@@ -137,7 +139,6 @@ fun RegisterScreen(
 
         Spacer(modifier = Modifier.height(10.dp))
 
-        val context = LocalContext.current
 
         // Muestra los estados al registrarse
         when (registerState) {

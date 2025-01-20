@@ -13,11 +13,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import es.thatapps.fullbus.R
 import es.thatapps.fullbus.ui.theme.LightGray
+import es.thatapps.fullbus.utils.base64toImage
 
 @Composable
 fun Header(
+    userBase64Image: String?,
     onMenuClick: () -> Unit,
-    onProfileClick: () -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -52,13 +53,20 @@ fun Header(
 
         Spacer(modifier = Modifier.weight(1f))
 
+        val imageBitmap = userBase64Image?.let { base64toImage(it) }
         // Botón de perfil de usuario
-        IconButton(onClick = onProfileClick) {
+        if (imageBitmap != null) {
+            Image(
+                bitmap = imageBitmap,
+                contentDescription = "Perfil de usuario",
+                modifier = Modifier
+                    .width(40.dp)
+            )
+        } else {
             Icon(
-                painter = painterResource(id = R.drawable.ic_avatar),
-                contentDescription = "Profile",
+                painter = painterResource(id = R.drawable.default_pfp),
                 modifier = Modifier.width(40.dp),
-                tint = Color.Black
+                contentDescription = "Perfil de usuario",
             )
         }
     }
