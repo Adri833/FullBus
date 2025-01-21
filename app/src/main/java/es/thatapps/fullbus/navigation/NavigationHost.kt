@@ -20,7 +20,7 @@ fun NavigationHost(
 
     NavHost(
         navController = navController,
-        startDestination = Routes.Register.route,
+        startDestination = Routes.Login.route,
     ) {
         // Navegacion de la pantalla Register
         composable(route = Routes.Register.route) {
