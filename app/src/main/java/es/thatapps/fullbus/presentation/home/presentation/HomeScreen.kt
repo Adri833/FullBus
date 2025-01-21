@@ -1,6 +1,5 @@
 package es.thatapps.fullbus.presentation.home.presentation
 
-import android.provider.Settings.Global
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -21,10 +20,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import es.thatapps.fullbus.presentation.components.AdBanner
 import es.thatapps.fullbus.presentation.components.BusInfoBox
 import es.thatapps.fullbus.presentation.components.DrawerMenu
-import es.thatapps.fullbus.presentation.components.GlobalHeader
 import es.thatapps.fullbus.presentation.components.Header
 import es.thatapps.fullbus.presentation.components.adjustForMobile
 import es.thatapps.fullbus.presentation.home.domain.BusLineMockData
+import kotlinx.coroutines.launch
 
 @Composable
 fun HomeScreen(
@@ -56,7 +55,7 @@ fun HomeScreen(
                 .adjustForMobile()
         ) {
             // Header sin padding para que ocupe toda la pantalla horizontalmente
-            GlobalHeader()
+            Header(onMenuClick = { scope.launch { drawerState.open() } })
 
             Spacer(modifier = Modifier.height(15.dp))
 

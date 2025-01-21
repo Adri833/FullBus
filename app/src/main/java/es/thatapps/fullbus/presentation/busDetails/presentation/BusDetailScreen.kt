@@ -21,11 +21,10 @@ import androidx.compose.ui.res.painterResource
 import es.thatapps.fullbus.R
 import es.thatapps.fullbus.presentation.components.AdBanner
 import es.thatapps.fullbus.presentation.components.DrawerMenu
-import es.thatapps.fullbus.presentation.components.GlobalHeader
 import es.thatapps.fullbus.presentation.components.Header
 import es.thatapps.fullbus.presentation.components.HorizontalPagerBuses
-import es.thatapps.fullbus.presentation.components.ProfileViewModel
 import es.thatapps.fullbus.presentation.components.adjustForMobile
+import kotlinx.coroutines.launch
 
 @SuppressLint("DiscouragedApi")
 @Composable
@@ -71,7 +70,8 @@ fun BusDetailScreen(
                 .adjustForMobile()
         ) {
             // Encabezado
-            GlobalHeader()
+            Header(onMenuClick = { scope.launch { drawerState.open() } })
+
             // Navegacion superior
             TabRow(
                 selectedTabIndex = selectedTabIndex,

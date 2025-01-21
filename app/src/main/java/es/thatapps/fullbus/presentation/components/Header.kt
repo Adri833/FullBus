@@ -6,6 +6,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -13,13 +16,21 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import es.thatapps.fullbus.R
 import es.thatapps.fullbus.ui.theme.LightGray
-import es.thatapps.fullbus.utils.base64toImage
+import es.thatapps.fullbus.utils.ImageBase64
+import es.thatapps.fullbus.utils.getPFP
+
 
 @Composable
 fun Header(
-    userBase64Image: String?,
     onMenuClick: () -> Unit,
 ) {
+    val profileImageUrl = remember { mutableStateOf<String?>(null) }
+
+    // Ejecutar la consulta a Firebase
+    LaunchedEffect(Unit) {
+        profileImageUrl.value = getPFP()
+    }
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -53,21 +64,10 @@ fun Header(
 
         Spacer(modifier = Modifier.weight(1f))
 
-        val imageBitmap = userBase64Image?.let { base64toImage(it) }
-        // Botón de perfil de usuario
-        if (imageBitmap != null) {
-            Image(
-                bitmap = imageBitmap,
-                contentDescription = "Perfil de usuario",
-                modifier = Modifier
-                    .width(40.dp)
-            )
-        } else {
-            Icon(
-                painter = painterResource(id = R.drawable.default_pfp),
-                modifier = Modifier.width(40.dp),
-                contentDescription = "Perfil de usuario",
-            )
-        }
+        ImageBase64(
+            imageUrl = profileImageUrl.value,
+            width = 40.dp,
+            height = 40.dp
+        )
     }
 }
