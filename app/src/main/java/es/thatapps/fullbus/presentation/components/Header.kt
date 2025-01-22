@@ -6,6 +6,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -13,12 +16,21 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import es.thatapps.fullbus.R
 import es.thatapps.fullbus.ui.theme.LightGray
+import es.thatapps.fullbus.utils.ImageBase64
+import es.thatapps.fullbus.utils.getPFP
+
 
 @Composable
 fun Header(
     onMenuClick: () -> Unit,
-    onProfileClick: () -> Unit
 ) {
+    val profileImageUrl = remember { mutableStateOf<String?>(null) }
+
+    // Ejecutar la consulta a Firebase
+    LaunchedEffect(Unit) {
+        profileImageUrl.value = getPFP()
+    }
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -52,14 +64,10 @@ fun Header(
 
         Spacer(modifier = Modifier.weight(1f))
 
-        // Botón de perfil de usuario
-        IconButton(onClick = onProfileClick) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_avatar),
-                contentDescription = "Profile",
-                modifier = Modifier.width(40.dp),
-                tint = Color.Black
-            )
-        }
+        ImageBase64(
+            imageUrl = profileImageUrl.value,
+            width = 40.dp,
+            height = 40.dp
+        )
     }
 }

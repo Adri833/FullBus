@@ -76,13 +76,6 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        Text(
-            text = "Iniciar Sesión",
-            fontSize = 28.sp,
-            color = Color.Black,
-            modifier = Modifier.padding(bottom = 32.dp)
-        )
-
         // Campo de texto para el email
         TextField(
             value = email.value,
@@ -125,6 +118,7 @@ fun LoginScreen(
                 }
             }
         )
+
         Spacer(modifier =  Modifier.height(23.dp))
 
         // Mostrar mensaje de error en un recuadro rojo si hay algún error

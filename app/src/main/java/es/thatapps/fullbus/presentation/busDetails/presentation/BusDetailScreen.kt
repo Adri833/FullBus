@@ -1,6 +1,7 @@
 package es.thatapps.fullbus.presentation.busDetails.presentation
 
 import android.annotation.SuppressLint
+import android.provider.Settings.Global
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -23,6 +24,7 @@ import es.thatapps.fullbus.presentation.components.DrawerMenu
 import es.thatapps.fullbus.presentation.components.Header
 import es.thatapps.fullbus.presentation.components.HorizontalPagerBuses
 import es.thatapps.fullbus.presentation.components.adjustForMobile
+import kotlinx.coroutines.launch
 
 @SuppressLint("DiscouragedApi")
 @Composable
@@ -32,7 +34,7 @@ fun BusDetailScreen(
     navigationToSettings: () -> Unit,
     navigationToHome: () -> Unit,
     navigationToProfile : () -> Unit,
-    viewModel: BusViewModel = hiltViewModel()
+    viewModel: BusViewModel = hiltViewModel(),
 ) {
     // Observar el estado de los buses activos
     val activeBuses by viewModel.activeBuses.collectAsState()
@@ -68,7 +70,7 @@ fun BusDetailScreen(
                 .adjustForMobile()
         ) {
             // Encabezado
-            Header(onMenuClick = { drawerMenu.openMenu(scope, drawerState) }, onProfileClick = {})
+            Header(onMenuClick = { scope.launch { drawerState.open() } })
 
             // Navegacion superior
             TabRow(

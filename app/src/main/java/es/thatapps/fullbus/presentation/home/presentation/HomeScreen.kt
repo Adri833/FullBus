@@ -23,6 +23,7 @@ import es.thatapps.fullbus.presentation.components.DrawerMenu
 import es.thatapps.fullbus.presentation.components.Header
 import es.thatapps.fullbus.presentation.components.adjustForMobile
 import es.thatapps.fullbus.presentation.home.domain.BusLineMockData
+import kotlinx.coroutines.launch
 
 @Composable
 fun HomeScreen(
@@ -54,7 +55,7 @@ fun HomeScreen(
                 .adjustForMobile()
         ) {
             // Header sin padding para que ocupe toda la pantalla horizontalmente
-            Header(onMenuClick = { drawerMenu.openMenu(scope, drawerState)}, onProfileClick = {})
+            Header(onMenuClick = { scope.launch { drawerState.open() } })
 
             Spacer(modifier = Modifier.height(15.dp))
 

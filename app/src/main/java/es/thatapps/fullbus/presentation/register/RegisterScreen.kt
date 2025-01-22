@@ -44,13 +44,14 @@ fun RegisterScreen(
     navigationToHome: () -> Unit,
 ) {
     // Estados para almacenar los valores de entrada
-    val username = remember { mutableStateOf("") }
     val email = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
     val registerState by viewModel.registerState.collectAsState()
 
     // Obtener el controlador del teclado
     val keyboardController = LocalSoftwareKeyboardController.current
+
+    val context = LocalContext.current
 
     Column(
         modifier = Modifier
@@ -74,14 +75,6 @@ fun RegisterScreen(
         Text(text = "Ingresa tus datos", fontSize = 28.sp, color = Color.Black)
 
         Spacer(modifier = Modifier.height(20.dp))
-
-        RegisterTextField(
-            value = username.value,
-            placeHolder = "Nombre de Usuario"
-        ) {
-            username.value = it // Actualiza el valor del nombre
-        }
-        Spacer(modifier = Modifier.height(15.dp))
 
         RegisterTextField(
             value = email.value,
@@ -124,7 +117,7 @@ fun RegisterScreen(
                 // Oculta el teclado
                 keyboardController?.hide()
 
-                viewModel.register(email.value, password.value, username.value) // Llama a la función de registro
+                viewModel.register(email.value, password.value, context) // Llama a la función de registro
             },
             shape = CircleShape,
             colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
@@ -137,7 +130,6 @@ fun RegisterScreen(
 
         Spacer(modifier = Modifier.height(10.dp))
 
-        val context = LocalContext.current
 
         // Muestra los estados al registrarse
         when (registerState) {
