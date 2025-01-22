@@ -55,12 +55,14 @@ class LoginViewModel @Inject constructor(
     // Funcion para reestablecer la contraseña
     fun resetPassword(email: String) {
         if (email.isEmpty()) {
-            _loginState.value = LoginState.Error(R.string.camp_required) // Mensaje de error si el campo está vacío
+            _loginState.value =
+                LoginState.Error(R.string.camp_required) // Mensaje de error si el campo está vacío
             return
         }
 
         if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            _loginState.value = LoginState.Error(R.string.invalid_email) // Mensaje de error si el email no es válido
+            _loginState.value =
+                LoginState.Error(R.string.invalid_email) // Mensaje de error si el email no es válido
             return
         }
 
@@ -69,9 +71,11 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 auth.sendPasswordResetEmail(email).await()
-                _loginState.value = LoginState.PasswordResetSuccess // Estado personalizado para indicar que se ha enviado el correo de restablecimiento
+                _loginState.value =
+                    LoginState.PasswordResetSuccess // Estado personalizado para indicar que se ha enviado el correo de restablecimiento
             } catch (e: Exception) {
-                _loginState.value = LoginState.Error(R.string.error_reset_password) // Mensaje de error si no se puede enviar el correo
+                _loginState.value =
+                    LoginState.Error(R.string.error_reset_password) // Mensaje de error si no se puede enviar el correo
             }
         }
     }

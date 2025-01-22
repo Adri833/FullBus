@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">FullBus</string>
+    <!-- Google id-->
+    <string name="google_id">849555118843-m3fh3d2ul50trvtdsnakd5bkqgi4sfjb.apps.googleusercontent.com</string>
 
     <!-- Errores -->
     <string name="camp_required">Por favor, rellena todos los campos</string>
@@ -16,4 +18,8 @@
     <string name="error_reset_password">Error al restablecer la contraseña</string>
 
     <string name="email_send">Se ha enviado un mensaje a tu email</string>
+
+    <!-- Pantalla de Login -->
+    <string name="google">Continuar con Google</string>
+    <string name="email_login">Correo/Contraseña</string>
 </resources>

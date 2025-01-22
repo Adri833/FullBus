@@ -80,16 +80,17 @@ dependencies {
     kapt(libs.hilt.android.compiler)
 
     // Google Firebase
-    implementation(platform("com.google.firebase:firebase-bom:33.6.0"))
+    implementation(libs.firebase.bom.v3380)
     implementation(libs.firebase.auth) // Authenticator
+    implementation (libs.play.services.auth)
     implementation(libs.firebase.firestore) // Firestore db
     implementation(libs.play.services.ads) // AdMob
-    implementation ("com.google.android.gms:play-services-base:18.5.0")
+    implementation (libs.play.services.base)
     // DataStore
     implementation(libs.androidx.datastore.preferences)
 
     // HorizontalPager
-    implementation ("com.google.accompanist:accompanist-pager:0.28.0")
+    implementation (libs.accompanist.pager)
 
 }
 

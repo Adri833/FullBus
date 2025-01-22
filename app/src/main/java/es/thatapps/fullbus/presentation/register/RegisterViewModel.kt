@@ -1,10 +1,7 @@
 package es.thatapps.fullbus.presentation.register
 
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.net.Uri
-import android.util.Base64
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
@@ -16,7 +13,6 @@ import es.thatapps.fullbus.utils.encodeImageToBase64
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import java.io.ByteArrayOutputStream
 import javax.inject.Inject
 
 @HiltViewModel
