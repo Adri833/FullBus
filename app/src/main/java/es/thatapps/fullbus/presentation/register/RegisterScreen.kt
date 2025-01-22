@@ -44,7 +44,6 @@ fun RegisterScreen(
     navigationToHome: () -> Unit,
 ) {
     // Estados para almacenar los valores de entrada
-    val username = remember { mutableStateOf("") }
     val email = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
     val registerState by viewModel.registerState.collectAsState()
@@ -76,14 +75,6 @@ fun RegisterScreen(
         Text(text = "Ingresa tus datos", fontSize = 28.sp, color = Color.Black)
 
         Spacer(modifier = Modifier.height(20.dp))
-
-        RegisterTextField(
-            value = username.value,
-            placeHolder = "Nombre de Usuario"
-        ) {
-            username.value = it // Actualiza el valor del nombre
-        }
-        Spacer(modifier = Modifier.height(15.dp))
 
         RegisterTextField(
             value = email.value,
