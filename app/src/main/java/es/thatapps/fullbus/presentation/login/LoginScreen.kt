@@ -1,6 +1,12 @@
 package es.thatapps.fullbus.presentation.login
 
+import android.content.Context
+import android.util.Log
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.IntentSenderRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -39,7 +45,11 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.google.android.gms.auth.api.identity.BeginSignInRequest
+import com.google.android.gms.auth.api.identity.Identity
 import es.thatapps.fullbus.R
+import es.thatapps.fullbus.constants.FullBusConstants
+import es.thatapps.fullbus.presentation.components.GoogleSignInButton
 
 
 @Composable
@@ -56,6 +66,15 @@ fun LoginScreen(
 
     // Obtener el controlador del teclado
     val keyboardController = LocalSoftwareKeyboardController.current
+    val context = LocalContext.current
+    val oneTapClient = remember { Identity.getSignInClient(context) }
+
+    // Interfaz de google
+    val googleLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartIntentSenderForResult()
+    ) { result ->
+        viewModel.googleSignInObserver(result, oneTapClient)
+    }
 
     Column(
         modifier = Modifier
@@ -112,14 +131,18 @@ fun LoginScreen(
                     onClick = { passwordVisible.value = !passwordVisible.value },
                     modifier = Modifier.padding(end = 8.dp)
                 ) {
-                    val iconResID = if (passwordVisible.value) R.drawable.ojo_abierto else R.drawable.ojo_cerrao
+                    val iconResID =
+                        if (passwordVisible.value) R.drawable.ojo_abierto else R.drawable.ojo_cerrao
                     Image( // Propiedades de la foto
-                        painter = painterResource(id = iconResID), contentDescription = null, modifier = Modifier.size(25.dp))
+                        painter = painterResource(id = iconResID),
+                        contentDescription = null,
+                        modifier = Modifier.size(25.dp)
+                    )
                 }
             }
         )
 
-        Spacer(modifier =  Modifier.height(23.dp))
+        Spacer(modifier = Modifier.height(23.dp))
 
         // Mostrar mensaje de error en un recuadro rojo si hay algún error
         if (loginState is LoginState.Error) {
@@ -127,8 +150,15 @@ fun LoginScreen(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .border(1.dp, Color.Red, shape = RoundedCornerShape(4.dp)) // Borde de color rojo
-                    .background(Color(0xFFFFD2D7), shape = RoundedCornerShape(4.dp)) // Color rojo más claro
+                    .border(
+                        1.dp,
+                        Color.Red,
+                        shape = RoundedCornerShape(4.dp)
+                    ) // Borde de color rojo
+                    .background(
+                        Color(0xFFFFD2D7),
+                        shape = RoundedCornerShape(4.dp)
+                    ) // Color rojo más claro
                     .padding(8.dp),
                 contentAlignment = Alignment.Center // Centrar el texto
             ) {
@@ -167,9 +197,11 @@ fun LoginScreen(
             is LoginState.Loading -> CircularProgressIndicator() // Circulo mientras carga
             is LoginState.Success -> {
                 viewModel.resetLoginState() // Reestablece el estado para evitar un bucle
-                Toast.makeText(context, "Bienvenido", Toast.LENGTH_SHORT).show() // Notificacion de exito
+                Toast.makeText(context, "Bienvenido", Toast.LENGTH_SHORT)
+                    .show() // Notificacion de exito
                 navigationToHome()
             }
+
             else -> {}
         }
 
@@ -189,13 +221,27 @@ fun LoginScreen(
         }
         Spacer(modifier = Modifier.height(16.dp))
 
+        GoogleSignInButton() {
+            launchGoogleSignIn(
+            context = context,
+            viewModel = viewModel,
+            launcher = googleLauncher
+        )}
+
         // Recuadro verde para mostrar si el correo de recuperacion ha sido enviado
         if (loginState is LoginState.PasswordResetSuccess) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .border(1.dp, Color.Green, shape = RoundedCornerShape(4.dp)) // Borde de color rojo
-                    .background(Color(0xFFD0E8D0), shape = RoundedCornerShape(4.dp)) // Color rojo más claro
+                    .border(
+                        1.dp,
+                        Color.Green,
+                        shape = RoundedCornerShape(4.dp)
+                    ) // Borde de color rojo
+                    .background(
+                        Color(0xFFD0E8D0),
+                        shape = RoundedCornerShape(4.dp)
+                    ) // Color rojo más claro
                     .padding(8.dp),
                 contentAlignment = Alignment.Center // Centrar el texto
             ) {
@@ -207,4 +253,33 @@ fun LoginScreen(
             }
         }
     }
+}
+
+private fun launchGoogleSignIn(
+    context: Context,
+    viewModel: LoginViewModel,
+    launcher: ActivityResultLauncher<IntentSenderRequest>,
+) {
+//    viewModel.setLoadingState()
+    val oneTapClient = Identity.getSignInClient(context)
+    val signInRequest = BeginSignInRequest.builder()
+        .setGoogleIdTokenRequestOptions(
+            BeginSignInRequest.GoogleIdTokenRequestOptions.builder()
+                .setSupported(true)
+                .setServerClientId("849555118843-m3fh3d2ul50trvtdsnakd5bkqgi4sfjb.apps.googleusercontent.com")
+                .setFilterByAuthorizedAccounts(false)
+                .build()
+        ).build()
+
+    oneTapClient.beginSignIn(signInRequest)
+        .addOnSuccessListener { result ->
+//            viewModel.resetAuthStateFlow()
+            launcher.launch(IntentSenderRequest.Builder(result.pendingIntent.intentSender).build())
+        }
+
+        .addOnFailureListener { e ->
+            Toast.makeText(context, "Error al iniciar sesion", Toast.LENGTH_SHORT).show()
+            Log.e( "ERROR", e.message.toString() + " " + e.localizedMessage)
+//            viewModel.resetAuthStateFlow()
+        }
 }

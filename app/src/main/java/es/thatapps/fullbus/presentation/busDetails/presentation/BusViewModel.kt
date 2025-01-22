@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import es.thatapps.fullbus.data.local.busSchedule.BusScheduleRepository
-import es.thatapps.fullbus.data.remote.BusRepository
+import es.thatapps.fullbus.data.repository.BusRepository
 import es.thatapps.fullbus.presentation.busDetails.domain.BusDetailDomain
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

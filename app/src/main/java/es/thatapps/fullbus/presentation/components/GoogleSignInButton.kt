@@ -19,8 +19,8 @@ import es.thatapps.fullbus.R
 
 @Composable
 fun GoogleSignInButton(
+    modifier: Modifier = Modifier,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
 ) {
     Button(
         onClick = onClick,

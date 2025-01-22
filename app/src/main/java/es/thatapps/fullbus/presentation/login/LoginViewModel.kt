@@ -1,12 +1,18 @@
 package es.thatapps.fullbus.presentation.login
 
+import androidx.activity.result.ActivityResult
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
+import com.google.firebase.auth.GoogleAuthProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import es.thatapps.fullbus.R
+import es.thatapps.fullbus.data.repository.AuthRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -16,10 +22,12 @@ import javax.inject.Inject
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val auth: FirebaseAuth, // Inyección de Firebase Authenticator
-) : ViewModel() {
+    private val authRepository: AuthRepository,
+    ) : ViewModel() {
 
     private val _loginState = MutableStateFlow<LoginState>(LoginState.Idle)
     val loginState: StateFlow<LoginState> = _loginState
+
 
     // Funcion para iniciar sesion
     fun login(email: String, password: String) {
@@ -83,6 +91,25 @@ class LoginViewModel @Inject constructor(
     // Funcion para resetear el estado del login
     fun resetLoginState() {
         _loginState.value = LoginState.Idle
+    }
+
+    fun googleSignInObserver(result: ActivityResult, oneTapClient: SignInClient) {
+        viewModelScope.launch(Dispatchers.IO) {
+            googleSignIn(result, oneTapClient)
+        }
+    }
+
+    private suspend fun googleSignIn(result: ActivityResult, oneTapClient: SignInClient) {
+        try {
+                val credential = oneTapClient.getSignInCredentialFromIntent(result.data)
+                credential.googleIdToken?.let { googleIdTokenNotNull ->
+                    val firebaseCredential = GoogleAuthProvider.getCredential(googleIdTokenNotNull, null)
+                    authRepository.signInWithGoogle(firebaseCredential)
+                } ?: (Exception("No se obtuvo el token de ID de Google"))
+
+        } catch (e: Exception) {
+            //TODO manejar error
+        }
     }
 }
 

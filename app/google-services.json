@@ -43,6 +43,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "849555118843-q55v09m3921eg65afdshjn93pqrit2v6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "es.thatapps.fullbus",
+            "certificate_hash": "d6175654944d1a8959d30d61758f505864fb1618"
+          }
+        },
+        {
           "client_id": "849555118843-m3fh3d2ul50trvtdsnakd5bkqgi4sfjb.apps.googleusercontent.com",
           "client_type": 3
         }

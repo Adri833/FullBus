@@ -1,4 +1,4 @@
-package es.thatapps.fullbus.data.remote
+package es.thatapps.fullbus.data.repository
 
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
