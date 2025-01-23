@@ -38,7 +38,7 @@ class RegisterViewModel @Inject constructor(
             val result = authRepository.register(email, password)
             if (result.isSuccess) {
                 // Guardar el nombre de usuario en Firestore
-                val username = generateRandomUsername() // Genera un nombre aleatorio
+                val username = authRepository.generateRandomUsername() // Genera un nombre aleatorio
                 saveUserToFirestore(email, username, context)
                 _registerState.value = RegisterState.Success
             } else {
@@ -63,17 +63,6 @@ class RegisterViewModel @Inject constructor(
         }
     }
 
-    // Funcion para generar un nombre aleatorio para el usuario
-    private fun generateRandomUsername(): String {
-        val randomNumber = (1..9999).random()
-        return "User$randomNumber"
-    }
-
-    private fun getDefaultPFP(context: Context): String {
-        val uri = Uri.parse("android.resource://${context.packageName}/${R.drawable.default_pfp}")
-        return encodeImageToBase64(context, uri) ?: ""
-    }
-
     // Funcion para resetear el estado del registro
     fun resetRegisterState() {
         _registerState.value = RegisterState.Idle
@@ -83,7 +72,7 @@ class RegisterViewModel @Inject constructor(
     private fun saveUserToFirestore(email: String, username: String, context: Context) {
 
         // Foto de perfil predeterminada
-        val defaultPFP = getDefaultPFP(context)
+        val defaultPFP = authRepository.getDefaultPFP(context)
 
         val userData = hashMapOf(
             "username" to username,

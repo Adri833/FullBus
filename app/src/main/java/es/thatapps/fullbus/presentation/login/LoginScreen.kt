@@ -50,6 +50,7 @@ import com.google.android.gms.auth.api.identity.Identity
 import es.thatapps.fullbus.R
 import es.thatapps.fullbus.constants.FullBusConstants
 import es.thatapps.fullbus.presentation.components.GoogleSignInButton
+import es.thatapps.fullbus.utils.AsyncResult
 
 
 @Composable
@@ -62,7 +63,7 @@ fun LoginScreen(
     val email = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
     val passwordVisible = remember { mutableStateOf(false) }
-    val loginState by viewModel.loginState.collectAsState()
+    val AsyncResult by viewModel.authState.collectAsState()
 
     // Obtener el controlador del teclado
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -145,8 +146,8 @@ fun LoginScreen(
         Spacer(modifier = Modifier.height(23.dp))
 
         // Mostrar mensaje de error en un recuadro rojo si hay algún error
-        if (loginState is LoginState.Error) {
-            val errorState = loginState as LoginState.Error
+        if (AsyncResult is AsyncResult.Error) {
+            val errorState = AsyncResult as AsyncResult.Error
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -163,7 +164,7 @@ fun LoginScreen(
                 contentAlignment = Alignment.Center // Centrar el texto
             ) {
                 Text(
-                    text = stringResource(id = errorState.messageResID),
+                    text = stringResource(R.string.invalid_email),
                     color = Color.Red,
                     fontSize = 15.sp
                 )
@@ -193,10 +194,10 @@ fun LoginScreen(
         val context = LocalContext.current
 
         // Muestra los estados al registrarse
-        when (loginState) {
-            is LoginState.Loading -> CircularProgressIndicator() // Circulo mientras carga
-            is LoginState.Success -> {
-                viewModel.resetLoginState() // Reestablece el estado para evitar un bucle
+        when (AsyncResult) {
+            is AsyncResult.Loading -> CircularProgressIndicator() // Circulo mientras carga
+            is AsyncResult.Success -> {
+                viewModel.resetAsyncResult() // Reestablece el estado para evitar un bucle
                 Toast.makeText(context, "Bienvenido", Toast.LENGTH_SHORT)
                     .show() // Notificacion de exito
                 navigationToHome()
@@ -229,7 +230,7 @@ fun LoginScreen(
         )}
 
         // Recuadro verde para mostrar si el correo de recuperacion ha sido enviado
-        if (loginState is LoginState.PasswordResetSuccess) {
+        if (AsyncResult is AsyncResult.Success) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -266,7 +267,7 @@ private fun launchGoogleSignIn(
         .setGoogleIdTokenRequestOptions(
             BeginSignInRequest.GoogleIdTokenRequestOptions.builder()
                 .setSupported(true)
-                .setServerClientId("849555118843-m3fh3d2ul50trvtdsnakd5bkqgi4sfjb.apps.googleusercontent.com")
+                .setServerClientId(FullBusConstants.GOOGLE_ID)
                 .setFilterByAuthorizedAccounts(false)
                 .build()
         ).build()

@@ -3,7 +3,6 @@ package es.thatapps.fullbus.presentation.login
 import androidx.activity.result.ActivityResult
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
@@ -12,6 +11,7 @@ import com.google.firebase.auth.GoogleAuthProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import es.thatapps.fullbus.R
 import es.thatapps.fullbus.data.repository.AuthRepository
+import es.thatapps.fullbus.utils.AsyncResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -23,31 +23,31 @@ import javax.inject.Inject
 class LoginViewModel @Inject constructor(
     private val auth: FirebaseAuth, // Inyección de Firebase Authenticator
     private val authRepository: AuthRepository,
-    ) : ViewModel() {
+) : ViewModel() {
 
-    private val _loginState = MutableStateFlow<LoginState>(LoginState.Idle)
-    val loginState: StateFlow<LoginState> = _loginState
+    private val _authState = MutableStateFlow<AsyncResult<Unit>>(AsyncResult.Idle)
+    val authState: StateFlow<AsyncResult<Unit>> = _authState
 
 
     // Funcion para iniciar sesion
     fun login(email: String, password: String) {
         // Excepciones iniciales
         if (email.isEmpty() || password.isEmpty()) {
-            _loginState.value = LoginState.Error(R.string.camp_required)
+            _authState.value = AsyncResult.Error(R.string.camp_required)
             return
         }
 
         if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            _loginState.value = LoginState.Error(R.string.invalid_email)
+            _authState.value = AsyncResult.Error(R.string.invalid_email)
             return
         }
 
-        _loginState.value = LoginState.Loading
+        _authState.value = AsyncResult.Loading
 
         viewModelScope.launch {
             try {
                 auth.signInWithEmailAndPassword(email, password).await() // Iniciar Sesion
-                _loginState.value = LoginState.Success
+                _authState.value = AsyncResult.Success(Unit)
             } catch (e: Exception) {
                 // Manejo de excepciones personalizados
                 val errorMessageID = when (e) {
@@ -55,7 +55,7 @@ class LoginViewModel @Inject constructor(
                     is FirebaseAuthInvalidCredentialsException -> R.string.invalid_credentials // Contraseña incorrecta
                     else -> R.string.error_login // Error generico
                 }
-                _loginState.value = LoginState.Error(errorMessageID)
+                _authState.value = AsyncResult.Error(errorMessageID)
             }
         }
     }
@@ -63,37 +63,38 @@ class LoginViewModel @Inject constructor(
     // Funcion para reestablecer la contraseña
     fun resetPassword(email: String) {
         if (email.isEmpty()) {
-            _loginState.value =
-                LoginState.Error(R.string.camp_required) // Mensaje de error si el campo está vacío
+            _authState.value =
+                AsyncResult.Error(R.string.camp_required) // Mensaje de error si el campo está vacío
             return
         }
 
         if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            _loginState.value =
-                LoginState.Error(R.string.invalid_email) // Mensaje de error si el email no es válido
+            _authState.value =
+                AsyncResult.Error(R.string.invalid_email) // Mensaje de error si el email no es válido
             return
         }
 
-        _loginState.value = LoginState.Loading
+        _authState.value = AsyncResult.Loading
 
         viewModelScope.launch {
             try {
                 auth.sendPasswordResetEmail(email).await()
-                _loginState.value =
-                    LoginState.PasswordResetSuccess // Estado personalizado para indicar que se ha enviado el correo de restablecimiento
+                _authState.value =
+                    AsyncResult.Success(Unit) // Estado personalizado para indicar que se ha enviado el correo de restablecimiento
             } catch (e: Exception) {
-                _loginState.value =
-                    LoginState.Error(R.string.error_reset_password) // Mensaje de error si no se puede enviar el correo
+                _authState.value =
+                    AsyncResult.Error(R.string.error_reset_password) // Mensaje de error si no se puede enviar el correo
             }
         }
     }
 
     // Funcion para resetear el estado del login
-    fun resetLoginState() {
-        _loginState.value = LoginState.Idle
+    fun resetAsyncResult() {
+        _authState.value = AsyncResult.Idle
     }
 
     fun googleSignInObserver(result: ActivityResult, oneTapClient: SignInClient) {
+        _authState.value = AsyncResult.Loading
         viewModelScope.launch(Dispatchers.IO) {
             googleSignIn(result, oneTapClient)
         }
@@ -101,22 +102,15 @@ class LoginViewModel @Inject constructor(
 
     private suspend fun googleSignIn(result: ActivityResult, oneTapClient: SignInClient) {
         try {
-                val credential = oneTapClient.getSignInCredentialFromIntent(result.data)
-                credential.googleIdToken?.let { googleIdTokenNotNull ->
-                    val firebaseCredential = GoogleAuthProvider.getCredential(googleIdTokenNotNull, null)
-                    authRepository.signInWithGoogle(firebaseCredential)
-                } ?: (Exception("No se obtuvo el token de ID de Google"))
+            val credential = oneTapClient.getSignInCredentialFromIntent(result.data)
+            credential.googleIdToken?.let { googleIdTokenNotNull ->
+                val firebaseCredential = GoogleAuthProvider.getCredential(googleIdTokenNotNull, null)
+                authRepository.signInWithGoogle(firebaseCredential)
+                _authState.value = AsyncResult.Success(Unit)
+            } ?: (Exception("No se obtuvo el token de ID de Google"))
 
         } catch (e: Exception) {
-            //TODO manejar error
+            _authState.value = AsyncResult.Error("Error al iniciar sesion con Google")
         }
     }
-}
-
-sealed class LoginState {
-    data object Idle : LoginState()
-    data object Loading : LoginState()
-    data object Success : LoginState()
-    data object PasswordResetSuccess : LoginState() // Metodo para indicar que el correo de restablecimiento se ha enviado
-    data class Error(val messageResID: Int) : LoginState()
 }
