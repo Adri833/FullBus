@@ -46,7 +46,7 @@ class RegisterViewModel @Inject constructor(
                 val exception = result.exceptionOrNull()
                 val errorResId = when (exception) {
                     is FirebaseAuthUserCollisionException -> R.string.email_in_use // Error de correo ya registrado
-                    else -> R.string.error_unknown // Otros errores desconocidos
+                    else -> R.string.unknown_error // Otros errores desconocidos
                 }
                 _registerState.value = RegisterState.Error(errorResId)
             }

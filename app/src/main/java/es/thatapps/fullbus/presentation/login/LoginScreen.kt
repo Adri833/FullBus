@@ -40,8 +40,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -50,8 +54,9 @@ import com.google.android.gms.auth.api.identity.Identity
 import es.thatapps.fullbus.R
 import es.thatapps.fullbus.constants.FullBusConstants
 import es.thatapps.fullbus.presentation.components.GoogleSignInButton
+import es.thatapps.fullbus.presentation.components.adjustForMobile
 import es.thatapps.fullbus.utils.AsyncResult
-
+import es.thatapps.fullbus.utils.isError
 
 @Composable
 fun LoginScreen(
@@ -77,181 +82,202 @@ fun LoginScreen(
         viewModel.googleSignInObserver(result, oneTapClient)
     }
 
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
-            .padding(20.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .padding(20.dp)
     ) {
-        Spacer(modifier = Modifier.height(25.dp))
-
-        Image(
-            painter = painterResource(id = R.drawable.logo_fullbus),
-            contentDescription = "Logo de la aplicacion",
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .height(200.dp)
-        )
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        // Campo de texto para el email
-        TextField(
-            value = email.value,
-            onValueChange = { email.value = it },
-            label = { Text("Correo electrónico") },
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true,
-
-            colors = TextFieldDefaults.colors(
-                focusedTextColor = Color.Black,
-                unfocusedTextColor = Color.Black
+                .adjustForMobile()
+                .fillMaxSize()
+                .padding(top = 56.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.logo_fullbus),
+                contentDescription = "Logo de la aplicacion",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp)
             )
-        )
-        Spacer(modifier = Modifier.height(11.dp))
 
-        // Campo de texto para la contraseña
-        TextField(
-            value = password.value,
-            onValueChange = { password.value = it },
-            label = { Text("Contraseña") },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 16.dp),
-            singleLine = true,
-            colors = TextFieldDefaults.colors(
-                focusedTextColor = Color.Black,
-                unfocusedTextColor = Color.Black
-            ),
+            Spacer(modifier = Modifier.height(48.dp))
 
-            // Icono para ver o dejar de ver la contraseña
-            visualTransformation = if (passwordVisible.value) VisualTransformation.None else PasswordVisualTransformation(),
-            trailingIcon = {
-                IconButton(
-                    onClick = { passwordVisible.value = !passwordVisible.value },
-                    modifier = Modifier.padding(end = 8.dp)
+            // Campo de texto para el email
+            TextField(
+                value = email.value,
+                onValueChange = { email.value = it },
+                label = { Text("Correo electrónico") },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+
+                colors = TextFieldDefaults.colors(
+                    focusedTextColor = Color.Black,
+                    unfocusedTextColor = Color.Black
+                )
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Campo de texto para la contraseña
+            TextField(
+                value = password.value,
+                onValueChange = { password.value = it },
+                label = { Text("Contraseña") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp),
+                singleLine = true,
+                colors = TextFieldDefaults.colors(
+                    focusedTextColor = Color.Black,
+                    unfocusedTextColor = Color.Black
+                ),
+
+                // Icono para ver o dejar de ver la contraseña
+                visualTransformation = if (passwordVisible.value) VisualTransformation.None else PasswordVisualTransformation(),
+                trailingIcon = {
+                    IconButton(
+                        onClick = { passwordVisible.value = !passwordVisible.value },
+                        modifier = Modifier.padding(end = 8.dp)
+                    ) {
+                        val iconResID =
+                            if (passwordVisible.value) R.drawable.ojo_abierto else R.drawable.ojo_cerrao
+                        Image( // Propiedades de la foto
+                            painter = painterResource(id = iconResID),
+                            contentDescription = null,
+                            modifier = Modifier.size(25.dp)
+                        )
+                    }
+                }
+            )
+
+            TextButton(
+                onClick = { viewModel.resetPassword(email.value) }, // Llama a la función de restablecimiento de contraseña
+                modifier = Modifier
+                    .align(Alignment.End)
+            ) {
+                Text("¿Olvidaste tu contraseña?", fontSize = 13.sp)
+            }
+
+            // Mostrar mensaje de error en un recuadro rojo si hay algún error
+            if (AsyncResult is AsyncResult.Error) {
+                val errorMessage = when (val msg = (AsyncResult as AsyncResult.Error).message) {
+                    is Int -> context.getString(msg) // Es un recurso de R.string
+                    is String -> msg // Es un mensaje directo
+                    else -> "Error desconocido" // Fallback en caso de un valor inesperado
+                }
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .border(
+                            1.dp,
+                            Color.Red,
+                            shape = RoundedCornerShape(4.dp)
+                        ) // Borde de color rojo
+                        .background(
+                            Color(0xFFFFD2D7),
+                            shape = RoundedCornerShape(4.dp)
+                        ) // Color rojo más claro
+                        .padding(8.dp),
+                    contentAlignment = Alignment.Center // Centrar el texto
                 ) {
-                    val iconResID =
-                        if (passwordVisible.value) R.drawable.ojo_abierto else R.drawable.ojo_cerrao
-                    Image( // Propiedades de la foto
-                        painter = painterResource(id = iconResID),
-                        contentDescription = null,
-                        modifier = Modifier.size(25.dp)
+                    Text(
+                        text = errorMessage,
+                        color = Color.Red,
+                        fontSize = 15.sp
                     )
                 }
             }
-        )
 
-        Spacer(modifier = Modifier.height(23.dp))
+            Spacer(modifier = Modifier.height(20.dp))
 
-        // Mostrar mensaje de error en un recuadro rojo si hay algún error
-        if (AsyncResult is AsyncResult.Error) {
-            val errorState = AsyncResult as AsyncResult.Error
-            Box(
+            // Botón de inicio de sesión
+            Button(
+                onClick = {
+                    // Oculta el teclado
+                    keyboardController?.hide()
+                    viewModel.login(email.value, password.value) // Llama a la función de login
+                },
+                shape = CircleShape,
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .border(
-                        1.dp,
-                        Color.Red,
-                        shape = RoundedCornerShape(4.dp)
-                    ) // Borde de color rojo
-                    .background(
-                        Color(0xFFFFD2D7),
-                        shape = RoundedCornerShape(4.dp)
-                    ) // Color rojo más claro
-                    .padding(8.dp),
-                contentAlignment = Alignment.Center // Centrar el texto
+                    .height(50.dp)
             ) {
-                Text(
-                    text = stringResource(R.string.invalid_email),
-                    color = Color.Red,
-                    fontSize = 15.sp
+                Text(text = "Iniciar Sesión", fontSize = 17.sp, color = Color.White)
+            }
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            val context = LocalContext.current
+
+            // TODO: pantalla de login aparte
+            // Muestra los estados al registrarse
+            when (AsyncResult) {
+                is AsyncResult.Loading -> CircularProgressIndicator() // Circulo mientras carga
+                is AsyncResult.Success -> {
+                    viewModel.resetAsyncResult() // Reestablece el estado para evitar un bucle
+                    Toast.makeText(context, "Bienvenido", Toast.LENGTH_SHORT)
+                        .show() // Notificacion de exito
+                    navigationToHome()
+                }
+
+                else -> {}
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Botón de inicio de sesión con Google
+            GoogleSignInButton {
+                launchGoogleSignIn(
+                    context = context,
+                    viewModel = viewModel,
+                    launcher = googleLauncher
                 )
             }
-            Spacer(modifier = Modifier.height(16.dp))
-        }
 
-        // Botón de inicio de sesión
-        Button(
-            onClick = {
-                // Oculta el teclado
-                keyboardController?.hide()
-
-                viewModel.login(email.value, password.value) // Llama a la función de login
-            },
-            shape = CircleShape,
-            colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp)
-        ) {
-            Text(text = "Iniciar Sesión", fontSize = 17.sp, color = Color.White)
-        }
-
-        Spacer(modifier = Modifier.height(10.dp))
-
-        val context = LocalContext.current
-
-        // Muestra los estados al registrarse
-        when (AsyncResult) {
-            is AsyncResult.Loading -> CircularProgressIndicator() // Circulo mientras carga
-            is AsyncResult.Success -> {
-                viewModel.resetAsyncResult() // Reestablece el estado para evitar un bucle
-                Toast.makeText(context, "Bienvenido", Toast.LENGTH_SHORT)
-                    .show() // Notificacion de exito
-                navigationToHome()
+            // Recuadro verde para mostrar si el correo de recuperacion ha sido enviado
+            if (AsyncResult is AsyncResult.Success) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .border(
+                            1.dp,
+                            Color.Green,
+                            shape = RoundedCornerShape(4.dp)
+                        ) // Borde de color rojo
+                        .background(
+                            Color(0xFFD0E8D0),
+                            shape = RoundedCornerShape(4.dp)
+                        ) // Color rojo más claro
+                        .padding(8.dp),
+                    contentAlignment = Alignment.Center // Centrar el texto
+                ) {
+                    Text(
+                        text = stringResource(R.string.email_send),
+                        color = Color(0xFF004D00),
+                        fontSize = 15.sp
+                    )
+                }
             }
-
-            else -> {}
         }
 
         // Enlace a la pantalla de registro
         TextButton(
             onClick = { navigationToRegister() },
-            modifier = Modifier.padding(top = 16.dp)
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
         ) {
-            Text("¿No tienes cuenta? Regístrate")
-        }
-
-        TextButton(
-            onClick = { viewModel.resetPassword(email.value) }, // Llama a la función de restablecimiento de contraseña
-            modifier = Modifier.padding(top = 16.dp)
-        ) {
-            Text("¿Olvidaste tu contraseña?")
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-
-        GoogleSignInButton() {
-            launchGoogleSignIn(
-            context = context,
-            viewModel = viewModel,
-            launcher = googleLauncher
-        )}
-
-        // Recuadro verde para mostrar si el correo de recuperacion ha sido enviado
-        if (AsyncResult is AsyncResult.Success) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .border(
-                        1.dp,
-                        Color.Green,
-                        shape = RoundedCornerShape(4.dp)
-                    ) // Borde de color rojo
-                    .background(
-                        Color(0xFFD0E8D0),
-                        shape = RoundedCornerShape(4.dp)
-                    ) // Color rojo más claro
-                    .padding(8.dp),
-                contentAlignment = Alignment.Center // Centrar el texto
-            ) {
-                Text(
-                    text = stringResource(R.string.email_send),
-                    color = Color(0xFF004D00),
-                    fontSize = 15.sp
-                )
-            }
+            Text(
+                buildAnnotatedString {
+                    append("¿No tienes cuenta? ")
+                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                        append("Regístrate")
+                    }
+                }
+            )
         }
     }
 }
@@ -261,7 +287,6 @@ private fun launchGoogleSignIn(
     viewModel: LoginViewModel,
     launcher: ActivityResultLauncher<IntentSenderRequest>,
 ) {
-//    viewModel.setLoadingState()
     val oneTapClient = Identity.getSignInClient(context)
     val signInRequest = BeginSignInRequest.builder()
         .setGoogleIdTokenRequestOptions(
@@ -280,7 +305,7 @@ private fun launchGoogleSignIn(
 
         .addOnFailureListener { e ->
             Toast.makeText(context, "Error al iniciar sesion", Toast.LENGTH_SHORT).show()
-            Log.e( "ERROR", e.message.toString() + " " + e.localizedMessage)
+            Log.e("ERROR", e.message.toString() + " " + e.localizedMessage)
 //            viewModel.resetAuthStateFlow()
         }
 }

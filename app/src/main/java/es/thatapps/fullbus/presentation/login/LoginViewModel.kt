@@ -31,60 +31,55 @@ class LoginViewModel @Inject constructor(
 
     // Funcion para iniciar sesion
     fun login(email: String, password: String) {
-        // Excepciones iniciales
-        if (email.isEmpty() || password.isEmpty()) {
-            _authState.value = AsyncResult.Error(R.string.camp_required)
-            return
-        }
-
-        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            _authState.value = AsyncResult.Error(R.string.invalid_email)
-            return
-        }
+        if (!validateInputs(email, password)) return
 
         _authState.value = AsyncResult.Loading
 
         viewModelScope.launch {
             try {
-                auth.signInWithEmailAndPassword(email, password).await() // Iniciar Sesion
-                _authState.value = AsyncResult.Success(Unit)
-            } catch (e: Exception) {
-                // Manejo de excepciones personalizados
-                val errorMessageID = when (e) {
-                    is FirebaseAuthInvalidUserException -> R.string.user_not_found // Usuario no registrado
-                    is FirebaseAuthInvalidCredentialsException -> R.string.invalid_credentials // Contraseña incorrecta
-                    else -> R.string.error_login // Error generico
+                val result = authRepository.login(email, password)
+                if (result.isSuccess) {
+                    _authState.value = AsyncResult.Success(Unit)
+                } else {
+                    val errorMessageID = when (val exception = result.exceptionOrNull()) {
+                        is FirebaseAuthInvalidUserException -> R.string.user_not_found
+                        is FirebaseAuthInvalidCredentialsException -> R.string.invalid_credentials
+                        else -> R.string.error_login
+                    }
+                    _authState.value = AsyncResult.Error(errorMessageID)
                 }
-                _authState.value = AsyncResult.Error(errorMessageID)
+            } catch (e: Exception) {
+                _authState.value = AsyncResult.Error(R.string.error_login)
             }
         }
     }
 
     // Funcion para reestablecer la contraseña
     fun resetPassword(email: String) {
-        if (email.isEmpty()) {
-            _authState.value =
-                AsyncResult.Error(R.string.camp_required) // Mensaje de error si el campo está vacío
-            return
-        }
-
-        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            _authState.value =
-                AsyncResult.Error(R.string.invalid_email) // Mensaje de error si el email no es válido
-            return
-        }
-
-        _authState.value = AsyncResult.Loading
+        if (!validateInputs(email, "")) return
 
         viewModelScope.launch {
             try {
                 auth.sendPasswordResetEmail(email).await()
-                _authState.value =
-                    AsyncResult.Success(Unit) // Estado personalizado para indicar que se ha enviado el correo de restablecimiento
+                _authState.value = AsyncResult.Success(Unit)
             } catch (e: Exception) {
-                _authState.value =
-                    AsyncResult.Error(R.string.error_reset_password) // Mensaje de error si no se puede enviar el correo
+                _authState.value = AsyncResult.Error(R.string.error_reset_password)
             }
+        }
+    }
+
+    // Funcion para validar los campos de entrada
+    private fun validateInputs(email: String, password: String): Boolean {
+        val errorMessageId = when {
+            email.isEmpty() || password.isEmpty() -> R.string.camp_required
+            !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() -> R.string.invalid_email
+            else -> null
+        }
+        return if (errorMessageId != null) {
+            _authState.value = AsyncResult.Error(errorMessageId)
+            false
+        } else {
+            true
         }
     }
 
