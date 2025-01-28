@@ -29,6 +29,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -56,7 +57,6 @@ import es.thatapps.fullbus.constants.FullBusConstants
 import es.thatapps.fullbus.presentation.components.GoogleSignInButton
 import es.thatapps.fullbus.presentation.components.adjustForMobile
 import es.thatapps.fullbus.utils.AsyncResult
-import es.thatapps.fullbus.utils.isError
 
 @Composable
 fun LoginScreen(
@@ -80,6 +80,10 @@ fun LoginScreen(
         contract = ActivityResultContracts.StartIntentSenderForResult()
     ) { result ->
         viewModel.googleSignInObserver(result, oneTapClient)
+    }
+
+    LaunchedEffect(Unit) {
+        if (viewModel.isUserLoggedIn()) { navigationToHome() }
     }
 
     Box(
@@ -299,13 +303,13 @@ private fun launchGoogleSignIn(
 
     oneTapClient.beginSignIn(signInRequest)
         .addOnSuccessListener { result ->
-//            viewModel.resetAuthStateFlow()
+            viewModel.resetAsyncResult()
             launcher.launch(IntentSenderRequest.Builder(result.pendingIntent.intentSender).build())
         }
 
         .addOnFailureListener { e ->
             Toast.makeText(context, "Error al iniciar sesion", Toast.LENGTH_SHORT).show()
             Log.e("ERROR", e.message.toString() + " " + e.localizedMessage)
-//            viewModel.resetAuthStateFlow()
+            viewModel.resetAsyncResult()
         }
 }

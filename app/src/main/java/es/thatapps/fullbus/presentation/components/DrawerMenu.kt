@@ -20,27 +20,27 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import es.thatapps.fullbus.R
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 
 class DrawerMenu {
     @Composable
     fun Show(
         drawerState: DrawerState,
-        navigationToRegister: () -> Unit,
+        navigationToLogin: () -> Unit,
         navigationToSettings: () -> Unit,
         navigationToProfile: () -> Unit,
         navigationToHome: () -> Unit,
+        onLogout : () -> Unit,
         content: @Composable () -> Unit
     ) {
         ModalNavigationDrawer(
             drawerState = drawerState,
             drawerContent = {
                 DrawerContent(
-                    navigationToRegister = navigationToRegister,
+                    navigationToLogin = navigationToLogin,
                     navigationToSettings = navigationToSettings,
                     navigationToProfile = navigationToProfile,
-                    navigationToHome = navigationToHome
+                    navigationToHome = navigationToHome,
+                    onLogout = onLogout
                 )
             },
             content = content // Contenido principal de la pantalla
@@ -49,10 +49,11 @@ class DrawerMenu {
 
     @Composable
     private fun DrawerContent(
-        navigationToRegister: () -> Unit,
+        navigationToLogin: () -> Unit,
         navigationToSettings: () -> Unit,
         navigationToProfile: () -> Unit,
-        navigationToHome: () -> Unit
+        navigationToHome: () -> Unit,
+        onLogout : () -> Unit,
     ) {
         Column (
             modifier = Modifier
@@ -101,18 +102,15 @@ class DrawerMenu {
             MenuItem(
                 iconRes = R.drawable.ic_logout,
                 text = "Cerrar sesión",
-                onClick = navigationToRegister
+                onClick = {
+                    onLogout()
+                }
             )
         }
     }
 
-    fun openMenu(scope: CoroutineScope, drawerState: DrawerState) {
-        scope.launch { drawerState.open() }
-    }
-
     @Composable
     fun SuggestionMenuItem() {
-        // Estado para mostrar u ocultar el cuadro de diálogo
         val showDialog = remember { mutableStateOf(false) }
 
         // MenuItem que abre el cuadro de sugerencias

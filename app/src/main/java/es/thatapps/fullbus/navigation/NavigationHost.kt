@@ -53,8 +53,10 @@ fun NavigationHost(
                     // Navegar a BusDetailScreen con el busLine
                     navController.navigate("busLineDetail/$busLine")
                 },
-                navigationToRegister = {
-                    navController.navigate(Routes.Register.route)
+                navigationToLogin = {
+                    navController.navigate(Routes.Login.route) {
+                        popUpTo(Routes.Login.route) { inclusive = true }
+                    }
                 },
                 navigationToSettings = {
                     navController.navigate(Routes.Settings.route)
@@ -79,10 +81,14 @@ fun NavigationHost(
             if (busLine != null) {
                 BusDetailScreen(
                     busLine = busLine, // Pasar el busLine a la pantalla de detalles
-                    navigationToRegister = { navController.navigate(Routes.Register.route) },
+                    navigationToLogin = {
+                        navController.navigate(Routes.Login.route) {
+                            popUpTo(Routes.Login.route) { inclusive = true }
+                        }
+                    },
                     navigationToSettings = { navController.navigate(Routes.Settings.route) },
                     navigationToHome = { navController.navigate(Routes.Home.route) },
-                    navigationToProfile = { navController.navigate(Routes.Profile.route) }
+                    navigationToProfile = { navController.navigate(Routes.Profile.route) },
                 )
             }
         }
@@ -93,8 +99,10 @@ fun NavigationHost(
                 navigationToSettings = {
                     navController.navigate(Routes.Settings.route)
                 },
-                navigationToRegister = {
-                    navController.navigate(Routes.Register.route)
+                navigationToLogin = {
+                    navController.navigate(Routes.Login.route) {
+                        popUpTo(Routes.Login.route) { inclusive = true }
+                    }
                 },
                 navigationToProfile = {
                     navController.navigate(Routes.Profile.route)

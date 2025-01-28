@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import es.thatapps.fullbus.data.local.busSchedule.BusScheduleRepository
+import es.thatapps.fullbus.data.repository.AuthRepository
 import es.thatapps.fullbus.data.repository.BusRepository
 import es.thatapps.fullbus.presentation.busDetails.domain.BusDetailDomain
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,7 +16,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class BusViewModel @Inject constructor(
-    private val busRepository: BusRepository
+    private val busRepository: BusRepository,
+    private val authRepository: AuthRepository,
 ) : ViewModel() {
 
     // Configuración de la zona horaria y formato de hora
@@ -136,5 +138,9 @@ class BusViewModel @Inject constructor(
             // Llama a refreshActiveBuses para recargar los buses activos si es necesario
             refreshActiveBuses()
         }
+    }
+
+    fun logout() {
+        authRepository.logout()
     }
 }

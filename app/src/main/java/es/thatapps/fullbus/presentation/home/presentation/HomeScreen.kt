@@ -29,7 +29,7 @@ import kotlinx.coroutines.launch
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
     onBusLineClick: (String) -> Unit, // Función para manejar clics en líneas de autobús
-    navigationToRegister: () -> Unit,
+    navigationToLogin: () -> Unit,
     navigationToSettings: () -> Unit,
     navigationToProfile: () -> Unit,
     navigationToHome: () -> Unit
@@ -43,10 +43,14 @@ fun HomeScreen(
     // Estructura principal con el menú lateral y el header
     drawerMenu.Show(
         drawerState = drawerState,
-        navigationToRegister = navigationToRegister,
+        navigationToLogin = navigationToLogin,
         navigationToSettings = navigationToSettings,
         navigationToProfile = navigationToProfile,
-        navigationToHome = navigationToHome
+        navigationToHome = navigationToHome,
+        onLogout = {
+            viewModel.logout()
+            navigationToLogin()
+        },
     ) {
 
         Column(

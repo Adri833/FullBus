@@ -41,7 +41,7 @@ class LoginViewModel @Inject constructor(
                 if (result.isSuccess) {
                     _authState.value = AsyncResult.Success(Unit)
                 } else {
-                    val errorMessageID = when (val exception = result.exceptionOrNull()) {
+                    val errorMessageID = when (result.exceptionOrNull()) {
                         is FirebaseAuthInvalidUserException -> R.string.user_not_found
                         is FirebaseAuthInvalidCredentialsException -> R.string.invalid_credentials
                         else -> R.string.error_login
@@ -88,6 +88,10 @@ class LoginViewModel @Inject constructor(
         _authState.value = AsyncResult.Idle
     }
 
+    fun isUserLoggedIn(): Boolean {
+        return authRepository.isUserLoggedIn()
+    }
+
     fun googleSignInObserver(result: ActivityResult, oneTapClient: SignInClient) {
         _authState.value = AsyncResult.Loading
         viewModelScope.launch(Dispatchers.IO) {
@@ -102,7 +106,7 @@ class LoginViewModel @Inject constructor(
                 val firebaseCredential = GoogleAuthProvider.getCredential(googleIdTokenNotNull, null)
                 authRepository.signInWithGoogle(firebaseCredential)
                 _authState.value = AsyncResult.Success(Unit)
-            } ?: (Exception("No se obtuvo el token de ID de Google"))
+            } ?: throw Exception("Token de Google nulo")
 
         } catch (e: Exception) {
             _authState.value = AsyncResult.Error("Error al iniciar sesion con Google")

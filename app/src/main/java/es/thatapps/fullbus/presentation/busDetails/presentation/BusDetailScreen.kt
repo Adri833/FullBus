@@ -19,18 +19,21 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import es.thatapps.fullbus.R
+import es.thatapps.fullbus.data.repository.AuthRepository
 import es.thatapps.fullbus.presentation.components.AdBanner
 import es.thatapps.fullbus.presentation.components.DrawerMenu
 import es.thatapps.fullbus.presentation.components.Header
 import es.thatapps.fullbus.presentation.components.HorizontalPagerBuses
 import es.thatapps.fullbus.presentation.components.adjustForMobile
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
 @SuppressLint("DiscouragedApi")
 @Composable
 fun BusDetailScreen(
     busLine: String,
-    navigationToRegister: () -> Unit,
+    navigationToLogin: () -> Unit,
     navigationToSettings: () -> Unit,
     navigationToHome: () -> Unit,
     navigationToProfile : () -> Unit,
@@ -50,10 +53,14 @@ fun BusDetailScreen(
     // Estructura principal con el menú lateral y el header
     drawerMenu.Show(
         drawerState = drawerState,
-        navigationToRegister = navigationToRegister,
+        navigationToLogin = navigationToLogin,
         navigationToSettings = navigationToSettings,
         navigationToProfile = navigationToProfile,
-        navigationToHome = navigationToHome
+        navigationToHome = navigationToHome,
+        onLogout = {
+            viewModel.logout()
+            navigationToLogin()
+        }
     ) {
         // Actualiza la hora cada segundo
         LaunchedEffect(activeBuses) {

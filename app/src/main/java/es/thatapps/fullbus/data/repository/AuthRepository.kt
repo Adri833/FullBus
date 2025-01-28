@@ -65,6 +65,14 @@ class AuthRepository @Inject constructor(
         Result.failure(e)
     }
 
+    fun isUserLoggedIn(): Boolean {
+        return firebaseAuth.currentUser != null
+    }
+
+    fun logout() {
+        firebaseAuth.signOut()
+    }
+
     // Funcion para generar un nombre aleatorio para el usuario
     fun generateRandomUsername(): String {
         val randomNumber = (1..9999).random()
