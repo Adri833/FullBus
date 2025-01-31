@@ -28,6 +28,8 @@ class LoginViewModel @Inject constructor(
     private val _authState = MutableStateFlow<AsyncResult<Unit>>(AsyncResult.Idle)
     val authState: StateFlow<AsyncResult<Unit>> = _authState
 
+    private val _passwordResetState = MutableStateFlow<AsyncResult<Unit>>(AsyncResult.Idle)
+    val passwordResetState: StateFlow<AsyncResult<Unit>> = _passwordResetState
 
     // Funcion para iniciar sesion
     fun login(email: String, password: String) {
@@ -36,6 +38,10 @@ class LoginViewModel @Inject constructor(
         _authState.value = AsyncResult.Loading
 
         viewModelScope.launch {
+            // Validar si el email tiene un method de inicio de sesión registrado
+            if (!checkMethods(email)) return@launch
+
+            // Si el email esta registrado, intentar iniciar sesion
             try {
                 val result = authRepository.login(email, password)
                 if (result.isSuccess) {
@@ -55,15 +61,18 @@ class LoginViewModel @Inject constructor(
     }
 
     // Funcion para reestablecer la contraseña
-    fun resetPassword(email: String) {
-        if (!validateInputs(email, "")) return
+    fun resetPassword(email: String, password: String) {
+        if (!validateInputs(email, password)) return
 
         viewModelScope.launch {
+            // Validar si el email tiene un method de inicio de sesión registrado
+            if (!checkMethods(email)) return@launch
+
             try {
                 auth.sendPasswordResetEmail(email).await()
-                _authState.value = AsyncResult.Success(Unit)
+                _passwordResetState.value = AsyncResult.Success(Unit)
             } catch (e: Exception) {
-                _authState.value = AsyncResult.Error(R.string.error_reset_password)
+                _passwordResetState.value = AsyncResult.Error(R.string.error_reset_password)
             }
         }
     }
@@ -81,6 +90,17 @@ class LoginViewModel @Inject constructor(
         } else {
             true
         }
+    }
+
+    private suspend fun checkMethods(email: String): Boolean {
+        // Validar si el email tiene un method de inicio de sesión registrado
+        val signInMethods = authRepository.getSignInMethods(email)
+
+        if (signInMethods.isEmpty()) {
+            _authState.value = AsyncResult.Error(R.string.user_not_found)
+            return false
+        }
+        return true
     }
 
     // Funcion para resetear el estado del login

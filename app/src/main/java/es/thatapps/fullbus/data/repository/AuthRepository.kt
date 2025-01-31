@@ -65,6 +65,15 @@ class AuthRepository @Inject constructor(
         Result.failure(e)
     }
 
+    suspend fun getSignInMethods(email: String): List<String> {
+        return try {
+            val result = firebaseAuth.fetchSignInMethodsForEmail(email).await()
+            result.signInMethods ?: emptyList()
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
+
     fun isUserLoggedIn(): Boolean {
         return firebaseAuth.currentUser != null
     }

@@ -95,7 +95,7 @@ fun LoginScreen(
             modifier = Modifier
                 .adjustForMobile()
                 .fillMaxSize()
-                .padding(top = 56.dp),
+                .padding(top = 50.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Image(
@@ -157,7 +157,7 @@ fun LoginScreen(
             )
 
             TextButton(
-                onClick = { viewModel.resetPassword(email.value) }, // Llama a la función de restablecimiento de contraseña
+                onClick = { viewModel.resetPassword(email.value, password.value) }, // Llama a la función de restablecimiento de contraseña
                 modifier = Modifier
                     .align(Alignment.End)
             ) {
@@ -167,9 +167,9 @@ fun LoginScreen(
             // Mostrar mensaje de error en un recuadro rojo si hay algún error
             if (AsyncResult is AsyncResult.Error) {
                 val errorMessage = when (val msg = (AsyncResult as AsyncResult.Error).message) {
-                    is Int -> context.getString(msg) // Es un recurso de R.string
-                    is String -> msg // Es un mensaje directo
-                    else -> "Error desconocido" // Fallback en caso de un valor inesperado
+                    is Int -> context.getString(msg)
+                    is String -> msg
+                    else -> "Error desconocido"
                 }
 
                 Box(
