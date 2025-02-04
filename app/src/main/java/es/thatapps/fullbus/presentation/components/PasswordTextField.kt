@@ -8,6 +8,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -28,15 +29,9 @@ fun PasswordTextField(
 ) {
     val passwordVisible = remember { mutableStateOf(false) }
 
-    OutlinedTextField(
+    TextField(
         value = value,
         onValueChange = { onValueChange(it) },
-        maxLines = 1,
-        colors = TextFieldDefaults.colors(
-            focusedContainerColor = Color.White,
-            unfocusedContainerColor = Color.White,
-            disabledContainerColor = Color.White
-        ),
         singleLine = true,
         label = {
             Text(text = "Contraseña")

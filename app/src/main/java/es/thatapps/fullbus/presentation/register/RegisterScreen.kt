@@ -17,6 +17,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -28,14 +30,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import es.thatapps.fullbus.R
 import es.thatapps.fullbus.presentation.components.PasswordTextField
-import es.thatapps.fullbus.presentation.components.RegisterTextField
-
+import es.thatapps.fullbus.presentation.components.adjustForMobile
+import es.thatapps.fullbus.utils.AsyncResult
 
 @Composable
 fun RegisterScreen(
@@ -46,22 +51,20 @@ fun RegisterScreen(
     // Estados para almacenar los valores de entrada
     val email = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
-    val registerState by viewModel.registerState.collectAsState()
+    val asyncResult by viewModel.registerState.collectAsState()
 
     // Obtener el controlador del teclado
     val keyboardController = LocalSoftwareKeyboardController.current
-
     val context = LocalContext.current
 
     Column(
         modifier = Modifier
+            .adjustForMobile()
             .fillMaxSize()
             .background(Color.White)
-            .padding(20.dp),
+            .padding(top =70.dp, start = 20.dp, end = 20.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Spacer(modifier = Modifier.height(25.dp))
-
         Image(
             painter = painterResource(id = R.drawable.logo_fullbus),
             contentDescription = "Logo de la aplicacion",
@@ -70,54 +73,59 @@ fun RegisterScreen(
                 .height(200.dp)
         )
 
-        Spacer(modifier = Modifier.height(12.dp))
+        Text(text = "Registrarse", fontSize = 28.sp, color = Color.Black, modifier = Modifier.padding(top = 20.dp, bottom = 20.dp))
 
-        Text(text = "Ingresa tus datos", fontSize = 28.sp, color = Color.Black)
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        RegisterTextField(
+        // Campo de texto para el email
+        TextField(
             value = email.value,
-            placeHolder = "Email"
-        ) {
-            email.value = it // Actualiza el valor del email
-        }
+            onValueChange = { email.value = it },
+            label = { Text("Correo electrónico") },
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true,
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
 
         PasswordTextField(
             value = password.value,
             onValueChange = {
-                password.value = it // Actualiza el valor de la contraseña
+                password.value = it
             }
         )
 
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(24.dp))
 
         // Mostrar mensaje de error en un recuadro rojo si hay algún error
-        if (registerState is RegisterState.Error) {
-            val errorState = registerState as RegisterState.Error
+        if (asyncResult is AsyncResult.Error) {
+            val errorMessage = when (val msg = (asyncResult as AsyncResult.Error).message) {
+                is Int -> context.getString(msg)
+                is String -> msg
+                else -> "Error desconocido"
+            }
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .border(1.dp, Color.Red, shape = RoundedCornerShape(4.dp)) // Borde de color rojo
-                    .background(Color(0xFFFFD2D7), shape = RoundedCornerShape(4.dp)) // Color rojo más claro
+                    .border(1.dp, Color.Red, shape = RoundedCornerShape(4.dp))
+                    .background(Color(0xFFFFD2D7), shape = RoundedCornerShape(4.dp))
                     .padding(8.dp),
                 contentAlignment = Alignment.Center // Centrar el texto
             ) {
                 Text(
-                    text = stringResource(id = errorState.messageResID),
+                    text = errorMessage,
                     color = Color.Red,
                     fontSize = 15.sp
                 )
             }
-            Spacer(modifier = Modifier.height(16.dp))
         }
+
+        Spacer(modifier = Modifier.height(8.dp))
 
         Button(
             onClick = {
                 // Oculta el teclado
                 keyboardController?.hide()
 
-                viewModel.register(email.value, password.value, context) // Llama a la función de registro
+                viewModel.register(email.value, password.value) // Llama a la función de registro
             },
             shape = CircleShape,
             colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
@@ -128,39 +136,32 @@ fun RegisterScreen(
             Text(text = "Registrarse", fontSize = 17.sp, color = Color.White)
         }
 
-        Spacer(modifier = Modifier.height(10.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
+        // Enlace a la pantalla de inicio sesion
+        TextButton(
+            onClick = { navigationToLogin() },
+        ) {
+            Text(
+                buildAnnotatedString {
+                    append("¿Ya tienes cuenta? ")
+                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                        append("Iniciar sesion")
+                    }
+                }
+            )
+        }
 
         // Muestra los estados al registrarse
-        when (registerState) {
-            is RegisterState.Loading -> CircularProgressIndicator() // Circulo mientras carga
-            is RegisterState.Success -> {
+        when (asyncResult) {
+            is AsyncResult.Loading -> CircularProgressIndicator() // Circulo mientras carga
+            is AsyncResult.Success -> {
                 viewModel.resetRegisterState() // Reestablece el estado para evitar un bucle
                 Toast.makeText(context, "Registro exitoso!", Toast.LENGTH_SHORT).show() // Notificacion de exito
                 navigationToHome()
             }
-            is RegisterState.Error -> {}
+            is AsyncResult.Error -> {}
             else -> {}
         }
-
-        // Espacio en blanco hasta la parte inferior de la pantalla
-        Spacer(modifier = Modifier.weight(1f))
-
-        Text(text = "¿Ya tienes cuenta?", fontSize = 17.sp, color = Color.Black)
-
-        Spacer(modifier = Modifier.height(10.dp))
-
-        Button(
-            onClick = navigationToLogin,
-            shape = CircleShape,
-            colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp)
-        ) {
-            Text(text = "Iniciar Sesión", fontSize = 17.sp, color = Color.White)
-        }
-
-        Spacer(modifier = Modifier.height(40.dp))
     }
 }

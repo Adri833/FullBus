@@ -33,7 +33,7 @@ class LoginViewModel @Inject constructor(
 
     // Funcion para iniciar sesion
     fun login(email: String, password: String) {
-        if (!validateInputs(email, password)) return
+        if (validateInputs(email, password) != null) return
 
         _authState.value = AsyncResult.Loading
 
@@ -62,7 +62,7 @@ class LoginViewModel @Inject constructor(
 
     // Funcion para reestablecer la contraseña
     fun resetPassword(email: String, password: String) {
-        if (!validateInputs(email, password)) return
+        if (validateInputs(email, password) != null) return
 
         viewModelScope.launch {
             // Validar si el email tiene un method de inicio de sesión registrado
@@ -78,17 +78,12 @@ class LoginViewModel @Inject constructor(
     }
 
     // Funcion para validar los campos de entrada
-    private fun validateInputs(email: String, password: String): Boolean {
-        val errorMessageId = when {
-            email.isEmpty() || password.isEmpty() -> R.string.camp_required
-            !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() -> R.string.invalid_email
+    private fun validateInputs(email: String, password: String): AsyncResult.Error? {
+        return when {
+            email.isEmpty() || password.isEmpty() -> AsyncResult.Error(R.string.camp_required)
+            !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() -> AsyncResult.Error(R.string.invalid_email)
+            password.length < 6 -> AsyncResult.Error(R.string.password_short)
             else -> null
-        }
-        return if (errorMessageId != null) {
-            _authState.value = AsyncResult.Error(errorMessageId)
-            false
-        } else {
-            true
         }
     }
 
