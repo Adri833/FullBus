@@ -34,6 +34,7 @@ class RegisterViewModel @Inject constructor(
             val result = authRepository.register(email, password)
             if (result.isSuccess) {
                 authRepository.registerUserInFirestore(email)
+                _registerState.value = AsyncResult.Success(Unit)
             } else {
                 // Obtener la excepción para identificar el tipo de error
                 val exception = result.exceptionOrNull()

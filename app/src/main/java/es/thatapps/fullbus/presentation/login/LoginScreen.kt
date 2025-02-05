@@ -84,15 +84,6 @@ fun LoginScreen(
                 .show() // Notificacion de exito
             navigationToHome()
         }
-        is AsyncResult.Error -> {
-            val errorMessage = when (val msg = (asyncResult as AsyncResult.Error).message) {
-                is Int -> stringResource(id = msg)
-                is String -> msg
-                else -> "Error desconocido"
-            }
-            Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
-        }
-
         else -> {}
     }
 }
