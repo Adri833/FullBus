@@ -38,6 +38,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -45,6 +46,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.Identity
 import es.thatapps.fullbus.R
@@ -52,13 +54,53 @@ import es.thatapps.fullbus.constants.FullBusConstants
 import es.thatapps.fullbus.presentation.components.GoogleSignInButton
 import es.thatapps.fullbus.presentation.components.PasswordTextField
 import es.thatapps.fullbus.presentation.components.adjustForMobile
+import es.thatapps.fullbus.presentation.loading.LoadingScreen
 import es.thatapps.fullbus.utils.AsyncResult
 
 @Composable
 fun LoginScreen(
     viewModel: LoginViewModel = hiltViewModel(),
     navigationToRegister: () -> Unit,
-    navigationToHome: () -> Unit,
+    navigationToHome: () -> Unit
+    ) {
+
+    // Init
+    LaunchedEffect(Unit) {
+        viewModel.resetAsyncResult()
+        if (viewModel.isUserLoggedIn()) { navigationToHome() }
+    }
+
+    // UI
+    LoginView(viewModel, navigationToRegister)
+
+    // Auth observer
+    val asyncResult by viewModel.authState.collectAsState()
+    val context = LocalContext.current
+    when (asyncResult) {
+        is AsyncResult.Loading -> LoadingScreen() // Circulo mientras carga
+        is AsyncResult.Success -> {
+            viewModel.resetAsyncResult() // Reestablece el estado para evitar un bucle
+            Toast.makeText(context, "Bienvenido", Toast.LENGTH_SHORT)
+                .show() // Notificacion de exito
+            navigationToHome()
+        }
+        is AsyncResult.Error -> {
+            val errorMessage = when (val msg = (asyncResult as AsyncResult.Error).message) {
+                is Int -> stringResource(id = msg)
+                is String -> msg
+                else -> "Error desconocido"
+            }
+            Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
+        }
+
+        else -> {}
+    }
+}
+
+@Composable
+private fun LoginView(
+    viewModel: LoginViewModel,
+    navigationToRegister: () -> Unit,
 ) {
     // Estados para almacenar los valores de entrada
     val email = remember { mutableStateOf("") }
@@ -75,10 +117,6 @@ fun LoginScreen(
         contract = ActivityResultContracts.StartIntentSenderForResult()
     ) { result ->
         viewModel.googleSignInObserver(result, oneTapClient)
-    }
-
-    LaunchedEffect(Unit) {
-        if (viewModel.isUserLoggedIn()) { navigationToHome() }
     }
 
     Box(
@@ -182,22 +220,6 @@ fun LoginScreen(
                     .height(50.dp)
             ) {
                 Text(text = "Iniciar Sesión", fontSize = 17.sp, color = Color.White)
-            }
-
-            Spacer(modifier = Modifier.height(10.dp))
-
-            // TODO: pantalla de carga aparte
-            // Muestra los estados al registrarse
-            when (asyncResult) {
-                is AsyncResult.Loading -> CircularProgressIndicator() // Circulo mientras carga
-                is AsyncResult.Success -> {
-                    viewModel.resetAsyncResult() // Reestablece el estado para evitar un bucle
-                    Toast.makeText(context, "Bienvenido", Toast.LENGTH_SHORT)
-                        .show() // Notificacion de exito
-                    navigationToHome()
-                }
-
-                else -> {}
             }
 
             Spacer(modifier = Modifier.height(20.dp))

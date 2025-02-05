@@ -78,12 +78,21 @@ class LoginViewModel @Inject constructor(
     }
 
     // Funcion para validar los campos de entrada
-    private fun validateInputs(email: String, password: String): AsyncResult.Error? {
+    private fun validateInputs(email: String, password: String): Boolean {
         return when {
-            email.isEmpty() || password.isEmpty() -> AsyncResult.Error(R.string.camp_required)
-            !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() -> AsyncResult.Error(R.string.invalid_email)
-            password.length < 6 -> AsyncResult.Error(R.string.password_short)
-            else -> null
+            email.isEmpty() || password.isEmpty() -> {
+                _authState.value = AsyncResult.Error(R.string.camp_required)
+                false
+            }
+            !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() -> {
+                _authState.value = AsyncResult.Error(R.string.invalid_email)
+                false
+            }
+            password.length < 6 -> {
+                _authState.value = AsyncResult.Error(R.string.password_short)
+                false
+            }
+            else -> true
         }
     }
 

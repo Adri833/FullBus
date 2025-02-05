@@ -40,6 +40,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import es.thatapps.fullbus.R
 import es.thatapps.fullbus.presentation.components.PasswordTextField
 import es.thatapps.fullbus.presentation.components.adjustForMobile
+import es.thatapps.fullbus.presentation.loading.LoadingScreen
 import es.thatapps.fullbus.utils.AsyncResult
 
 @Composable
@@ -154,12 +155,12 @@ fun RegisterScreen(
 
         // Muestra los estados al registrarse
         when (asyncResult) {
-            is AsyncResult.Loading -> CircularProgressIndicator() // Circulo mientras carga
+            is AsyncResult.Loading -> LoadingScreen() // Circulo mientras carga
             is AsyncResult.Success -> {
                 viewModel.resetRegisterState() // Reestablece el estado para evitar un bucle
                 Toast.makeText(context, "Registro exitoso!", Toast.LENGTH_SHORT).show() // Notificacion de exito
                 navigationToHome()
-            }
+              }
             is AsyncResult.Error -> {}
             else -> {}
         }
