@@ -83,12 +83,12 @@ class AuthRepository @Inject constructor(
     }
 
     // Funcion para generar un nombre aleatorio para el usuario
-    fun generateRandomUsername(): String {
+    private fun generateRandomUsername(): String {
         val randomNumber = (1..9999).random()
         return "User$randomNumber"
     }
 
-    fun getDefaultPFP(context: Context): String {
+    private fun getDefaultPFP(context: Context): String {
         val uri = Uri.parse("android.resource://${context.packageName}/${R.drawable.default_pfp}")
         return encodeImageToBase64(context, uri) ?: ""
     }

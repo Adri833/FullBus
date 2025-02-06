@@ -33,13 +33,13 @@ class LoginViewModel @Inject constructor(
 
     // Funcion para iniciar sesion
     fun login(email: String, password: String) {
-        if (validateFields(email, password) != null) return
+       if (validateFields(email, password) != null) return
 
         _authState.value = AsyncResult.Loading
 
         viewModelScope.launch {
             // Validar si el email tiene un method de inicio de sesión registrado
-            if (!checkMethods(email)) return@launch
+            // if (!checkMethods(email)) return@launch
 
             // Si el email esta registrado, intentar iniciar sesion
             try {
@@ -66,7 +66,7 @@ class LoginViewModel @Inject constructor(
 
         viewModelScope.launch {
             // Validar si el email tiene un method de inicio de sesión registrado
-            if (!checkMethods(email)) return@launch
+            //if (!checkMethods(email)) return@launch
 
             try {
                 auth.sendPasswordResetEmail(email).await()
@@ -78,11 +78,11 @@ class LoginViewModel @Inject constructor(
     }
 
     // Funcion para validar los campos de entrada
-    private fun validateFields(email: String, password: String): AsyncResult.Error? {
+    private fun validateFields(email: String, password: String): Any? {
         return when {
-            email.isEmpty() || password.isEmpty() -> AsyncResult.Error(R.string.camp_required)
-            !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() -> AsyncResult.Error(R.string.invalid_email)
-            password.length < 6 -> AsyncResult.Error(R.string.password_short)
+            email.isEmpty() || password.isEmpty() -> _authState.value = AsyncResult.Error(R.string.camp_required)
+            !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() -> _authState.value = AsyncResult.Error(R.string.invalid_email)
+            password.length < 6 -> _authState.value = AsyncResult.Error(R.string.password_short)
             else -> null
         }
     }
