@@ -21,7 +21,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val auth: FirebaseAuth, // Inyección de Firebase Authenticator
+    private val auth: FirebaseAuth,
     private val authRepository: AuthRepository,
 ) : ViewModel() {
 
@@ -34,13 +34,9 @@ class LoginViewModel @Inject constructor(
     // Funcion para iniciar sesion
     fun login(email: String, password: String) {
        if (validateFields(email, password) != null) return
-
         _authState.value = AsyncResult.Loading
 
         viewModelScope.launch {
-            // Validar si el email tiene un method de inicio de sesión registrado
-            // if (!checkMethods(email)) return@launch
-
             // Si el email esta registrado, intentar iniciar sesion
             try {
                 val result = authRepository.login(email, password)
@@ -61,13 +57,14 @@ class LoginViewModel @Inject constructor(
     }
 
     // Funcion para reestablecer la contraseña
-    fun resetPassword(email: String, password: String) {
-        if (validateFields(email, password) != null) return
+    fun resetPassword(email: String) {
+        if (email.isEmpty()) {
+            _authState.value = AsyncResult.Error("Ingresa tu correo electronico")
+            return
+        }
+        _passwordResetState.value = AsyncResult.Loading
 
         viewModelScope.launch {
-            // Validar si el email tiene un method de inicio de sesión registrado
-            //if (!checkMethods(email)) return@launch
-
             try {
                 auth.sendPasswordResetEmail(email).await()
                 _passwordResetState.value = AsyncResult.Success(Unit)
@@ -87,22 +84,13 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    private suspend fun checkMethods(email: String): Boolean {
-        // Validar si el email tiene un method de inicio de sesión registrado
-        val signInMethods = authRepository.getSignInMethods(email)
-
-        if (signInMethods.isEmpty()) {
-            _authState.value = AsyncResult.Error(R.string.user_not_found)
-            return false
-        }
-        return true
-    }
-
     // Funcion para resetear el estado del login
     fun resetAsyncResult() {
         _authState.value = AsyncResult.Idle
+        _passwordResetState.value = AsyncResult.Idle
     }
 
+    // Funcion para saber si el usuario esta logueado
     fun isUserLoggedIn(): Boolean {
         return authRepository.isUserLoggedIn()
     }

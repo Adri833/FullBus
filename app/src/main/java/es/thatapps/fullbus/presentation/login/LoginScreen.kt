@@ -59,7 +59,7 @@ fun LoginScreen(
     viewModel: LoginViewModel = hiltViewModel(),
     navigationToRegister: () -> Unit,
     navigationToHome: () -> Unit
-    ) {
+) {
 
     // Init
     LaunchedEffect(Unit) {
@@ -70,16 +70,28 @@ fun LoginScreen(
     // UI
     LoginView(viewModel, navigationToRegister)
 
-    // Auth observer
+    // Login observer
     val asyncResult by viewModel.authState.collectAsState()
+    val passwordResetState by viewModel.passwordResetState.collectAsState()
     val context = LocalContext.current
+
+    // Login
     when (asyncResult) {
-        is AsyncResult.Loading -> LoadingScreen() // Circulo mientras carga
+        is AsyncResult.Loading -> LoadingScreen()
         is AsyncResult.Success -> {
             viewModel.resetAsyncResult() // Reestablece el estado para evitar un bucle
-            Toast.makeText(context, "Bienvenido", Toast.LENGTH_SHORT)
-                .show() // Notificacion de exito
+            Toast.makeText(context, "Bienvenido", Toast.LENGTH_SHORT).show()
             navigationToHome()
+        }
+        else -> {}
+    }
+
+    // Password observer
+    when (passwordResetState) {
+        is AsyncResult.Loading -> LoadingScreen()
+        is AsyncResult.Success -> {
+            viewModel.resetAsyncResult() // Reestablece el estado para evitar un bucle
+            Toast.makeText(context, "Comprueba tu bandeja de entrada", Toast.LENGTH_SHORT).show()
         }
         else -> {}
     }
@@ -154,7 +166,7 @@ private fun LoginView(
             )
 
             TextButton(
-                onClick = { viewModel.resetPassword(email.value, password.value) }, // Llama a la función de restablecimiento de contraseña
+                onClick = { viewModel.resetPassword(email.value) }, // Llama a la función de restablecimiento de contraseña
                 modifier = Modifier
                     .align(Alignment.End)
             ) {

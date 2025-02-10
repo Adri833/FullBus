@@ -15,7 +15,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -49,6 +48,30 @@ fun RegisterScreen(
     navigationToLogin: () -> Unit,
     navigationToHome: () -> Unit,
 ) {
+
+    // UI
+    RegisterView(viewModel, navigationToLogin)
+
+    // Muestra los estados al registrarse
+    val asyncResult by viewModel.registerState.collectAsState()
+    val context = LocalContext.current
+    when (asyncResult) {
+        is AsyncResult.Loading -> LoadingScreen() // Circulo mientras carga
+        is AsyncResult.Success -> {
+            viewModel.resetRegisterState() // Reestablece el estado para evitar un bucle
+            Toast.makeText(context, "Registro exitoso!", Toast.LENGTH_SHORT)
+                .show() // Notificacion de exito
+            navigationToHome()
+        }
+        else -> {}
+    }
+}
+
+@Composable
+fun RegisterView(
+    viewModel: RegisterViewModel,
+    navigationToLogin: () -> Unit,
+) {
     // Estados para almacenar los valores de entrada
     val email = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
@@ -63,7 +86,7 @@ fun RegisterScreen(
             .adjustForMobile()
             .fillMaxSize()
             .background(Color.White)
-            .padding(top =70.dp, start = 20.dp, end = 20.dp),
+            .padding(top = 70.dp, start = 20.dp, end = 20.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
@@ -74,7 +97,12 @@ fun RegisterScreen(
                 .height(200.dp)
         )
 
-        Text(text = "Registrarse", fontSize = 28.sp, color = Color.Black, modifier = Modifier.padding(top = 20.dp, bottom = 20.dp))
+        Text(
+            text = "Registrarse",
+            fontSize = 28.sp,
+            color = Color.Black,
+            modifier = Modifier.padding(top = 20.dp, bottom = 20.dp)
+        )
 
         // Campo de texto para el email
         TextField(
@@ -126,7 +154,7 @@ fun RegisterScreen(
                 // Oculta el teclado
                 keyboardController?.hide()
 
-                viewModel.register(email.value, password.value) // Llama a la función de registro
+                viewModel.register(email.value, password.value)
             },
             shape = CircleShape,
             colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
@@ -151,18 +179,6 @@ fun RegisterScreen(
                     }
                 }
             )
-        }
-
-        // Muestra los estados al registrarse
-        when (asyncResult) {
-            is AsyncResult.Loading -> LoadingScreen() // Circulo mientras carga
-            is AsyncResult.Success -> {
-                viewModel.resetRegisterState() // Reestablece el estado para evitar un bucle
-                Toast.makeText(context, "Registro exitoso!", Toast.LENGTH_SHORT).show() // Notificacion de exito
-                navigationToHome()
-              }
-            is AsyncResult.Error -> {}
-            else -> {}
         }
     }
 }

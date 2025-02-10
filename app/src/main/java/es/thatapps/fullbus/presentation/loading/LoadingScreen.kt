@@ -3,12 +3,16 @@ package es.thatapps.fullbus.presentation.loading
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -40,7 +44,7 @@ fun LoadingScreen() {
             shape = RoundedCornerShape(8.dp),
             color = Color.Black.copy(alpha = 0.2f),
             modifier = Modifier
-                .wrapContentSize()
+                .size(170.dp)
                 .padding(16.dp)
         ) {
             Box(
@@ -48,18 +52,26 @@ fun LoadingScreen() {
                     .padding(16.dp),
                 contentAlignment = Alignment.Center
             ) {
-                Image(
-                    modifier = Modifier
-                        .size(80.dp),
-                    painter = painterResource(id = R.drawable.logo_fullbus),
-                    contentDescription = "Logo FullBus",
-                    contentScale = ContentScale.Crop,
-                )
-                CircularProgressIndicator(
-                    color = Color.White,
-                    modifier = Modifier
-                        .size(80.dp)
-                )
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Image(
+                        modifier = Modifier
+                            .size(80.dp),
+                        painter = painterResource(id = R.drawable.logo_fullbus),
+                        contentDescription = "Logo FullBus",
+                        contentScale = ContentScale.Crop,
+                    )
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    LinearProgressIndicator(
+                        color = Color.Red,
+                        modifier = Modifier
+                            .fillMaxWidth(0.9f)
+                    )
+                }
             }
         }
     }
