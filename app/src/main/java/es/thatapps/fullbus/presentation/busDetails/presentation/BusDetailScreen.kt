@@ -77,7 +77,7 @@ fun BusDetailScreen(
                 .adjustForMobile()
         ) {
             // Encabezado
-            Header(onMenuClick = { scope.launch { drawerState.open() } })
+            Header(onMenuClick = { scope.launch { drawerState.open() } }, navigationToProfile)
 
             // Navegacion superior
             TabRow(

@@ -2,6 +2,7 @@ package es.thatapps.fullbus.presentation.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -23,12 +24,13 @@ import es.thatapps.fullbus.utils.getPFP
 @Composable
 fun Header(
     onMenuClick: () -> Unit,
+    navigationToProfile: () -> Unit,
 ) {
-    val profileImageUrl = remember { mutableStateOf<String?>(null) }
+    val pfp = remember { mutableStateOf<String?>(null) }
 
     // Ejecutar la consulta a Firebase
     LaunchedEffect(Unit) {
-        profileImageUrl.value = getPFP()
+        pfp.value = getPFP()
     }
 
     Row(
@@ -64,10 +66,18 @@ fun Header(
 
         Spacer(modifier = Modifier.weight(1f))
 
-        ImageBase64(
-            imageUrl = profileImageUrl.value,
-            width = 40.dp,
-            height = 40.dp
-        )
+
+        Box (
+            modifier = Modifier
+                .clickable {
+                    navigationToProfile()
+                }
+        ) {
+            // Imagen de perfil actual
+            ImageBase64(
+                imageUrl = pfp.value,
+                size = 50.dp
+            )
+        }
     }
 }

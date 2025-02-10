@@ -121,12 +121,12 @@ private fun LoginView(
 
     Box(
         modifier = Modifier
+            .adjustForMobile()
             .fillMaxSize()
             .padding(20.dp)
     ) {
         Column(
             modifier = Modifier
-                .adjustForMobile()
                 .fillMaxSize()
                 .padding(top = 50.dp),
             horizontalAlignment = Alignment.CenterHorizontally

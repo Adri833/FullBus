@@ -39,9 +39,4 @@ class ProfileViewModel @Inject constructor(
             }
         }
     }
-
-    // Cerrar sesion
-    fun logout() {
-        authRepository.logout()
-    }
 }

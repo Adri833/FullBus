@@ -11,9 +11,12 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
@@ -89,8 +92,7 @@ private fun scaleBitmap(bitmap: Bitmap, maxWidth: Int, maxHeight: Int): Bitmap {
 @Composable
 fun ImageBase64(
     imageUrl: String?,
-    width: Dp = 100.dp,
-    height: Dp = 80.dp,
+    size: Dp,
     padding: Dp? = null,
 ) {
     getImageFromBase64(imageUrl)?.let { imageUrlNotNull ->
@@ -98,16 +100,16 @@ fun ImageBase64(
             bitmap = imageUrlNotNull,
             contentDescription = null,
             modifier = Modifier
-                .width(width)
-                .height(height)
+                .size(size)
+                .clip(CircleShape)
                 .padding(padding ?: 0.dp),
             contentScale = ContentScale.Crop
         )
     } ?: run {
         Image(
             modifier = Modifier
-                .width(width)
-                .height(height)
+                .size(size)
+                .clip(CircleShape)
                 .padding(padding ?: 0.dp),
             painter = painterResource(id = R.drawable.default_pfp),
             contentDescription = null,

@@ -59,7 +59,7 @@ fun HomeScreen(
                 .adjustForMobile()
         ) {
             // Header sin padding para que ocupe toda la pantalla horizontalmente
-            Header(onMenuClick = { scope.launch { drawerState.open() } })
+            Header(onMenuClick = { scope.launch { drawerState.open() } }, navigationToProfile)
 
             Spacer(modifier = Modifier.height(15.dp))
 
