@@ -1,6 +1,12 @@
 package es.thatapps.fullbus.presentation.login
 
+import android.content.Context
+import android.util.Log
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.IntentSenderRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -11,18 +17,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -33,178 +37,245 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.google.android.gms.auth.api.identity.BeginSignInRequest
+import com.google.android.gms.auth.api.identity.Identity
 import es.thatapps.fullbus.R
-
+import es.thatapps.fullbus.constants.FullBusConstants
+import es.thatapps.fullbus.presentation.components.GoogleSignInButton
+import es.thatapps.fullbus.presentation.components.PasswordTextField
+import es.thatapps.fullbus.presentation.components.adjustForMobile
+import es.thatapps.fullbus.presentation.loading.LoadingScreen
+import es.thatapps.fullbus.utils.AsyncResult
 
 @Composable
 fun LoginScreen(
     viewModel: LoginViewModel = hiltViewModel(),
     navigationToRegister: () -> Unit,
-    navigationToHome: () -> Unit,
+    navigationToHome: () -> Unit
+) {
+
+    // Init
+    LaunchedEffect(Unit) {
+        viewModel.resetAsyncResult()
+        if (viewModel.isUserLoggedIn()) { navigationToHome() }
+    }
+
+    // UI
+    LoginView(viewModel, navigationToRegister)
+
+    // Login observer
+    val asyncResult by viewModel.authState.collectAsState()
+    val passwordResetState by viewModel.passwordResetState.collectAsState()
+    val context = LocalContext.current
+
+    // Login
+    when (asyncResult) {
+        is AsyncResult.Loading -> LoadingScreen()
+        is AsyncResult.Success -> {
+            viewModel.resetAsyncResult() // Reestablece el estado para evitar un bucle
+            Toast.makeText(context, "Bienvenido", Toast.LENGTH_SHORT).show()
+            navigationToHome()
+        }
+        else -> {}
+    }
+
+    // Password observer
+    when (passwordResetState) {
+        is AsyncResult.Loading -> LoadingScreen()
+        is AsyncResult.Success -> {
+            viewModel.resetAsyncResult() // Reestablece el estado para evitar un bucle
+            Toast.makeText(context, "Comprueba tu bandeja de entrada", Toast.LENGTH_SHORT).show()
+        }
+        else -> {}
+    }
+}
+
+@Composable
+private fun LoginView(
+    viewModel: LoginViewModel,
+    navigationToRegister: () -> Unit,
 ) {
     // Estados para almacenar los valores de entrada
     val email = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
-    val passwordVisible = remember { mutableStateOf(false) }
-    val loginState by viewModel.loginState.collectAsState()
+    val asyncResult by viewModel.authState.collectAsState()
 
     // Obtener el controlador del teclado
     val keyboardController = LocalSoftwareKeyboardController.current
+    val context = LocalContext.current
+    val oneTapClient = remember { Identity.getSignInClient(context) }
 
-    Column(
+    // Interfaz de google
+    val googleLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartIntentSenderForResult()
+    ) { result ->
+        viewModel.googleSignInObserver(result, oneTapClient)
+    }
+
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
-            .padding(20.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .padding(20.dp)
     ) {
-        Spacer(modifier = Modifier.height(25.dp))
-
-        Image(
-            painter = painterResource(id = R.drawable.logo_fullbus),
-            contentDescription = "Logo de la aplicacion",
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .height(200.dp)
-        )
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        // Campo de texto para el email
-        TextField(
-            value = email.value,
-            onValueChange = { email.value = it },
-            label = { Text("Correo electrónico") },
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true,
-
-            colors = TextFieldDefaults.colors(
-                focusedTextColor = Color.Black,
-                unfocusedTextColor = Color.Black
-            )
-        )
-        Spacer(modifier = Modifier.height(11.dp))
-
-        // Campo de texto para la contraseña
-        TextField(
-            value = password.value,
-            onValueChange = { password.value = it },
-            label = { Text("Contraseña") },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 16.dp),
-            singleLine = true,
-            colors = TextFieldDefaults.colors(
-                focusedTextColor = Color.Black,
-                unfocusedTextColor = Color.Black
-            ),
-
-            // Icono para ver o dejar de ver la contraseña
-            visualTransformation = if (passwordVisible.value) VisualTransformation.None else PasswordVisualTransformation(),
-            trailingIcon = {
-                IconButton(
-                    onClick = { passwordVisible.value = !passwordVisible.value },
-                    modifier = Modifier.padding(end = 8.dp)
-                ) {
-                    val iconResID = if (passwordVisible.value) R.drawable.ojo_abierto else R.drawable.ojo_cerrao
-                    Image( // Propiedades de la foto
-                        painter = painterResource(id = iconResID), contentDescription = null, modifier = Modifier.size(25.dp))
-                }
-            }
-        )
-
-        Spacer(modifier =  Modifier.height(23.dp))
-
-        // Mostrar mensaje de error en un recuadro rojo si hay algún error
-        if (loginState is LoginState.Error) {
-            val errorState = loginState as LoginState.Error
-            Box(
+                .adjustForMobile()
+                .fillMaxSize()
+                .padding(top = 50.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.logo_fullbus),
+                contentDescription = "Logo de la aplicacion",
                 modifier = Modifier
                     .fillMaxWidth()
-                    .border(1.dp, Color.Red, shape = RoundedCornerShape(4.dp)) // Borde de color rojo
-                    .background(Color(0xFFFFD2D7), shape = RoundedCornerShape(4.dp)) // Color rojo más claro
-                    .padding(8.dp),
-                contentAlignment = Alignment.Center // Centrar el texto
+                    .height(200.dp)
+            )
+
+            Text(text = "Iniciar sesión", fontSize = 28.sp, color = Color.Black, modifier = Modifier.padding(top = 20.dp, bottom = 20.dp))
+
+            // Campo de texto para el email
+            TextField(
+                value = email.value,
+                onValueChange = { email.value = it },
+                label = { Text("Correo electrónico") },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+
+                colors = TextFieldDefaults.colors(
+                    focusedTextColor = Color.Black,
+                    unfocusedTextColor = Color.Black
+                )
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Campo de texto para la contraseña
+            PasswordTextField(
+                value = password.value,
+                onValueChange = {
+                    password.value = it
+                }
+            )
+
+            TextButton(
+                onClick = { viewModel.resetPassword(email.value) }, // Llama a la función de restablecimiento de contraseña
+                modifier = Modifier
+                    .align(Alignment.End)
             ) {
-                Text(
-                    text = stringResource(id = errorState.messageResID),
-                    color = Color.Red,
-                    fontSize = 15.sp
+                Text("¿Olvidaste tu contraseña?", fontSize = 13.sp)
+            }
+
+            // Mostrar mensaje de error en un recuadro rojo si hay algún error
+            if (asyncResult is AsyncResult.Error) {
+                val errorMessage = when (val msg = (asyncResult as AsyncResult.Error).message) {
+                    is Int -> context.getString(msg)
+                    is String -> msg
+                    else -> "Error desconocido"
+                }
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .border(
+                            1.dp,
+                            Color.Red,
+                            shape = RoundedCornerShape(4.dp)
+                        ) // Borde de color rojo
+                        .background(
+                            Color(0xFFFFD2D7),
+                            shape = RoundedCornerShape(4.dp)
+                        ) // Color rojo más claro
+                        .padding(8.dp),
+                    contentAlignment = Alignment.Center // Centrar el texto
+                ) {
+                    Text(
+                        text = errorMessage,
+                        color = Color.Red,
+                        fontSize = 15.sp
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            // Botón de inicio de sesión
+            Button(
+                onClick = {
+                    // Oculta el teclado
+                    keyboardController?.hide()
+                    viewModel.login(email.value, password.value) // Llama a la función de login
+                },
+                shape = CircleShape,
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp)
+            ) {
+                Text(text = "Iniciar Sesión", fontSize = 17.sp, color = Color.White)
+            }
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            // Botón de inicio de sesión con Google
+            GoogleSignInButton {
+                launchGoogleSignIn(
+                    context = context,
+                    viewModel = viewModel,
+                    launcher = googleLauncher
                 )
             }
-            Spacer(modifier = Modifier.height(16.dp))
-        }
-
-        // Botón de inicio de sesión
-        Button(
-            onClick = {
-                // Oculta el teclado
-                keyboardController?.hide()
-
-                viewModel.login(email.value, password.value) // Llama a la función de login
-            },
-            shape = CircleShape,
-            colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp)
-        ) {
-            Text(text = "Iniciar Sesión", fontSize = 17.sp, color = Color.White)
-        }
-
-        Spacer(modifier = Modifier.height(10.dp))
-
-        val context = LocalContext.current
-
-        // Muestra los estados al registrarse
-        when (loginState) {
-            is LoginState.Loading -> CircularProgressIndicator() // Circulo mientras carga
-            is LoginState.Success -> {
-                viewModel.resetLoginState() // Reestablece el estado para evitar un bucle
-                Toast.makeText(context, "Bienvenido", Toast.LENGTH_SHORT).show() // Notificacion de exito
-                navigationToHome()
-            }
-            else -> {}
         }
 
         // Enlace a la pantalla de registro
         TextButton(
             onClick = { navigationToRegister() },
-            modifier = Modifier.padding(top = 16.dp)
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
         ) {
-            Text("¿No tienes cuenta? Regístrate")
-        }
-
-        TextButton(
-            onClick = { viewModel.resetPassword(email.value) }, // Llama a la función de restablecimiento de contraseña
-            modifier = Modifier.padding(top = 16.dp)
-        ) {
-            Text("¿Olvidaste tu contraseña?")
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Recuadro verde para mostrar si el correo de recuperacion ha sido enviado
-        if (loginState is LoginState.PasswordResetSuccess) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .border(1.dp, Color.Green, shape = RoundedCornerShape(4.dp)) // Borde de color rojo
-                    .background(Color(0xFFD0E8D0), shape = RoundedCornerShape(4.dp)) // Color rojo más claro
-                    .padding(8.dp),
-                contentAlignment = Alignment.Center // Centrar el texto
-            ) {
-                Text(
-                    text = stringResource(R.string.email_send),
-                    color = Color(0xFF004D00),
-                    fontSize = 15.sp
-                )
-            }
+            Text(
+                buildAnnotatedString {
+                    append("¿No tienes cuenta? ")
+                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                        append("Regístrate")
+                    }
+                }
+            )
         }
     }
+}
+
+private fun launchGoogleSignIn(
+    context: Context,
+    viewModel: LoginViewModel,
+    launcher: ActivityResultLauncher<IntentSenderRequest>,
+) {
+    val oneTapClient = Identity.getSignInClient(context)
+    val signInRequest = BeginSignInRequest.builder()
+        .setGoogleIdTokenRequestOptions(
+            BeginSignInRequest.GoogleIdTokenRequestOptions.builder()
+                .setSupported(true)
+                .setServerClientId(FullBusConstants.GOOGLE_ID)
+                .setFilterByAuthorizedAccounts(false)
+                .build()
+        ).build()
+
+    oneTapClient.beginSignIn(signInRequest)
+        .addOnSuccessListener { result ->
+            viewModel.resetAsyncResult()
+            launcher.launch(IntentSenderRequest.Builder(result.pendingIntent.intentSender).build())
+        }
+
+        .addOnFailureListener { e ->
+            Toast.makeText(context, "Error al iniciar sesion", Toast.LENGTH_SHORT).show()
+            Log.e("ERROR", e.message.toString() + " " + e.localizedMessage)
+            viewModel.resetAsyncResult()
+        }
 }
