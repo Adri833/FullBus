@@ -58,4 +58,8 @@ class ProfileViewModel @Inject constructor(
             }
         }
     }
+
+    fun getEmail(): String? {
+        return FirebaseAuth.getInstance().currentUser?.email
+    }
 }

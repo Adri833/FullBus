@@ -17,9 +17,11 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,7 +30,10 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -83,6 +88,17 @@ fun ProfileScreen(
         // Boton para volver atras
         BackButton(navController)
 
+        // Texto de perfil
+        Text(
+            text = "Perfil",
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally),
+            fontSize = 40.sp,
+            color = Color.Black,
+        )
+
+        Spacer(modifier = Modifier.height(40.dp))
+
         // Foto de perfil clicable para cambiarla
         Box(
             modifier = Modifier
@@ -113,7 +129,7 @@ fun ProfileScreen(
             }
         }
 
-        Spacer(modifier = Modifier.height(48.dp))
+        Spacer(modifier = Modifier.height(26.dp))
 
         Box(
             modifier = Modifier
@@ -124,32 +140,75 @@ fun ProfileScreen(
             if (isEditing) {
                 TextField(
                     value = newUsername,
-                    onValueChange = { newUsername = it },
+                    onValueChange = {
+                        if (it.length <= 12) {
+                            newUsername = it
+                        }
+                    },
                     modifier = Modifier
-                        .focusRequester(focusRequester),
-                    keyboardOptions = KeyboardOptions(
-                        imeAction = ImeAction.Done
-                    ),
+                        .focusRequester(focusRequester)
+                        .border(0.dp, Color.Transparent),
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                     keyboardActions = KeyboardActions(
                         onDone = {
-                            // Guardar el nuevo nombre de usuario
-                            viewModel.updateUserName(newUsername)
-                            username = newUsername
-                            isEditing = false
-                            focusManager.clearFocus()
+                            if (newUsername.isNotBlank()) { // Evita guardar un nombre vacio
+                                viewModel.updateUserName(newUsername)
+                                username = newUsername
+                                isEditing = false
+                                focusManager.clearFocus()
+                            } else {
+                                Toast.makeText(context, "El nombre de usuario no puede estar vacío", Toast.LENGTH_SHORT).show()
+                            }
                         }
                     ),
                     singleLine = true,
+                    textStyle = TextStyle(
+                        fontSize = 30.sp,
+                        color = Color.Black,
+                        textAlign = TextAlign.Center
+                    ),
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = Color.Transparent,
+                        unfocusedContainerColor = Color.Transparent,
+                        disabledContainerColor = Color.Transparent
+                    )
                 )
             } else {
                 Text(
                     text = username,
                     modifier = Modifier
                         .clickable { isEditing = true },
-                    fontSize = 35.sp,
-                    color = Color.Black
+                    fontSize = 30.sp,
+                    color = Color.Black,
+                    fontWeight = FontWeight.Bold
                 )
             }
+        }
+
+        if (isEditing) {
+            Button(
+                onClick = {
+                    viewModel.updateUserName(newUsername)
+                    username = newUsername
+                    isEditing = false
+                    focusManager.clearFocus()
+                },
+                enabled = newUsername.isNotBlank() && newUsername != username,
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(top = 16.dp),
+            ) {
+                Text("Guardar Cambios")
+            }
+        } else {
+            Text(
+                text = viewModel.getEmail().toString(),
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(top = 4.dp),
+                fontSize = 16.sp,
+                color = Color.Black,
+            )
         }
     }
 }
