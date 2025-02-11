@@ -16,7 +16,6 @@ class AuthRepository @Inject constructor(
     private val firestore: FirebaseFirestore,
     private val context: Context,
 ) {
-
     suspend fun login(email: String, password: String): Result<Unit> {
         return try {
             firebaseAuth.signInWithEmailAndPassword(email,password).await()
@@ -65,15 +64,6 @@ class AuthRepository @Inject constructor(
         Result.failure(e)
     }
 
-    suspend fun getSignInMethods(email: String): List<String> {
-        return try {
-            val result = firebaseAuth.fetchSignInMethodsForEmail(email).await()
-            result.signInMethods ?: emptyList()
-        } catch (e: Exception) {
-            emptyList()
-        }
-    }
-
     fun isUserLoggedIn(): Boolean {
         return firebaseAuth.currentUser != null
     }
@@ -91,5 +81,27 @@ class AuthRepository @Inject constructor(
     private fun getDefaultPFP(context: Context): String {
         val uri = Uri.parse("android.resource://${context.packageName}/${R.drawable.default_pfp}")
         return encodeImageToBase64(context, uri) ?: ""
+    }
+
+    // Metodo para recoger el nombre de usuario actual
+    suspend fun getUserName(): String {
+        val currentUser = firebaseAuth.currentUser ?: throw Exception("Usuario no registrado")
+
+        return try {
+            val document = firestore.collection("users").document(currentUser.email!!).get().await()
+            document.getString("username") ?: throw Exception("Username not found")
+        } catch (e: Exception) {
+            throw Exception("Error al obtener el username: ${e.message}", e)
+        }
+    }
+
+    // Metodo para actualizar el nombre de usuario
+    suspend fun updateUserName(email: String, newUsername: String) {
+        try {
+            val userRef = firestore.collection("users").document(email)
+            userRef.update("username", newUsername).await()
+        } catch (e: Exception) {
+            throw Exception("Error al actualizar el username: ${e.message}", e)
+        }
     }
 }

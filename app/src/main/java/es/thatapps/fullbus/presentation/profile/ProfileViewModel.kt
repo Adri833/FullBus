@@ -2,10 +2,12 @@ package es.thatapps.fullbus.presentation.profile
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import es.thatapps.fullbus.data.repository.AuthRepository
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -36,6 +38,23 @@ class ProfileViewModel @Inject constructor(
                 // Si el documento no existe, lo creamos con el campo "PFP"
                 val userData = hashMapOf("PFP" to newPFP)
                 firestoreRef.set(userData)
+            }
+        }
+    }
+
+    suspend fun getUserName(): String {
+       return authRepository.getUserName()
+    }
+
+    fun updateUserName(newUsername: String) {
+        viewModelScope.launch {
+            try {
+                val email = FirebaseAuth.getInstance().currentUser?.email
+                if (email != null) {
+                    authRepository.updateUserName(email, newUsername)
+                }
+            } catch (e: Exception) {
+                Log.e("ProfileScreen", "Error al actualizar el username: ${e.message}", e)
             }
         }
     }

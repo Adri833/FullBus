@@ -18,9 +18,11 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.navigation.NavController
 import es.thatapps.fullbus.R
 import es.thatapps.fullbus.data.repository.AuthRepository
 import es.thatapps.fullbus.presentation.components.AdBanner
+import es.thatapps.fullbus.presentation.components.BackButton
 import es.thatapps.fullbus.presentation.components.DrawerMenu
 import es.thatapps.fullbus.presentation.components.Header
 import es.thatapps.fullbus.presentation.components.HorizontalPagerBuses
@@ -38,6 +40,7 @@ fun BusDetailScreen(
     navigationToHome: () -> Unit,
     navigationToProfile : () -> Unit,
     viewModel: BusViewModel = hiltViewModel(),
+    navController: NavController
 ) {
     // Observar el estado de los buses activos
     val activeBuses by viewModel.activeBuses.collectAsState()
@@ -97,16 +100,7 @@ fun BusDetailScreen(
             when (selectedTabIndex) {
                 0 -> { // Ida
 
-                    Box {
-                        IconButton(
-                            onClick = { navigationToHome() },
-                        ) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_back),
-                                contentDescription = "Back"
-                            )
-                        }
-                    }
+                    BackButton(navController)
 
                     // Contenedor para el HorizontalPager
                     Box(
@@ -120,16 +114,7 @@ fun BusDetailScreen(
 
                 1 -> { // Vuelta
 
-                    Box {
-                        IconButton(
-                            onClick = { navigationToHome() },
-                        ) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_back),
-                                contentDescription = "Back"
-                            )
-                        }
-                    }
+                    BackButton(navController)
 
                     Box(
                         modifier = Modifier
@@ -142,16 +127,7 @@ fun BusDetailScreen(
 
                 2 -> { // Horario
 
-                    Box {
-                        IconButton(
-                            onClick = { navigationToHome() },
-                        ) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_back),
-                                contentDescription = "Back"
-                            )
-                        }
-                    }
+                    BackButton(navController)
 
                     Box(
                         modifier = Modifier
