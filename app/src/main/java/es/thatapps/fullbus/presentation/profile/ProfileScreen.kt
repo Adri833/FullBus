@@ -16,8 +16,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material3.Button
+import androidx.compose.material.icons.filled.MailOutline
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -39,6 +42,9 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import es.thatapps.fullbus.presentation.components.BackButton
+import es.thatapps.fullbus.presentation.components.CardClickable
+import es.thatapps.fullbus.presentation.components.CardInfo
+import es.thatapps.fullbus.presentation.components.CardSwitch
 import es.thatapps.fullbus.presentation.components.adjustForMobile
 import es.thatapps.fullbus.utils.ImageBase64
 import es.thatapps.fullbus.utils.encodeImageToBase64
@@ -93,11 +99,11 @@ fun ProfileScreen(
             text = "Perfil",
             modifier = Modifier
                 .align(Alignment.CenterHorizontally),
-            fontSize = 40.sp,
+            fontSize = 36.sp,
             color = Color.Black,
         )
 
-        Spacer(modifier = Modifier.height(40.dp))
+        Spacer(modifier = Modifier.height(30.dp))
 
         // Foto de perfil clicable para cambiarla
         Box(
@@ -111,7 +117,7 @@ fun ProfileScreen(
             // Imagen de perfil actual
             ImageBase64(
                 imageUrl = pfp,
-                size = 140.dp
+                size = 130.dp
             )
 
             // Icono de lapiz
@@ -129,7 +135,7 @@ fun ProfileScreen(
             }
         }
 
-        Spacer(modifier = Modifier.height(26.dp))
+        Spacer(modifier = Modifier.height(20.dp))
 
         Box(
             modifier = Modifier
@@ -157,7 +163,11 @@ fun ProfileScreen(
                                 isEditing = false
                                 focusManager.clearFocus()
                             } else {
-                                Toast.makeText(context, "El nombre de usuario no puede estar vacío", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    context,
+                                    "El nombre de usuario no puede estar vacío",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
                         }
                     ),
@@ -185,30 +195,47 @@ fun ProfileScreen(
             }
         }
 
-        if (isEditing) {
-            Button(
-                onClick = {
-                    viewModel.updateUserName(newUsername)
-                    username = newUsername
-                    isEditing = false
-                    focusManager.clearFocus()
-                },
-                enabled = newUsername.isNotBlank() && newUsername != username,
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .padding(top = 16.dp),
-            ) {
-                Text("Guardar Cambios")
-            }
-        } else {
-            Text(
-                text = viewModel.getEmail().toString(),
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .padding(top = 4.dp),
-                fontSize = 16.sp,
-                color = Color.Black,
-            )
-        }
+        // Barra horizontal
+        HorizontalDivider(
+            thickness = 2.dp,
+            color = Color.Black,
+            modifier = Modifier.padding(top = 16.dp, bottom = 32.dp)
+        )
+
+        // Card para el modo oscuro
+        CardSwitch(
+            title = "Modo Oscuro",
+            isCheked = false,
+            onChekedChange = { },
+            modifier = Modifier.padding(16.dp)
+        )
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        // Card para el correo electronico
+        CardInfo(
+            content = viewModel.getEmail().toString(),
+            icon = Icons.Default.MailOutline,
+        )
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        CardClickable(
+            icon = Icons.AutoMirrored.Filled.ExitToApp,
+            onClick = { viewModel.logout(navController) },
+            title = "Cerrar Sesión",
+        )
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        CardClickable(
+            icon = Icons.Default.Delete,
+            onClick = {
+                viewModel.deleteAccount(navController) {
+                    Toast.makeText(context, "Error al borrar la cuenta", Toast.LENGTH_SHORT).show()
+                }
+            },
+            title = "Borrar cuenta",
+        )
     }
 }

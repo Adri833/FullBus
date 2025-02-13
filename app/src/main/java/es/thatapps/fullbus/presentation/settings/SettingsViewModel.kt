@@ -14,7 +14,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
-    private val dataStore: DataStore<Preferences> // Inyección de DataStore
+    private val dataStore: DataStore<Preferences>
 ) : ViewModel() {
 
     private val DARK_MODE_KEY = booleanPreferencesKey("dark_mode")

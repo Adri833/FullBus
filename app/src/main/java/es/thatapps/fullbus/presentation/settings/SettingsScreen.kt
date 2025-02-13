@@ -10,7 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import es.thatapps.fullbus.presentation.components.SettingItem
+import es.thatapps.fullbus.presentation.components.CardSwitch
 
 @Composable
 fun SettingsScreen(
@@ -23,8 +23,8 @@ fun SettingsScreen(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(20.dp), // Espaciado entre items
-        horizontalAlignment = Alignment.CenterHorizontally // Centra el contenido horizontalmente
+        verticalArrangement = Arrangement.spacedBy(20.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // Encabezado
         Text(
@@ -36,16 +36,16 @@ fun SettingsScreen(
             modifier = Modifier.padding(bottom = 24.dp) // Más espacio debajo del título
         )
 
-        // Item Modo Oscuro en una Card para un diseño más limpio
-        SettingItem(
+        // Item Modo Oscuro
+        CardSwitch(
             title = "Modo Oscuro",
             isCheked = isDarkModeEnabled,
             onChekedChange = { viewModel.toggleDarkMode(it) },
-            modifier = Modifier.padding(16.dp) // Relleno dentro del card
+            modifier = Modifier.padding(16.dp)
         )
 
-        // Item Notificaciones en una Card
-        SettingItem(
+        // Item Notificaciones
+        CardSwitch(
             title = "Activar notificaciones",
             isCheked = areNotificationsEnabled,
             onChekedChange = { viewModel.toggleNotifications(it) },

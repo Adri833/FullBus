@@ -72,6 +72,22 @@ class AuthRepository @Inject constructor(
         firebaseAuth.signOut()
     }
 
+    suspend fun deleteAccount(): Result<Unit> {
+        val user = firebaseAuth.currentUser
+        return if (user != null) {
+            try {
+                val userEmail = user.email ?: throw Exception("Email no disponible")
+                firestore.collection("users").document(userEmail).delete().await()
+                user?.delete()?.await()
+                Result.success(Unit)
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        } else {
+            Result.failure(Exception("Usuario no registrado"))
+        }
+    }
+
     // Funcion para generar un nombre aleatorio para el usuario
     private fun generateRandomUsername(): String {
         val randomNumber = (1..9999).random()

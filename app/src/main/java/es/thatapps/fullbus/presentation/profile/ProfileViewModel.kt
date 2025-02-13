@@ -3,10 +3,12 @@ package es.thatapps.fullbus.presentation.profile
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import es.thatapps.fullbus.data.repository.AuthRepository
+import es.thatapps.fullbus.navigation.Routes
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -56,6 +58,31 @@ class ProfileViewModel @Inject constructor(
             } catch (e: Exception) {
                 Log.e("ProfileScreen", "Error al actualizar el username: ${e.message}", e)
             }
+        }
+    }
+
+    fun deleteAccount(navController: NavController, onFailure: (Throwable) -> Unit) {
+        viewModelScope.launch {
+            val result = authRepository.deleteAccount()
+            result.fold(
+                onSuccess = {
+                    navController.navigate("login") {
+                        popUpTo("home") { inclusive = true }
+                        launchSingleTop = true
+                    }
+                },
+                onFailure = { e ->
+                    onFailure(e)
+                }
+            )
+        }
+    }
+
+    fun logout(navController: NavController) {
+        authRepository.logout()
+        navController.navigate("login") {
+            popUpTo(Routes.Home.route) { inclusive = true }
+            launchSingleTop = true
         }
     }
 
