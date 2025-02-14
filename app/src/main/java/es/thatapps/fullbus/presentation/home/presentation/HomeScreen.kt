@@ -30,7 +30,6 @@ fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
     onBusLineClick: (String) -> Unit, // Función para manejar clics en líneas de autobús
     navigationToLogin: () -> Unit,
-    navigationToSettings: () -> Unit,
     navigationToProfile: () -> Unit,
     navigationToHome: () -> Unit
 ) {
@@ -44,7 +43,6 @@ fun HomeScreen(
     drawerMenu.Show(
         drawerState = drawerState,
         navigationToLogin = navigationToLogin,
-        navigationToSettings = navigationToSettings,
         navigationToProfile = navigationToProfile,
         navigationToHome = navigationToHome,
         onLogout = {

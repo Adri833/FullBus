@@ -26,7 +26,6 @@ class DrawerMenu {
     fun Show(
         drawerState: DrawerState,
         navigationToLogin: () -> Unit,
-        navigationToSettings: () -> Unit,
         navigationToProfile: () -> Unit,
         navigationToHome: () -> Unit,
         onLogout : () -> Unit,
@@ -37,7 +36,6 @@ class DrawerMenu {
             drawerContent = {
                 DrawerContent(
                     navigationToLogin = navigationToLogin,
-                    navigationToSettings = navigationToSettings,
                     navigationToProfile = navigationToProfile,
                     navigationToHome = navigationToHome,
                     onLogout = onLogout
@@ -50,7 +48,6 @@ class DrawerMenu {
     @Composable
     private fun DrawerContent(
         navigationToLogin: () -> Unit,
-        navigationToSettings: () -> Unit,
         navigationToProfile: () -> Unit,
         navigationToHome: () -> Unit,
         onLogout : () -> Unit,
@@ -89,12 +86,6 @@ class DrawerMenu {
                 iconRes = R.drawable.ic_profile,
                 text = "Perfil",
                 onClick = navigationToProfile
-            )
-
-            MenuItem(
-                iconRes = R.drawable.ic_settings,
-                text = "Ajustes",
-                onClick = navigationToSettings
             )
 
             SuggestionMenuItem()

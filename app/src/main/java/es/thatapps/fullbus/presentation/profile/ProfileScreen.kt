@@ -49,7 +49,6 @@ import es.thatapps.fullbus.presentation.components.adjustForMobile
 import es.thatapps.fullbus.utils.ImageBase64
 import es.thatapps.fullbus.utils.encodeImageToBase64
 import es.thatapps.fullbus.utils.imagePickerLauncher
-import es.thatapps.fullbus.utils.getPFP
 
 @Composable
 fun ProfileScreen(
@@ -57,7 +56,7 @@ fun ProfileScreen(
     navController: NavController
 ) {
     val context = LocalContext.current
-    var pfp by remember { mutableStateOf<String?>(null) }
+    val pfp by viewModel.pfp.collectAsState()
     var username by remember { mutableStateOf("") }
     var isEditing by remember { mutableStateOf(false) }
     var newUsername by remember { mutableStateOf("") }
@@ -65,7 +64,7 @@ fun ProfileScreen(
     val focusManager = LocalFocusManager.current
 
     LaunchedEffect(Unit) {
-        pfp = getPFP()
+        viewModel.loadPFP()
         username = viewModel.getUserName()
         newUsername = username
     }
@@ -79,6 +78,7 @@ fun ProfileScreen(
             base64Image?.let { encodedImage ->
                 // Subimos la imagen codificada a Firestore
                 viewModel.updatePFP(encodedImage)
+                viewModel.loadPFP()
             } ?: run {
                 Toast.makeText(context, "Error al convertir la imagen", Toast.LENGTH_SHORT).show()
             }

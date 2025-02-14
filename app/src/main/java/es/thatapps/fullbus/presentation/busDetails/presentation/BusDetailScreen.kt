@@ -57,7 +57,6 @@ fun BusDetailScreen(
     drawerMenu.Show(
         drawerState = drawerState,
         navigationToLogin = navigationToLogin,
-        navigationToSettings = navigationToSettings,
         navigationToProfile = navigationToProfile,
         navigationToHome = navigationToHome,
         onLogout = {

@@ -58,9 +58,6 @@ fun NavigationHost(
                         popUpTo(Routes.Login.route) { inclusive = true }
                     }
                 },
-                navigationToSettings = {
-                    navController.navigate(Routes.Settings.route)
-                },
                 navigationToProfile = {
                     navController.navigate(Routes.Profile.route)
                 },

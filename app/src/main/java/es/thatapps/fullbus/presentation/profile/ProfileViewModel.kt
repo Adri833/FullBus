@@ -9,6 +9,9 @@ import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import es.thatapps.fullbus.data.repository.AuthRepository
 import es.thatapps.fullbus.navigation.Routes
+import es.thatapps.fullbus.utils.getPFP
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -16,6 +19,14 @@ import javax.inject.Inject
 class ProfileViewModel @Inject constructor(
     private val authRepository: AuthRepository,
 ): ViewModel() {
+    private val _pfp = MutableStateFlow<String?>(null)
+    val pfp: StateFlow<String?> = _pfp
+
+    init {
+        viewModelScope.launch {
+            _pfp.value = getPFP()
+        }
+    }
 
     // Función para actualizar el PFP en Firestore
     fun updatePFP(newPFP: String) {
@@ -35,17 +46,31 @@ class ProfileViewModel @Inject constructor(
         firestoreRef.get().addOnSuccessListener { document ->
             if (document.exists()) {
                 // Si el documento existe, actualizamos el campo "PFP"
-                firestoreRef.update("PFP", newPFP)
+                firestoreRef.update("PFP", newPFP).addOnSuccessListener {
+                    viewModelScope.launch {
+                        _pfp.value = newPFP
+                    }
+                }
             } else {
                 // Si el documento no existe, lo creamos con el campo "PFP"
                 val userData = hashMapOf("PFP" to newPFP)
-                firestoreRef.set(userData)
+                firestoreRef.set(userData).addOnSuccessListener {
+                    viewModelScope.launch {
+                        _pfp.value = newPFP
+                    }
+                }
             }
         }
     }
 
     suspend fun getUserName(): String {
        return authRepository.getUserName()
+    }
+
+    fun loadPFP() {
+        viewModelScope.launch {
+            _pfp.value = getPFP()
+        }
     }
 
     fun updateUserName(newUsername: String) {
