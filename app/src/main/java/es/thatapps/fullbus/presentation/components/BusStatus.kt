@@ -24,16 +24,21 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.thatapps.fullbus.R
+import es.thatapps.fullbus.data.repository.AuthRepository
 import es.thatapps.fullbus.presentation.busDetails.domain.BusDetailDomain
 import es.thatapps.fullbus.ui.theme.Green
 import es.thatapps.fullbus.ui.theme.Orange
 import es.thatapps.fullbus.ui.theme.Red
 import es.thatapps.fullbus.ui.theme.Red2
+import es.thatapps.fullbus.utils.ImageBase64
+import es.thatapps.fullbus.utils.getImageFromBase64
 
 @Composable
 fun BusStatus(
     busDetail: BusDetailDomain,
     onReportFull: () -> Unit,
+    pfp : String,
+    username : String,
 ) {
     Column(
         modifier = Modifier
@@ -104,17 +109,12 @@ fun BusStatus(
                     .wrapContentSize(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    imageVector = Icons.Filled.AccountCircle,
-                    tint = Color.Black,
-                    contentDescription = "Full Bus",
-                    modifier = Modifier.size(32.dp)
-                )
+                ImageBase64(imageUrl = pfp, size = 46.dp)
 
                 Spacer(modifier = Modifier.width(8.dp))
 
                 Text(
-                    text = "Reportado por (nombre_usuario)",
+                    text = "Reportado por $username",
                     color = Color.Black,
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp
@@ -145,26 +145,5 @@ fun BusStatus(
                     fontSize = 20.sp)
             }
         }
-//        Spacer(modifier = Modifier.height(24.dp))
-//
-//        TimedProgressBar(
-//            startTime = busDetail.departureTime,
-//            endTime = busDetail.arriveTime,
-//            currentTime = SimpleDateFormat("HH:mm", Locale.getDefault()).apply { timeZone = TimeZone.getTimeZone("Europe/Madrid") }.format(Calendar.getInstance().time),
-//        )
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun PreviewBusStatus() {
-    BusStatus(
-        busDetail = BusDetailDomain(
-            line = "M-126",
-            departureTime = "15:30",
-            arriveTime = "16:30",
-            isFull = true
-        ),
-        onReportFull = {},
-    )
 }

@@ -1,13 +1,10 @@
 package es.thatapps.fullbus.presentation.busDetails.presentation
 
 import android.annotation.SuppressLint
-import android.provider.Settings.Global
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.DrawerValue
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
@@ -19,16 +16,13 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavController
-import es.thatapps.fullbus.R
-import es.thatapps.fullbus.data.repository.AuthRepository
 import es.thatapps.fullbus.presentation.components.AdBanner
 import es.thatapps.fullbus.presentation.components.BackButton
 import es.thatapps.fullbus.presentation.components.DrawerMenu
 import es.thatapps.fullbus.presentation.components.Header
 import es.thatapps.fullbus.presentation.components.HorizontalPagerBuses
 import es.thatapps.fullbus.presentation.components.adjustForMobile
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.coroutineScope
+import es.thatapps.fullbus.presentation.loading.LoadingScreen
 import kotlinx.coroutines.launch
 
 @SuppressLint("DiscouragedApi")
@@ -36,7 +30,6 @@ import kotlinx.coroutines.launch
 fun BusDetailScreen(
     busLine: String,
     navigationToLogin: () -> Unit,
-    navigationToSettings: () -> Unit,
     navigationToHome: () -> Unit,
     navigationToProfile : () -> Unit,
     viewModel: BusViewModel = hiltViewModel(),
@@ -47,6 +40,7 @@ fun BusDetailScreen(
     val filteredBuses = activeBuses.filter { it.line == busLine }
     val idaBuses = filteredBuses.filter { it.direction == "Ida" }
     val vueltaBuses = filteredBuses.filter { it.direction == "Vuelta" }
+    val isLoading by viewModel.isLoading.collectAsState()
 
     // Estados del menu
     val drawerState = rememberDrawerState(DrawerValue.Closed)
@@ -80,6 +74,10 @@ fun BusDetailScreen(
         ) {
             // Encabezado
             Header(onMenuClick = { scope.launch { drawerState.open() } }, navigationToProfile)
+
+            if (isLoading) {
+                LoadingScreen()
+            }
 
             // Navegacion superior
             TabRow(
@@ -130,6 +128,7 @@ fun BusDetailScreen(
 
                     Box(
                         modifier = Modifier
+                            .padding(start = 16.dp, end = 16.dp, top = 16.dp)
                             .weight(1f)
                     ) {
                         // Formatea el nombre del recurso

@@ -32,6 +32,9 @@ class BusViewModel @Inject constructor(
     private val _activeBuses = MutableStateFlow<List<BusDetailDomain>>(emptyList())
     val activeBuses: StateFlow<List<BusDetailDomain>> = _activeBuses
 
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading
+
     // Función para obtener el día actual
     private fun getLogicDay(): Int {
         // Crea una copia del calendario para no modificar el original
@@ -52,12 +55,15 @@ class BusViewModel @Inject constructor(
 
     // Carga los buses activos desde Firestore
     private suspend fun loadActiveBuses() {
+        _isLoading.value = true
         _activeBuses.value = busRepository.getActiveBuses()
+        _isLoading.value = false
     }
 
     // Refresca los buses activos (elimina expirados y crea nuevos)
     private suspend fun refreshActiveBuses() {
         // Primero elimina todos los buses expirados
+        _isLoading.value = true
         deleteBus()
 
         // Obtiene los buses ya activos en Firestore, utilizando un Map para una búsqueda rápida
@@ -92,6 +98,7 @@ class BusViewModel @Inject constructor(
             }
         }
         loadActiveBuses()
+        _isLoading.value = false
     }
 
     private suspend fun deleteBus() {
@@ -140,6 +147,9 @@ class BusViewModel @Inject constructor(
         }
     }
 
+    suspend fun getUsername (): String {
+        return authRepository.getUserName()
+    }
     fun logout() {
         authRepository.logout()
     }

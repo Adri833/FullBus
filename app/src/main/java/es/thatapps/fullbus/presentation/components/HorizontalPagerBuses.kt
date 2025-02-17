@@ -13,8 +13,12 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -22,6 +26,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import es.thatapps.fullbus.presentation.busDetails.domain.BusDetailDomain
 import es.thatapps.fullbus.presentation.busDetails.presentation.BusViewModel
+import es.thatapps.fullbus.utils.getPFP
 import kotlinx.coroutines.launch
 
 @Composable
@@ -31,6 +36,13 @@ fun HorizontalPagerBuses(
 ) {
     val pagerState = rememberPagerState(pageCount = { activeBuses.size })
     val coroutineScope = rememberCoroutineScope()
+    var pfp by remember { mutableStateOf<String?>(null) }
+    var username by remember { mutableStateOf<String?>(null) }
+
+    LaunchedEffect(Unit) {
+        pfp = getPFP()
+        username = viewModel.getUsername()
+    }
 
     Box(modifier = Modifier.fillMaxWidth()) {
         // HorizontalPager
@@ -53,7 +65,9 @@ fun HorizontalPagerBuses(
             ) {
                 BusStatus(
                     busDetail = bus,
-                    onReportFull = { viewModel.reportFull(bus.id) }
+                    onReportFull = { viewModel.reportFull(bus.id) },
+                    pfp = pfp.toString(),
+                    username = username.toString()
                 )
             }
         }
