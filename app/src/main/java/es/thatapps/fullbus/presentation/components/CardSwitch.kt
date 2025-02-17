@@ -17,26 +17,26 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun SettingItem(
+fun CardSwitch(
     title: String,
     isCheked: Boolean,
     onChekedChange: (Boolean) -> Unit,
-    modifier: Modifier = Modifier // Para que sea personalizable
+    modifier: Modifier = Modifier
 ) {
     Card(
-        shape = RoundedCornerShape(12.dp), // Bordes redondeados
-        elevation = CardDefaults.cardElevation(8.dp), // Elevación para sombra
+        shape = RoundedCornerShape(12.dp),
+        elevation = CardDefaults.cardElevation(8.dp),
         colors = CardDefaults.cardColors(containerColor = Color(0xFFF5F5F5))
     ) {
         Row (
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ){ Text(
             text = title,
             fontSize = 18.sp,
-            modifier = Modifier.weight(1f) // Deja que el texto ocupe todo el espacio disponible
+            modifier = Modifier.weight(1f)
         )
             Switch(
                 checked = isCheked,

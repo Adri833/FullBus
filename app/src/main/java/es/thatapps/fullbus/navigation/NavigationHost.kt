@@ -58,9 +58,6 @@ fun NavigationHost(
                         popUpTo(Routes.Login.route) { inclusive = true }
                     }
                 },
-                navigationToSettings = {
-                    navController.navigate(Routes.Settings.route)
-                },
                 navigationToProfile = {
                     navController.navigate(Routes.Profile.route)
                 },
@@ -80,6 +77,7 @@ fun NavigationHost(
             val busLine = backStackEntry.arguments?.getString("busLine")
             if (busLine != null) {
                 BusDetailScreen(
+                    navController = navController,
                     busLine = busLine, // Pasar el busLine a la pantalla de detalles
                     navigationToLogin = {
                         navController.navigate(Routes.Login.route) {
@@ -96,20 +94,7 @@ fun NavigationHost(
         // Navegación de la pantalla de perfil
         composable(route = Routes.Profile.route) {
             ProfileScreen(
-                navigationToSettings = {
-                    navController.navigate(Routes.Settings.route)
-                },
-                navigationToLogin = {
-                    navController.navigate(Routes.Login.route) {
-                        popUpTo(Routes.Login.route) { inclusive = true }
-                    }
-                },
-                navigationToProfile = {
-                    navController.navigate(Routes.Profile.route)
-                },
-                navigationToHome = {
-                    navController.navigate(Routes.Home.route)
-                }
+                navController = navController
             )
         }
     }
