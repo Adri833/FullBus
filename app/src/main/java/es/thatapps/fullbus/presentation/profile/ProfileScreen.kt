@@ -45,6 +45,7 @@ import es.thatapps.fullbus.presentation.components.BackButton
 import es.thatapps.fullbus.presentation.components.CardClickable
 import es.thatapps.fullbus.presentation.components.CardInfo
 import es.thatapps.fullbus.presentation.components.CardSwitch
+import es.thatapps.fullbus.presentation.components.ConfirmationDialog
 import es.thatapps.fullbus.presentation.components.adjustForMobile
 import es.thatapps.fullbus.utils.ImageBase64
 import es.thatapps.fullbus.utils.encodeImageToBase64
@@ -60,6 +61,8 @@ fun ProfileScreen(
     var username by remember { mutableStateOf("") }
     var isEditing by remember { mutableStateOf(false) }
     var newUsername by remember { mutableStateOf("") }
+    var showLogoutDialog by remember { mutableStateOf(false) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
 
@@ -222,7 +225,7 @@ fun ProfileScreen(
 
         CardClickable(
             icon = Icons.AutoMirrored.Filled.ExitToApp,
-            onClick = { viewModel.logout(navController) },
+            onClick = { showLogoutDialog = true },
             title = "Cerrar Sesión",
         )
 
@@ -230,12 +233,36 @@ fun ProfileScreen(
 
         CardClickable(
             icon = Icons.Default.Delete,
-            onClick = {
-                viewModel.deleteAccount(navController) {
-                    Toast.makeText(context, "Error al borrar la cuenta", Toast.LENGTH_SHORT).show()
-                }
-            },
+            onClick = { showDeleteDialog = true },
             title = "Borrar cuenta",
         )
     }
+
+    // Mensaje de confirmacion de cierre de sesion
+    ConfirmationDialog(
+        showDialog = showLogoutDialog,
+        title = "Cerrar Sesión",
+        message = "¿Seguro que quieres cerrar sesión?",
+        confirmText = "Cerrar Sesión",
+        onConfirm = {
+            viewModel.logout(navController)
+            showLogoutDialog = false
+        },
+        onDismiss = { showLogoutDialog = false }
+    )
+
+    // Mensaje de confirmacion de borrado de cuenta
+    ConfirmationDialog(
+        showDialog = showDeleteDialog,
+        title = "Borrar cuenta",
+        message = "¿Seguro que quieres borrar tu cuenta?",
+        confirmText = "Borrar",
+        onConfirm = {
+            viewModel.deleteAccount(navController) {
+                Toast.makeText(context, "Error al borrar la cuenta", Toast.LENGTH_SHORT).show()
+            }
+            showDeleteDialog = false
+        },
+        onDismiss = { showDeleteDialog = false }
+    )
 }
