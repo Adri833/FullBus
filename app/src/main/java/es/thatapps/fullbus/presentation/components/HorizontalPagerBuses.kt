@@ -37,11 +37,18 @@ fun HorizontalPagerBuses(
     val pagerState = rememberPagerState(pageCount = { activeBuses.size })
     val coroutineScope = rememberCoroutineScope()
     var pfp by remember { mutableStateOf<String?>(null) }
+    var pfpbus by remember { mutableStateOf<String?>(null) }
+    var userbus by remember { mutableStateOf<String?>(null) }
     var username by remember { mutableStateOf<String?>(null) }
 
-    LaunchedEffect(Unit) {
-        pfp = getPFP()
-        username = viewModel.getUsername()
+    LaunchedEffect(activeBuses, pagerState.currentPage) {
+        if (activeBuses.isNotEmpty()) {
+            val bus = activeBuses[pagerState.currentPage]
+            pfp = getPFP()
+            username = viewModel.getUsername()
+            userbus = viewModel.getUserBus(bus)
+            pfpbus = viewModel.getPFPBus(bus)
+        }
     }
 
     Box(modifier = Modifier.fillMaxWidth()) {
@@ -65,9 +72,9 @@ fun HorizontalPagerBuses(
             ) {
                 BusStatus(
                     busDetail = bus,
-                    onReportFull = { viewModel.reportFull(bus.id) },
-                    pfp = pfp.toString(),
-                    username = username.toString()
+                    onReportFull = { viewModel.reportFull(bus.id, username.toString(), pfp.toString()) },
+                    pfp = pfpbus.toString(),
+                    username = userbus.toString()
                 )
             }
         }

@@ -7,7 +7,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -20,18 +19,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.thatapps.fullbus.R
-import es.thatapps.fullbus.data.repository.AuthRepository
 import es.thatapps.fullbus.presentation.busDetails.domain.BusDetailDomain
 import es.thatapps.fullbus.ui.theme.Green
 import es.thatapps.fullbus.ui.theme.Orange
 import es.thatapps.fullbus.ui.theme.Red
 import es.thatapps.fullbus.ui.theme.Red2
 import es.thatapps.fullbus.utils.ImageBase64
-import es.thatapps.fullbus.utils.getImageFromBase64
 
 @Composable
 fun BusStatus(

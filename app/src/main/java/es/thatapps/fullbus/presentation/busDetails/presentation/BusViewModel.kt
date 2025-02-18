@@ -129,7 +129,7 @@ class BusViewModel @Inject constructor(
     }
 
     // Función para establecer el bus como lleno
-    fun reportFull(busId: String) {
+    fun reportFull(busId: String, username: String, pfp: String) {
         viewModelScope.launch {
             // Encuentra el bus en la lista de buses activos
             _activeBuses.value = _activeBuses.value.map { bus ->
@@ -139,17 +139,33 @@ class BusViewModel @Inject constructor(
                     bus
                 }
             }
-            // Luego actualiza el estado del bus en Firestore
-            busRepository.updateBus(_activeBuses.value.find { it.id == busId }!!)
+
+            // Actualiza el estado del bus en Firestore
+            val updatedBus = _activeBuses.value.find { it.id == busId }!!
+
+            // Agrega el username y el pfp al bus
+            val updatedBusWithUserInfo = updatedBus.copy(reportedByUsername = username, reportedByPfp = pfp)
+
+            // Guarda el bus actualizado en Firestore
+            busRepository.updateBus(updatedBusWithUserInfo)
 
             // Llama a refreshActiveBuses para recargar los buses activos si es necesario
             refreshActiveBuses()
         }
     }
 
-    suspend fun getUsername (): String {
+    suspend fun getUserBus (bus: BusDetailDomain): String {
+        return busRepository.getUserBus(bus)
+    }
+
+    suspend fun getUsername(): String {
         return authRepository.getUserName()
     }
+
+    suspend fun getPFPBus(bus: BusDetailDomain): String {
+        return busRepository.getPFPBus(bus)
+    }
+
     fun logout() {
         authRepository.logout()
     }

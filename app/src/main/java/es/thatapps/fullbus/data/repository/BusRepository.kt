@@ -1,5 +1,6 @@
 package es.thatapps.fullbus.data.repository
 
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
 import es.thatapps.fullbus.presentation.busDetails.domain.BusDetailDomain
@@ -7,6 +8,7 @@ import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class BusRepository @Inject constructor() {
+    private val firebaseAuth = FirebaseAuth.getInstance()
     private val firestore = FirebaseFirestore.getInstance()
     private val busCollection = firestore.collection("autobuses")
 
@@ -29,7 +31,9 @@ class BusRepository @Inject constructor() {
             "arriveTime" to bus.arriveTime,
             "direction" to bus.direction,
             "id" to getBusId(bus),
-            "day" to bus.day
+            "day" to bus.day,
+            "reportedByUsername" to bus.reportedByUsername,
+            "reportedByPfp" to bus.reportedByPfp
         )
 
         busCollection.document(getBusId(bus)).set(autobus).await()
@@ -37,7 +41,6 @@ class BusRepository @Inject constructor() {
 
     // Metodo para eliminar un bus de la db
     suspend fun deleteBus(bus: BusDetailDomain) {
-        // Elimina el bus usando su ID único
         busCollection.document(getBusId(bus)).delete().await()
     }
 
@@ -53,6 +56,26 @@ class BusRepository @Inject constructor() {
         // Actualiza el autobus con los datos nuevos
         busDoc?.let {
             busCollection.document(it.id).set(bus).await()
+        }
+    }
+
+    // Metodo para recoger el nombre del bus reportado
+    suspend fun getUserBus(bus: BusDetailDomain): String {
+        return try {
+            val document = firestore.collection("autobuses").document(getBusId(bus)).get().await()
+            document.getString("reportedByUsername") ?: throw Exception("Username not found")
+        } catch (e: Exception) {
+            throw Exception("Error al obtener el username: ${e.message}", e)
+        }
+    }
+
+    // Metodo para recoger el pfp del bus reportado
+    suspend fun getPFPBus(bus: BusDetailDomain): String {
+        return try {
+            val document = firestore.collection("autobuses").document(getBusId(bus)).get().await()
+            document.getString("reportedByPfp") ?: throw Exception("PFP not found")
+        } catch (e: Exception) {
+            throw Exception("Error al obtener el pfp: ${e.message}", e)
         }
     }
 }
