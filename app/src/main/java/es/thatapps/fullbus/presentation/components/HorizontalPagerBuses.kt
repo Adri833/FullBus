@@ -44,12 +44,16 @@ fun HorizontalPagerBuses(
     LaunchedEffect(activeBuses, pagerState.currentPage) {
         if (activeBuses.isNotEmpty()) {
             val bus = activeBuses[pagerState.currentPage]
-            pfp = getPFP()
-            username = viewModel.getUsername()
-            userbus = viewModel.getUserBus(bus)
-            pfpbus = viewModel.getPFPBus(bus)
+            try {
+                pfp = getPFP()
+                username = viewModel.getUsername()
+                userbus = viewModel.getUserBus(bus)
+                pfpbus = viewModel.getPFPBus(bus)
+            } catch (_: Exception) {
+            }
         }
     }
+
 
     Box(modifier = Modifier.fillMaxWidth()) {
         // HorizontalPager

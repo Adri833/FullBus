@@ -69,12 +69,18 @@ class BusViewModel @Inject constructor(
         // Obtiene los buses ya activos en Firestore, utilizando un Map para una búsqueda rápida
         val existingBuses = _activeBuses.value.associateBy { it.departureTime }
 
+        // Obtiene el mes actual
+        val currentMonth = calendar.get(Calendar.MONTH) + 1 // Los meses en Calendar son 0-indexados
+
+        // Determina si es verano (julio o agosto) o invierno (cualquier otro mes)
+        val season = if (currentMonth == Calendar.JULY || currentMonth == Calendar.AUGUST) { "Summer" } else { "Winter" }
+
         // Crea nuevos buses según el horario actual si no existen
         BusScheduleRepository.busSchedules.forEach { busSchedule ->
             val schedule = when (getLogicDay()) {
-                Calendar.SATURDAY -> busSchedule.schedules["Saturday"]
-                Calendar.SUNDAY -> busSchedule.schedules["Holiday"]
-                else -> busSchedule.schedules["Normal"]
+                Calendar.SATURDAY -> busSchedule.schedules[season]?.get("Saturday")
+                Calendar.SUNDAY -> busSchedule.schedules[season]?.get("Holiday")
+                else -> busSchedule.schedules[season]?.get("Normal")
             }
 
             // Verifica si el bus debe ser creado comparando la hora actual con la hora de salida, y si ya existe

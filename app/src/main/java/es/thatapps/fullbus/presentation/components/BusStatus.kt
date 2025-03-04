@@ -15,6 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -100,12 +101,18 @@ fun BusStatus(
             Row(
                 modifier = Modifier
                     .background(Orange, RoundedCornerShape(20.dp))
-                    .border(3.dp , Color.Black, RoundedCornerShape(20.dp))
+                    .border(3.dp, Color.Black, RoundedCornerShape(20.dp))
                     .padding(8.dp)
                     .wrapContentSize(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                ImageBase64(imageUrl = pfp, size = 46.dp)
+                Box(
+                    modifier = Modifier
+                        .size(46.dp)
+                        .shadow(6.dp, RoundedCornerShape(50))
+                ) {
+                    ImageBase64(imageUrl = pfp, size = 46.dp)
+                }
 
                 Spacer(modifier = Modifier.width(8.dp))
 
