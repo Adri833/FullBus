@@ -10,6 +10,7 @@ import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -21,6 +22,7 @@ import es.thatapps.fullbus.presentation.components.BackButton
 import es.thatapps.fullbus.presentation.components.DrawerMenu
 import es.thatapps.fullbus.presentation.components.Header
 import es.thatapps.fullbus.presentation.components.HorizontalPagerBuses
+import es.thatapps.fullbus.presentation.components.NoBusesAvailableMessage
 import es.thatapps.fullbus.presentation.components.adjustForMobile
 import es.thatapps.fullbus.presentation.loading.LoadingScreen
 import kotlinx.coroutines.launch
@@ -105,6 +107,16 @@ fun BusDetailScreen(
                             .weight(1f) // Hace que ocupe el espacio disponible
                             .padding(16.dp) // Separación con el texto de la hora
                     ) {
+                        if (idaBuses.isEmpty()) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                NoBusesAvailableMessage()
+                            }
+
+                        }
                         HorizontalPagerBuses(idaBuses, viewModel)
                     }
                 }
@@ -118,6 +130,10 @@ fun BusDetailScreen(
                             .weight(1f)
                             .padding(16.dp)
                     ) {
+
+                        if (vueltaBuses.isEmpty()) {
+                            NoBusesAvailableMessage()
+                        }
                         HorizontalPagerBuses(vueltaBuses, viewModel)
                     }
                 }
@@ -151,7 +167,6 @@ fun BusDetailScreen(
             }
 
             Spacer(modifier = Modifier.height(16.dp))
-
             AdBanner(context = LocalContext.current)
         }
     }
