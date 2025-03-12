@@ -40,6 +40,7 @@ fun HorizontalPagerBuses(
     var pfpbus by remember { mutableStateOf<String?>(null) }
     var userbus by remember { mutableStateOf<String?>(null) }
     var username by remember { mutableStateOf<String?>(null) }
+    var showDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(activeBuses, pagerState.currentPage) {
         if (activeBuses.isNotEmpty()) {
@@ -76,9 +77,20 @@ fun HorizontalPagerBuses(
             ) {
                 BusStatus(
                     busDetail = bus,
-                    onReportFull = { viewModel.reportFull(bus.id, username.toString(), pfp.toString()) },
+                    onReportFull = { showDialog = true },
                     pfp = pfpbus.toString(),
                     username = userbus.toString()
+                )
+            }
+
+            if (showDialog) {
+                ConfirmationDialog(
+                    showDialog = showDialog,
+                    title = "Reportar bus lleno",
+                    message = "¿Seguro que quieres reportar el bus como lleno?",
+                    confirmText = "Reportar",
+                    onConfirm = { viewModel.reportFull(bus.id, username.toString(), pfp.toString()) ; showDialog = false },
+                    onDismiss = { showDialog = false }
                 )
             }
         }

@@ -31,7 +31,7 @@ import es.thatapps.fullbus.ui.theme.Red2
 import es.thatapps.fullbus.utils.ImageBase64
 
 @Composable
-fun BusStatus(
+fun              BusStatus(
     busDetail: BusDetailDomain,
     onReportFull: () -> Unit,
     pfp : String,
@@ -145,7 +145,8 @@ fun BusStatus(
                 Text(
                     text = "Reportar",
                     color = Color.Black,
-                    fontSize = 20.sp)
+                    fontSize = 20.sp
+                )
             }
         }
     }

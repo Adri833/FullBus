@@ -2,8 +2,11 @@ package es.thatapps.fullbus.presentation.busDetails.presentation
 
 import android.annotation.SuppressLint
 import android.util.Log
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
@@ -12,6 +15,7 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.compose.ui.platform.LocalContext
@@ -26,6 +30,8 @@ import es.thatapps.fullbus.presentation.components.NoBusesAvailableMessage
 import es.thatapps.fullbus.presentation.components.adjustForMobile
 import es.thatapps.fullbus.presentation.loading.LoadingScreen
 import kotlinx.coroutines.launch
+import java.util.Calendar
+import java.util.TimeZone
 
 @SuppressLint("DiscouragedApi")
 @Composable
@@ -43,6 +49,10 @@ fun BusDetailScreen(
     val idaBuses = filteredBuses.filter { it.direction == "Ida" }
     val vueltaBuses = filteredBuses.filter { it.direction == "Vuelta" }
     val isLoading by viewModel.isLoading.collectAsState()
+    val season = when (Calendar.getInstance(TimeZone.getTimeZone("Europe/Madrid")).get(Calendar.MONTH)) {
+        Calendar.JULY, Calendar.AUGUST -> "summer"
+        else -> "winter"
+    }
 
     // Estados del menu
     val drawerState = rememberDrawerState(DrawerValue.Closed)
@@ -101,11 +111,10 @@ fun BusDetailScreen(
 
                     BackButton(navController)
 
-                    // Contenedor para el HorizontalPager
                     Box(
                         modifier = Modifier
-                            .weight(1f) // Hace que ocupe el espacio disponible
-                            .padding(16.dp) // Separación con el texto de la hora
+                            .weight(1f)
+                            .padding(16.dp)
                     ) {
                         if (idaBuses.isEmpty()) {
                             Box(
@@ -113,7 +122,7 @@ fun BusDetailScreen(
                                     .fillMaxSize(),
                                 contentAlignment = Alignment.Center
                             ) {
-                                NoBusesAvailableMessage()
+                                NoBusesAvailableMessage(busLine)
                             }
 
                         }
@@ -130,9 +139,15 @@ fun BusDetailScreen(
                             .weight(1f)
                             .padding(16.dp)
                     ) {
-
                         if (vueltaBuses.isEmpty()) {
-                            NoBusesAvailableMessage()
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                NoBusesAvailableMessage(busLine)
+                            }
+
                         }
                         HorizontalPagerBuses(vueltaBuses, viewModel)
                     }
@@ -148,7 +163,7 @@ fun BusDetailScreen(
                             .weight(1f)
                     ) {
                         // Formatea el nombre del recurso
-                        val resourceName = "horario_${busLine.replace("-", "").lowercase()}"
+                        val resourceName = "horario_${busLine.replace("-", "").lowercase()}_$season"
                         val resourceId = LocalContext.current.resources.getIdentifier(
                             resourceName,
                             "drawable",
@@ -157,10 +172,16 @@ fun BusDetailScreen(
 
                         // Muestra la imagen si existe
                         if (resourceId != 0) {
-                            Image(
-                                painter = painterResource(id = resourceId),
-                                contentDescription = "Horario para la línea $busLine"
-                            )
+                            Box(
+                                modifier = Modifier
+                                    .border(BorderStroke(10.dp, Color.Black), shape = RoundedCornerShape(8.dp))
+                                    .padding(8.dp)
+                            ) {
+                                Image(
+                                    painter = painterResource(id = resourceId),
+                                    contentDescription = "Horario para la línea $busLine"
+                                )
+                            }
                         }
                     }
                 }

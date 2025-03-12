@@ -27,6 +27,8 @@ class BusViewModel @Inject constructor(
     private val currentTime = sdf.format(calendar.time)
     private val resetHour = 4
     private val currentHour = calendar.get(Calendar.HOUR_OF_DAY)
+    private val currentMonth = calendar.get(Calendar.MONTH) + 1
+    private val season = if (currentMonth == Calendar.JULY || currentMonth == Calendar.AUGUST) { "Summer" } else { "Winter" }
 
     // Estado de los buses activos
     private val _activeBuses = MutableStateFlow<List<BusDetailDomain>>(emptyList())
@@ -68,12 +70,6 @@ class BusViewModel @Inject constructor(
 
         // Obtiene los buses ya activos en Firestore, utilizando un Map para una búsqueda rápida
         val existingBuses = _activeBuses.value.associateBy { it.departureTime }
-
-        // Obtiene el mes actual
-        val currentMonth = calendar.get(Calendar.MONTH) + 1 // Los meses en Calendar son 0-indexados
-
-        // Determina si es verano (julio o agosto) o invierno (cualquier otro mes)
-        val season = if (currentMonth == Calendar.JULY || currentMonth == Calendar.AUGUST) { "Summer" } else { "Winter" }
 
         // Crea nuevos buses según el horario actual si no existen
         BusScheduleRepository.busSchedules.forEach { busSchedule ->
