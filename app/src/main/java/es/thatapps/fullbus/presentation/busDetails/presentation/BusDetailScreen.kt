@@ -159,7 +159,7 @@ fun BusDetailScreen(
 
                     Box(
                         modifier = Modifier
-                            .padding(start = 16.dp, end = 16.dp, top = 16.dp)
+                            .padding(start = 8.dp, end = 8.dp, top = 16.dp)
                             .weight(1f)
                     ) {
                         // Formatea el nombre del recurso
@@ -174,8 +174,8 @@ fun BusDetailScreen(
                         if (resourceId != 0) {
                             Box(
                                 modifier = Modifier
-                                    .border(BorderStroke(10.dp, Color.Black), shape = RoundedCornerShape(8.dp))
-                                    .padding(8.dp)
+                                    .border(BorderStroke(6.dp, Color.Black), shape = RoundedCornerShape(6.dp))
+                                    .padding(4.dp)
                             ) {
                                 Image(
                                     painter = painterResource(id = resourceId),

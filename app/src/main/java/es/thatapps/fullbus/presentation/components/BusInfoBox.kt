@@ -38,12 +38,12 @@ fun BusInfoBox(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
-            .shadow(elevation = 6.dp, shape = RoundedCornerShape(16.dp)) // Sombra
-            .border(2.dp, Color.Black, shape = RoundedCornerShape(16.dp)) // Borde negro
-            .clickable(onClick = onClick), // Hacer que el Card sea clicable
+            .shadow(elevation = 6.dp, shape = RoundedCornerShape(16.dp))
+            .border(2.dp, Color.Black, shape = RoundedCornerShape(16.dp))
+            .clickable(onClick = onClick),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color.Transparent // Fondo transparente para el gradiente
+            containerColor = Color.Transparent
         )
     ) {
         // Colores gradientes
@@ -79,7 +79,7 @@ fun BusInfoBox(
                         fontSize = 16.sp,
                         color = Color.Black,
                         textAlign = TextAlign.Center,
-                        style = TextStyle(fontWeight = Bold), // negrita
+                        style = TextStyle(fontWeight = Bold),
                         modifier = Modifier
                             .width(50.dp)
                     )

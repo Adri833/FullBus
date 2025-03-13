@@ -16,7 +16,7 @@ data class BusLineColorsDomain(
 
 object BusLineMockData {
     // Obtenber lista mokeada
-    fun getMockBusLines(): List<BusLineDomain> {
+    fun getBusLines(): List<BusLineDomain> {
         return listOf(
             BusLineDomain(
                 line = "M-126",
