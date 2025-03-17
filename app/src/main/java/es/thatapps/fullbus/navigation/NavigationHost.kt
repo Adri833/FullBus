@@ -28,7 +28,9 @@ fun NavigationHost(
                     navController.navigate(Routes.Login.route)
                 },
                 navigationToHome = {
-                    navController.navigate(Routes.Home.route)
+                    navController.navigate(Routes.Home.route) {
+                        popUpTo(Routes.Register.route) { inclusive = true }
+                    }
                 }
             )
         }
@@ -40,7 +42,9 @@ fun NavigationHost(
                     navController.navigate(Routes.Register.route)
                 },
                 navigationToHome = {
-                    navController.navigate(Routes.Home.route)
+                    navController.navigate(Routes.Home.route) {
+                        popUpTo(Routes.Login.route) { inclusive = true }
+                    }
                 }
             )
         }
@@ -54,7 +58,7 @@ fun NavigationHost(
                 },
                 navigationToLogin = {
                     navController.navigate(Routes.Login.route) {
-                        popUpTo(Routes.Login.route) { inclusive = true }
+                        popUpTo(Routes.Home.route) { inclusive = true }
                     }
                 },
                 navigationToProfile = {
@@ -75,7 +79,7 @@ fun NavigationHost(
                     busLine = busLine, // Pasar el busLine a la pantalla de detalles
                     navigationToLogin = {
                         navController.navigate(Routes.Login.route) {
-                            popUpTo(Routes.Login.route) { inclusive = true }
+                            popUpTo(Routes.Home.route) { inclusive = true }
                         }
                     },
                     navigationToHome = { navController.navigate(Routes.Home.route) },

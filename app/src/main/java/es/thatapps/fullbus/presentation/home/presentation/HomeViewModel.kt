@@ -12,5 +12,6 @@ class HomeViewModel @Inject constructor(
 
     fun logout() {
         authRepository.logout()
+
     }
 }

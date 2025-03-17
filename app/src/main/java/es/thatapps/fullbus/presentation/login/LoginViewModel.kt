@@ -90,6 +90,10 @@ class LoginViewModel @Inject constructor(
         _passwordResetState.value = AsyncResult.Idle
     }
 
+    fun setLoadingState() {
+        _authState.value = AsyncResult.Loading
+    }
+
     // Funcion para saber si el usuario esta logueado
     fun isUserLoggedIn(): Boolean {
         return authRepository.isUserLoggedIn()

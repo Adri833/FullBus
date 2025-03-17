@@ -117,6 +117,8 @@ fun RegisterView(
             singleLine = true,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
             colors = TextFieldDefaults.colors(
+                focusedLabelColor = Color(0xFFfe1200),
+                focusedIndicatorColor = Color(0xFFfe1200),
                 focusedTextColor = MaterialTheme.colorScheme.onBackground,
                 unfocusedTextColor = MaterialTheme.colorScheme.onBackground
             )
@@ -186,7 +188,8 @@ fun RegisterView(
                     withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
                         append("Iniciar sesion")
                     }
-                }
+                },
+                color = Color(0xFFfe1200)
             )
         }
     }

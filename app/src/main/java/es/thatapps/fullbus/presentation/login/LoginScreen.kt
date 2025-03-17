@@ -160,6 +160,8 @@ private fun LoginView(
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
 
                 colors = TextFieldDefaults.colors(
+                    focusedLabelColor = Color(0xFFfe1200),
+                    focusedIndicatorColor = Color(0xFFfe1200),
                     focusedTextColor = MaterialTheme.colorScheme.onBackground,
                     unfocusedTextColor = MaterialTheme.colorScheme.onBackground
                 )
@@ -178,9 +180,9 @@ private fun LoginView(
             TextButton(
                 onClick = { viewModel.resetPassword(email.value) }, // Llama a la función de restablecimiento de contraseña
                 modifier = Modifier
-                    .align(Alignment.End)
+                    .align(Alignment.End),
             ) {
-                Text("¿Olvidaste tu contraseña?", fontSize = 13.sp)
+                Text("¿Olvidaste tu contraseña?", fontSize = 13.sp, color = Color(0xFFfe1200))
             }
 
             // Mostrar mensaje de error en un recuadro rojo si hay algún error
@@ -256,7 +258,8 @@ private fun LoginView(
                     withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
                         append("Regístrate")
                     }
-                }
+                },
+                color = Color(0xFFfe1200)
             )
         }
     }
@@ -276,6 +279,7 @@ private fun launchGoogleSignIn(
                 .setFilterByAuthorizedAccounts(false)
                 .build()
         ).build()
+    viewModel.setLoadingState()
 
     oneTapClient.beginSignIn(signInRequest)
         .addOnSuccessListener { result ->
