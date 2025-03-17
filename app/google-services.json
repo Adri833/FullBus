@@ -51,6 +51,14 @@
           }
         },
         {
+          "client_id": "849555118843-pq9uhkt09glgc4b4qqp4pq3lj5t2pgff.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "es.thatapps.fullbus",
+            "certificate_hash": "3b7361e955fb0e57156e7fabd329367c8ef3b959"
+          }
+        },
+        {
           "client_id": "849555118843-q55v09m3921eg65afdshjn93pqrit2v6.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
