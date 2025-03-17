@@ -60,10 +60,10 @@ fun HomeScreen(
             navigationToLogin()
         },
     ) {
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
                 .adjustForMobile()
         ) {
             // Header sin padding para que ocupe toda la pantalla horizontalmente

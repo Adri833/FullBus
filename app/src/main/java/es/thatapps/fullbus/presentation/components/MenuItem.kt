@@ -10,11 +10,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -31,8 +31,7 @@ fun MenuItem(
             .width(300.dp)
             .padding(10.dp),
         colors = ButtonDefaults.buttonColors(
-            containerColor = Color(0xFFE0E0E0), // Fondo del botón
-            contentColor = Color.Black // Color del contenido
+            containerColor = MaterialTheme.colorScheme.surfaceVariant,
         ),
         contentPadding = PaddingValues(0.dp),
         elevation = ButtonDefaults.elevatedButtonElevation(defaultElevation = 4.dp),
@@ -54,8 +53,7 @@ fun MenuItem(
             Text(
                 text = text,
                 fontSize = 24.sp,
-                color = Color.Black
-            )
+                color = MaterialTheme.colorScheme.onBackground            )
         }
     }
 }

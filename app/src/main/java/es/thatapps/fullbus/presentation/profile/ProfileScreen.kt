@@ -3,6 +3,7 @@ package es.thatapps.fullbus.presentation.profile
 import es.thatapps.fullbus.presentation.components.ConfirmationDialog
 import android.net.Uri
 import android.widget.Toast
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -23,6 +24,7 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.MailOutline
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -42,10 +44,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import es.thatapps.fullbus.presentation.components.AdBanner
 import es.thatapps.fullbus.presentation.components.BackButton
 import es.thatapps.fullbus.presentation.components.CardClickable
 import es.thatapps.fullbus.presentation.components.CardInfo
-import es.thatapps.fullbus.presentation.components.CardSwitch
 import es.thatapps.fullbus.presentation.components.adjustForMobile
 import es.thatapps.fullbus.utils.ImageBase64
 import es.thatapps.fullbus.utils.encodeImageToBase64
@@ -90,8 +92,9 @@ fun ProfileScreen(
 
     Column(
         modifier = Modifier
-            .adjustForMobile()
             .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+            .adjustForMobile()
             .padding(top = 50.dp, start = 16.dp, end = 16.dp),
     ) {
         // Boton para volver atras
@@ -103,7 +106,7 @@ fun ProfileScreen(
             modifier = Modifier
                 .align(Alignment.CenterHorizontally),
             fontSize = 36.sp,
-            color = Color.Black,
+            color = MaterialTheme.colorScheme.onBackground,
         )
 
         Spacer(modifier = Modifier.height(30.dp))
@@ -111,7 +114,7 @@ fun ProfileScreen(
         // Foto de perfil clicable para cambiarla
         Box(
             modifier = Modifier
-                .border(4.dp, Color.Black, RoundedCornerShape(72.dp))
+                .border(4.dp, MaterialTheme.colorScheme.onBackground, RoundedCornerShape(72.dp))
                 .clickable {
                     imagePicker.launch("image/*")
                 }
@@ -132,7 +135,7 @@ fun ProfileScreen(
                 Icon(
                     imageVector = Icons.Default.Edit,
                     contentDescription = "Editar foto",
-                    tint = Color.Black,
+                    tint = MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier.size(20.dp)
                 )
             }
@@ -177,7 +180,7 @@ fun ProfileScreen(
                     singleLine = true,
                     textStyle = TextStyle(
                         fontSize = 30.sp,
-                        color = Color.Black,
+                        color = MaterialTheme.colorScheme.onBackground,
                         textAlign = TextAlign.Center
                     ),
                     colors = TextFieldDefaults.colors(
@@ -192,7 +195,7 @@ fun ProfileScreen(
                     modifier = Modifier
                         .clickable { isEditing = true },
                     fontSize = 30.sp,
-                    color = Color.Black,
+                    color = MaterialTheme.colorScheme.onBackground,
                     fontWeight = FontWeight.Bold
                 )
             }
@@ -201,16 +204,8 @@ fun ProfileScreen(
         // Barra horizontal
         HorizontalDivider(
             thickness = 2.dp,
-            color = Color.Black,
+            color = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier.padding(top = 16.dp, bottom = 32.dp)
-        )
-
-        // Card para el modo oscuro
-        CardSwitch(
-            title = "Modo Oscuro",
-            isCheked = false,
-            onChekedChange = { },
-            modifier = Modifier.padding(16.dp)
         )
 
         Spacer(modifier = Modifier.height(20.dp))
@@ -236,6 +231,10 @@ fun ProfileScreen(
             onClick = { showDeleteDialog = true },
             title = "Borrar cuenta",
         )
+
+        Spacer(Modifier.weight(1f))
+
+        AdBanner(context)
     }
 
     // Mensaje de confirmacion de cierre de sesion
