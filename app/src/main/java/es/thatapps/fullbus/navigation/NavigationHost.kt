@@ -9,7 +9,6 @@ import es.thatapps.fullbus.presentation.home.presentation.HomeScreen
 import es.thatapps.fullbus.presentation.login.LoginScreen
 import es.thatapps.fullbus.presentation.profile.ProfileScreen
 import es.thatapps.fullbus.presentation.register.RegisterScreen
-import es.thatapps.fullbus.presentation.settings.SettingsScreen
 
 
 @Composable
@@ -67,11 +66,6 @@ fun NavigationHost(
             )
         }
 
-        // Navegacion de la pantalla Settings
-        composable(route = Routes.Settings.route) {
-            SettingsScreen()
-        }
-
         // Navegación de la pantalla de detalles de la línea de autobús
         composable(route = "busLineDetail/{busLine}") { backStackEntry ->
             val busLine = backStackEntry.arguments?.getString("busLine")
@@ -84,7 +78,6 @@ fun NavigationHost(
                             popUpTo(Routes.Login.route) { inclusive = true }
                         }
                     },
-                    navigationToSettings = { navController.navigate(Routes.Settings.route) },
                     navigationToHome = { navController.navigate(Routes.Home.route) },
                     navigationToProfile = { navController.navigate(Routes.Profile.route) },
                 )

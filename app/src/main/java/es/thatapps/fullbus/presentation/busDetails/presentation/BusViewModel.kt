@@ -27,10 +27,15 @@ class BusViewModel @Inject constructor(
     private val currentTime = sdf.format(calendar.time)
     private val resetHour = 4
     private val currentHour = calendar.get(Calendar.HOUR_OF_DAY)
+    private val currentMonth = calendar.get(Calendar.MONTH) + 1
+    private val season = if (currentMonth == Calendar.JULY || currentMonth == Calendar.AUGUST) { "Summer" } else { "Winter" }
 
     // Estado de los buses activos
     private val _activeBuses = MutableStateFlow<List<BusDetailDomain>>(emptyList())
     val activeBuses: StateFlow<List<BusDetailDomain>> = _activeBuses
+
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading
 
     // Función para obtener el día actual
     private fun getLogicDay(): Int {
@@ -52,12 +57,15 @@ class BusViewModel @Inject constructor(
 
     // Carga los buses activos desde Firestore
     private suspend fun loadActiveBuses() {
+        _isLoading.value = true
         _activeBuses.value = busRepository.getActiveBuses()
+        _isLoading.value = false
     }
 
     // Refresca los buses activos (elimina expirados y crea nuevos)
     private suspend fun refreshActiveBuses() {
         // Primero elimina todos los buses expirados
+        _isLoading.value = true
         deleteBus()
 
         // Obtiene los buses ya activos en Firestore, utilizando un Map para una búsqueda rápida
@@ -66,9 +74,9 @@ class BusViewModel @Inject constructor(
         // Crea nuevos buses según el horario actual si no existen
         BusScheduleRepository.busSchedules.forEach { busSchedule ->
             val schedule = when (getLogicDay()) {
-                Calendar.SATURDAY -> busSchedule.schedules["Saturday"]
-                Calendar.SUNDAY -> busSchedule.schedules["Holiday"]
-                else -> busSchedule.schedules["Normal"]
+                Calendar.SATURDAY -> busSchedule.schedules[season]?.get("Saturday")
+                Calendar.SUNDAY -> busSchedule.schedules[season]?.get("Holiday")
+                else -> busSchedule.schedules[season]?.get("Normal")
             }
 
             // Verifica si el bus debe ser creado comparando la hora actual con la hora de salida, y si ya existe
@@ -92,6 +100,7 @@ class BusViewModel @Inject constructor(
             }
         }
         loadActiveBuses()
+        _isLoading.value = false
     }
 
     private suspend fun deleteBus() {
@@ -122,7 +131,7 @@ class BusViewModel @Inject constructor(
     }
 
     // Función para establecer el bus como lleno
-    fun reportFull(busId: String) {
+    fun reportFull(busId: String, username: String, pfp: String) {
         viewModelScope.launch {
             // Encuentra el bus en la lista de buses activos
             _activeBuses.value = _activeBuses.value.map { bus ->
@@ -132,12 +141,31 @@ class BusViewModel @Inject constructor(
                     bus
                 }
             }
-            // Luego actualiza el estado del bus en Firestore
-            busRepository.updateBus(_activeBuses.value.find { it.id == busId }!!)
+
+            // Actualiza el estado del bus en Firestore
+            val updatedBus = _activeBuses.value.find { it.id == busId }!!
+
+            // Agrega el username y el pfp al bus
+            val updatedBusWithUserInfo = updatedBus.copy(reportedByUsername = username, reportedByPfp = pfp)
+
+            // Guarda el bus actualizado en Firestore
+            busRepository.updateBus(updatedBusWithUserInfo)
 
             // Llama a refreshActiveBuses para recargar los buses activos si es necesario
             refreshActiveBuses()
         }
+    }
+
+    suspend fun getUserBus (bus: BusDetailDomain): String {
+        return busRepository.getUserBus(bus)
+    }
+
+    suspend fun getUsername(): String {
+        return authRepository.getUserName()
+    }
+
+    suspend fun getPFPBus(bus: BusDetailDomain): String {
+        return busRepository.getPFPBus(bus)
     }
 
     fun logout() {

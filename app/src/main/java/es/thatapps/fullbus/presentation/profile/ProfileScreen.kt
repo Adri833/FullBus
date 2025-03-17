@@ -1,5 +1,6 @@
 package es.thatapps.fullbus.presentation.profile
 
+import es.thatapps.fullbus.presentation.components.ConfirmationDialog
 import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.border
@@ -45,7 +46,6 @@ import es.thatapps.fullbus.presentation.components.BackButton
 import es.thatapps.fullbus.presentation.components.CardClickable
 import es.thatapps.fullbus.presentation.components.CardInfo
 import es.thatapps.fullbus.presentation.components.CardSwitch
-import es.thatapps.fullbus.presentation.components.ConfirmationDialog
 import es.thatapps.fullbus.presentation.components.adjustForMobile
 import es.thatapps.fullbus.utils.ImageBase64
 import es.thatapps.fullbus.utils.encodeImageToBase64

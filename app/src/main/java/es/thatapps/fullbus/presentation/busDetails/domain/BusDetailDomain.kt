@@ -8,4 +8,6 @@ data class BusDetailDomain(
     var arriveTime: String = "",
     var id: String = "",
     var day: String = "",
+    var reportedByUsername: String = "",
+    var reportedByPfp: String = ""
 )

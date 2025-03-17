@@ -78,7 +78,7 @@ class AuthRepository @Inject constructor(
             try {
                 val userEmail = user.email ?: throw Exception("Email no disponible")
                 firestore.collection("users").document(userEmail).delete().await()
-                user?.delete()?.await()
+                user.delete().await()
                 Result.success(Unit)
             } catch (e: Exception) {
                 Result.failure(e)

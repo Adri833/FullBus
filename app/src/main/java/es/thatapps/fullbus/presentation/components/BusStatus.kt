@@ -7,7 +7,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -16,11 +15,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.thatapps.fullbus.R
@@ -29,11 +28,14 @@ import es.thatapps.fullbus.ui.theme.Green
 import es.thatapps.fullbus.ui.theme.Orange
 import es.thatapps.fullbus.ui.theme.Red
 import es.thatapps.fullbus.ui.theme.Red2
+import es.thatapps.fullbus.utils.ImageBase64
 
 @Composable
-fun BusStatus(
+fun              BusStatus(
     busDetail: BusDetailDomain,
     onReportFull: () -> Unit,
+    pfp : String,
+    username : String,
 ) {
     Column(
         modifier = Modifier
@@ -99,22 +101,23 @@ fun BusStatus(
             Row(
                 modifier = Modifier
                     .background(Orange, RoundedCornerShape(20.dp))
-                    .border(3.dp , Color.Black, RoundedCornerShape(20.dp))
+                    .border(3.dp, Color.Black, RoundedCornerShape(20.dp))
                     .padding(8.dp)
                     .wrapContentSize(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    imageVector = Icons.Filled.AccountCircle,
-                    tint = Color.Black,
-                    contentDescription = "Full Bus",
-                    modifier = Modifier.size(32.dp)
-                )
+                Box(
+                    modifier = Modifier
+                        .size(46.dp)
+                        .shadow(6.dp, RoundedCornerShape(50))
+                ) {
+                    ImageBase64(imageUrl = pfp, size = 46.dp)
+                }
 
                 Spacer(modifier = Modifier.width(8.dp))
 
                 Text(
-                    text = "Reportado por (nombre_usuario)",
+                    text = "Reportado por $username",
                     color = Color.Black,
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp
@@ -142,29 +145,9 @@ fun BusStatus(
                 Text(
                     text = "Reportar",
                     color = Color.Black,
-                    fontSize = 20.sp)
+                    fontSize = 20.sp
+                )
             }
         }
-//        Spacer(modifier = Modifier.height(24.dp))
-//
-//        TimedProgressBar(
-//            startTime = busDetail.departureTime,
-//            endTime = busDetail.arriveTime,
-//            currentTime = SimpleDateFormat("HH:mm", Locale.getDefault()).apply { timeZone = TimeZone.getTimeZone("Europe/Madrid") }.format(Calendar.getInstance().time),
-//        )
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun PreviewBusStatus() {
-    BusStatus(
-        busDetail = BusDetailDomain(
-            line = "M-126",
-            departureTime = "15:30",
-            arriveTime = "16:30",
-            isFull = true
-        ),
-        onReportFull = {},
-    )
 }
