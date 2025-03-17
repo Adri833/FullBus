@@ -4,15 +4,11 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.isSystemInDarkTheme
 import dagger.hilt.android.AndroidEntryPoint
 import es.thatapps.fullbus.navigation.NavigationHost
 import es.thatapps.fullbus.ui.theme.FullBusTheme
-
-/*
-@AndroidEntryPoint le dice a Hilt que esta clase necesita dependencias inyectadas.
-Automáticamente genera y gestiona el código necesario para hacer la inyección.
-Se pone en la activity para que se inyecten todas las dependencias
-*/
+import com.google.android.gms.ads.MobileAds
 
 @AndroidEntryPoint
 class MainActivity: ComponentActivity() {
@@ -20,8 +16,10 @@ class MainActivity: ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge() // Ocupa toda la pantalla posible
+        MobileAds.initialize(this)
         setContent {
-            FullBusTheme {
+            val darkTheme = isSystemInDarkTheme()
+            FullBusTheme(darkTheme) {
                 NavigationHost()
             }
         }

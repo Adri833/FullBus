@@ -1,7 +1,10 @@
 package es.thatapps.fullbus.presentation.register
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,9 +12,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -20,34 +29,70 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import es.thatapps.fullbus.R
 import es.thatapps.fullbus.presentation.components.PasswordTextField
-import es.thatapps.fullbus.presentation.components.RegisterTextField
+import es.thatapps.fullbus.presentation.components.adjustForMobile
+import es.thatapps.fullbus.presentation.loading.LoadingScreen
+import es.thatapps.fullbus.utils.AsyncResult
 
 @Composable
 fun RegisterScreen(
     viewModel: RegisterViewModel = hiltViewModel(),
     navigationToLogin: () -> Unit,
+    navigationToHome: () -> Unit,
+) {
+
+    // UI
+    RegisterView(viewModel, navigationToLogin)
+
+    // Muestra los estados al registrarse
+    val asyncResult by viewModel.registerState.collectAsState()
+    val context = LocalContext.current
+    when (asyncResult) {
+        is AsyncResult.Loading -> LoadingScreen() // Circulo mientras carga
+        is AsyncResult.Success -> {
+            viewModel.resetRegisterState() // Reestablece el estado para evitar un bucle
+            Toast.makeText(context, "Registro exitoso!", Toast.LENGTH_SHORT)
+                .show() // Notificacion de exito
+            navigationToHome()
+        }
+        else -> {}
+    }
+}
+
+@Composable
+fun RegisterView(
+    viewModel: RegisterViewModel,
+    navigationToLogin: () -> Unit,
 ) {
     // Estados para almacenar los valores de entrada
-    val name = remember { mutableStateOf("") }
     val email = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
-    val registerState by viewModel.registerState.collectAsState()
+    val asyncResult by viewModel.registerState.collectAsState()
+
+    // Obtener el controlador del teclado
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val context = LocalContext.current
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
-            .padding(50.dp),
+            .background(MaterialTheme.colorScheme.background)
+            .adjustForMobile()
+            .padding(top = 70.dp, start = 20.dp, end = 20.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
         Image(
             painter = painterResource(id = R.drawable.logo_fullbus),
             contentDescription = "Logo de la aplicacion",
@@ -56,62 +101,93 @@ fun RegisterScreen(
                 .height(200.dp)
         )
 
-        Text(text = "Ingresa tus datos", fontSize = 28.sp, color = Color.Black)
-        Spacer(modifier = Modifier.height(20.dp))
+        Text(
+            text = "Registrarse",
+            fontSize = 28.sp,
+            color = MaterialTheme.colorScheme.onBackground,
+            modifier = Modifier.padding(top = 20.dp, bottom = 20.dp)
+        )
 
-        RegisterTextField(
-            value = name.value,
-            placeHolder = "Nombre de Usuario"
-        ) {
-            name.value = it // Actualiza el valor del nombre
-        }
-        Spacer(modifier = Modifier.height(10.dp))
-
-        RegisterTextField(
+        // Campo de texto para el email
+        TextField(
             value = email.value,
-            placeHolder = "Email"
-        ) {
-            email.value = it // Actualiza el valor del email
-        }
-        Spacer(modifier = Modifier.height(10.dp))
+            onValueChange = { email.value = it },
+            label = { Text("Correo electrónico") },
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+            colors = TextFieldDefaults.colors(
+                focusedTextColor = MaterialTheme.colorScheme.onBackground,
+                unfocusedTextColor = MaterialTheme.colorScheme.onBackground
+            )
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
 
         PasswordTextField(
             value = password.value,
             onValueChange = {
-                password.value = it // Actualiza el valor de la contraseña
+                password.value = it
             }
         )
-        Spacer(modifier = Modifier.height(20.dp))
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // Mostrar mensaje de error en un recuadro rojo si hay algún error
+        if (asyncResult is AsyncResult.Error) {
+            val errorMessage = when (val msg = (asyncResult as AsyncResult.Error).message) {
+                is Int -> context.getString(msg)
+                is String -> msg
+                else -> "Error desconocido"
+            }
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .border(1.dp, Color.Red, shape = RoundedCornerShape(4.dp))
+                    .background(Color(0xFFFFD2D7), shape = RoundedCornerShape(4.dp))
+                    .padding(8.dp),
+                contentAlignment = Alignment.Center // Centrar el texto
+            ) {
+                Text(
+                    text = errorMessage,
+                    color = Color.Red,
+                    fontSize = 15.sp
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
 
         Button(
             onClick = {
-                viewModel.register(email.value, password.value) // Llama a la función de registro
+                // Oculta el teclado
+                keyboardController?.hide()
+
+                viewModel.register(email.value, password.value)
             },
             shape = CircleShape,
-            colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onBackground),
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp)
         ) {
-            Text(text = "Registrarse")
+            Text(text = "Registrarse", fontSize = 17.sp, color = MaterialTheme.colorScheme.background)
         }
 
-        Spacer(modifier = Modifier.height(10.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
-        when (registerState) {
-            is RegisterState.Loading -> Text("Cargando...")
-            is RegisterState.Success -> Text("Registrado con éxito!")
-            is RegisterState.Error -> Text("Error: ${(registerState as RegisterState.Error).message}")
-            else -> {}
-
+        // Enlace a la pantalla de inicio sesion
+        TextButton(
+            onClick = { navigationToLogin() },
+        ) {
+            Text(
+                buildAnnotatedString {
+                    append("¿Ya tienes cuenta? ")
+                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                        append("Iniciar sesion")
+                    }
+                }
+            )
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun RegisterScreenPreview() {
-    RegisterScreen(
-        navigationToLogin = {}
-    )
 }

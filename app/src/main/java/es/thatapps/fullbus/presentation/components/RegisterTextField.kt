@@ -24,7 +24,7 @@ fun RegisterTextField(
         ),
         maxLines = 1,
         singleLine = true,
-        placeholder = {
+        label = {
             Text(text = placeHolder)
         },
         modifier = Modifier.fillMaxWidth()

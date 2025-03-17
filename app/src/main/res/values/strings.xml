@@ -1,3 +1,25 @@
 <resources>
     <string name="app_name">FullBus</string>
+    <!-- Google id-->
+    <string name="google_id">849555118843-m3fh3d2ul50trvtdsnakd5bkqgi4sfjb.apps.googleusercontent.com</string>
+
+    <!-- Errores -->
+    <string name="camp_required">Por favor, rellena todos los campos</string>
+    <string name="invalid_email">El formato del correo es inválido</string>
+    <string name="password_short">La contraseña debe tener al menos 6 caracteres</string>
+    <string name="username_taken">El nombre de usuario ya está en uso</string>
+    <string name="register_error">Error en el registro</string>
+    <string name="unknown_error">Ha ocurrido un error desconocido. Por favor, inténtalo de nuevo</string>
+    <string name="email_in_use">El correo electrónico ya está en uso</string>
+    <string name="error_firestore">Error de la base de datos</string>
+    <string name="error_login">Error desconocido al iniciar sesion. Por favor, intentelo de nuevo</string>
+    <string name="user_not_found">No se ha encontrado el ususario</string>
+    <string name="invalid_credentials">El usuario o contraseña es incorrecto</string>
+    <string name="error_reset_password">Error al restablecer la contraseña</string>
+
+    <string name="email_send">Se ha enviado un mensaje a tu email</string>
+
+    <!-- Pantalla de Login -->
+    <string name="google">Continuar con Google</string>
+    <string name="email_login">Correo/Contraseña</string>
 </resources>
