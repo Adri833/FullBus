@@ -22,6 +22,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -123,8 +124,9 @@ private fun LoginView(
 
     Box(
         modifier = Modifier
-            .adjustForMobile()
             .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+            .adjustForMobile()
             .padding(20.dp)
     ) {
         Column(
@@ -141,7 +143,12 @@ private fun LoginView(
                     .height(200.dp)
             )
 
-            Text(text = "Iniciar sesión", fontSize = 28.sp, color = Color.Black, modifier = Modifier.padding(top = 20.dp, bottom = 20.dp))
+            Text(
+                text = "Iniciar sesión",
+                fontSize = 28.sp,
+                color = MaterialTheme.colorScheme.onBackground,
+                modifier = Modifier.padding(top = 20.dp, bottom = 20.dp)
+            )
 
             // Campo de texto para el email
             TextField(
@@ -153,8 +160,8 @@ private fun LoginView(
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
 
                 colors = TextFieldDefaults.colors(
-                    focusedTextColor = Color.Black,
-                    unfocusedTextColor = Color.Black
+                    focusedTextColor = MaterialTheme.colorScheme.onBackground,
+                    unfocusedTextColor = MaterialTheme.colorScheme.onBackground
                 )
             )
 
@@ -191,11 +198,11 @@ private fun LoginView(
                             1.dp,
                             Color.Red,
                             shape = RoundedCornerShape(4.dp)
-                        ) // Borde de color rojo
+                        )
                         .background(
                             Color(0xFFFFD2D7),
                             shape = RoundedCornerShape(4.dp)
-                        ) // Color rojo más claro
+                        )
                         .padding(8.dp),
                     contentAlignment = Alignment.Center // Centrar el texto
                 ) {
@@ -217,12 +224,12 @@ private fun LoginView(
                     viewModel.login(email.value, password.value) // Llama a la función de login
                 },
                 shape = CircleShape,
-                colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onBackground),
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp)
             ) {
-                Text(text = "Iniciar Sesión", fontSize = 17.sp, color = Color.White)
+                Text(text = "Iniciar Sesión", fontSize = 17.sp, color = MaterialTheme.colorScheme.background)
             }
 
             Spacer(modifier = Modifier.height(20.dp))

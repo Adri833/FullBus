@@ -10,12 +10,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.DrawerState
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -56,7 +56,7 @@ class DrawerMenu {
             modifier = Modifier
                 .width(300.dp)
                 .fillMaxHeight()
-                .background(Color.White)
+                .background(MaterialTheme.colorScheme.background)
         ) {
             // Imagen de la parte superior
             Box(
@@ -109,16 +109,16 @@ class DrawerMenu {
             iconRes = R.drawable.ic_suggest,
             text = "Sugerencias",
             onClick = {
-                showDialog.value = true // Muestra el cuadro de diálogo al hacer clic
+                showDialog.value = true
             }
         )
 
         // Mostrar el cuadro de diálogo si el estado es verdadero
         if (showDialog.value) {
             SuggestionDialog(
-                onDismiss = { showDialog.value = false }, // Oculta el cuadro de diálogo
+                onDismiss = { showDialog.value = false },
                 onSend = { suggestion ->
-                    showDialog.value = false // Oculta el cuadro después de enviar
+                    showDialog.value = false
                 }
             )
         }

@@ -9,6 +9,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -38,8 +39,8 @@ fun BusInfoBox(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
-            .shadow(elevation = 6.dp, shape = RoundedCornerShape(16.dp))
-            .border(2.dp, Color.Black, shape = RoundedCornerShape(16.dp))
+            .shadow(elevation = 6.dp, ambientColor = MaterialTheme.colorScheme.onBackground, shape = RoundedCornerShape(16.dp))
+            .border(2.dp, MaterialTheme.colorScheme.onBackground, shape = RoundedCornerShape(16.dp))
             .clickable(onClick = onClick),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(

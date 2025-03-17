@@ -16,6 +16,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -86,9 +87,9 @@ fun RegisterView(
 
     Column(
         modifier = Modifier
-            .adjustForMobile()
             .fillMaxSize()
-            .background(Color.White)
+            .background(MaterialTheme.colorScheme.background)
+            .adjustForMobile()
             .padding(top = 70.dp, start = 20.dp, end = 20.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -103,7 +104,7 @@ fun RegisterView(
         Text(
             text = "Registrarse",
             fontSize = 28.sp,
-            color = Color.Black,
+            color = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier.padding(top = 20.dp, bottom = 20.dp)
         )
 
@@ -116,8 +117,8 @@ fun RegisterView(
             singleLine = true,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
             colors = TextFieldDefaults.colors(
-                focusedTextColor = Color.Black,
-                unfocusedTextColor = Color.Black
+                focusedTextColor = MaterialTheme.colorScheme.onBackground,
+                unfocusedTextColor = MaterialTheme.colorScheme.onBackground
             )
         )
 
@@ -165,12 +166,12 @@ fun RegisterView(
                 viewModel.register(email.value, password.value)
             },
             shape = CircleShape,
-            colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onBackground),
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp)
         ) {
-            Text(text = "Registrarse", fontSize = 17.sp, color = Color.White)
+            Text(text = "Registrarse", fontSize = 17.sp, color = MaterialTheme.colorScheme.background)
         }
 
         Spacer(modifier = Modifier.height(8.dp))

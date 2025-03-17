@@ -11,6 +11,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -44,7 +45,7 @@ fun              BusStatus(
                 if (busDetail.isFull) Red else Green,
                 RoundedCornerShape(16.dp)
             )
-            .border(3.dp, Color.Black, RoundedCornerShape(16.dp))
+            .border(3.dp, MaterialTheme.colorScheme.onBackground, RoundedCornerShape(16.dp))
             .padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
